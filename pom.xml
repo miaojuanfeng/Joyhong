@@ -11,10 +11,18 @@
       <!-- spring版本号 -->  
       <spring.version>4.0.2.RELEASE</spring.version>  
       <!-- mybatis版本号 -->  
-      <mybatis.version>3.2.6</mybatis.version>  
+      <mybatis.version>3.2.6</mybatis.version>
+      <!-- mybatis-spring版本号 -->  
+      <mybatis-spring.version>1.2.0</mybatis-spring.version>
+      <!-- mysql-connector版本号 -->
+      <mysql-connector.version>5.1.29</mysql-connector.version>
       <!-- log4j日志文件管理包版本 -->  
-      <slf4j.version>1.7.7</slf4j.version>  
+      <!-- <slf4j.version>1.7.7</slf4j.version> -->  
       <log4j.version>1.2.17</log4j.version>  
+      <!-- httpclient版本号 -->
+      <httpclient.version>4.5.3</httpclient.version>
+      <!-- json-lib版本号 -->
+      <json-lib.version>2.4</json-lib.version>
   </properties>
   <dependencies>
     <dependency>
@@ -23,6 +31,19 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
+    
+    <dependency>
+	    <groupId>org.apache.httpcomponents</groupId>
+	    <artifactId>httpclient</artifactId>
+	    <version>${httpclient.version}</version>
+	</dependency>
+	
+	<dependency>
+	    <groupId>net.sf.json-lib</groupId>
+	    <artifactId>json-lib</artifactId>
+	    <version>${json-lib.version}</version>
+	    <classifier>jdk15</classifier>
+	</dependency>
     
     <!-- spring核心包 -->  
     <dependency>  
@@ -87,15 +108,22 @@
     <dependency>  
         <groupId>org.mybatis</groupId>  
         <artifactId>mybatis-spring</artifactId>  
-        <version>1.2.0</version>  
+        <version>${mybatis-spring.version}</version>  
     </dependency>
 
     <!-- mysql驱动包 -->  
     <dependency>  
         <groupId>mysql</groupId>  
         <artifactId>mysql-connector-java</artifactId>  
-        <version>5.1.29</version>  
+        <version>${mysql-connector.version}</version>  
     </dependency>
+    
+    <!-- log4j驱动包 -->
+    <dependency>
+	    <groupId>log4j</groupId>
+	    <artifactId>log4j</artifactId>
+	    <version>${log4j.version}</version>
+	</dependency>
   </dependencies>
   <build>
     <finalName>joyhong</finalName>
