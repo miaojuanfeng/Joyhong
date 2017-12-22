@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.joyhong.dao.WeatherMapper">
+  <resultMap id="BaseResultMap" type="com.joyhong.model.Weather">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="time" jdbcType="TIMESTAMP" property="time" />
+    <result column="city_id" jdbcType="INTEGER" property="cityId" />
+    <result column="city_name" jdbcType="VARCHAR" property="cityName" />
+    <result column="lon" jdbcType="REAL" property="lon" />
+    <result column="lat" jdbcType="REAL" property="lat" />
+    <result column="zip_code" jdbcType="INTEGER" property="zipCode" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="modify_date" jdbcType="TIMESTAMP" property="modifyDate" />
+    <result column="deleted" jdbcType="INTEGER" property="deleted" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.joyhong.model.Weather">
+    <result column="data" jdbcType="LONGVARCHAR" property="data" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, time, city_id, city_name, lon, lat, zip_code, create_date, modify_date, deleted
+  </sql>
+  <sql id="Blob_Column_List">
+    data
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from weather
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from weather
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.joyhong.model.Weather">
+    insert into weather (id, time, city_id, 
+      city_name, lon, lat, zip_code, 
+      create_date, modify_date, deleted, 
+      data)
+    values (#{id,jdbcType=INTEGER}, #{time,jdbcType=TIMESTAMP}, #{cityId,jdbcType=INTEGER}, 
+      #{cityName,jdbcType=VARCHAR}, #{lon,jdbcType=REAL}, #{lat,jdbcType=REAL}, #{zipCode,jdbcType=INTEGER}, 
+      #{createDate,jdbcType=TIMESTAMP}, #{modifyDate,jdbcType=TIMESTAMP}, #{deleted,jdbcType=INTEGER}, 
+      #{data,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.joyhong.model.Weather">
+    insert into weather
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="time != null">
+        time,
+      </if>
+      <if test="cityId != null">
+        city_id,
+      </if>
+      <if test="cityName != null">
+        city_name,
+      </if>
+      <if test="lon != null">
+        lon,
+      </if>
+      <if test="lat != null">
+        lat,
+      </if>
+      <if test="zipCode != null">
+        zip_code,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+      <if test="modifyDate != null">
+        modify_date,
+      </if>
+      <if test="deleted != null">
+        deleted,
+      </if>
+      <if test="data != null">
+        data,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="time != null">
+        #{time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="cityId != null">
+        #{cityId,jdbcType=INTEGER},
+      </if>
+      <if test="cityName != null">
+        #{cityName,jdbcType=VARCHAR},
+      </if>
+      <if test="lon != null">
+        #{lon,jdbcType=REAL},
+      </if>
+      <if test="lat != null">
+        #{lat,jdbcType=REAL},
+      </if>
+      <if test="zipCode != null">
+        #{zipCode,jdbcType=INTEGER},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyDate != null">
+        #{modifyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleted != null">
+        #{deleted,jdbcType=INTEGER},
+      </if>
+      <if test="data != null">
+        #{data,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.joyhong.model.Weather">
+    update weather
+    <set>
+      <if test="time != null">
+        time = #{time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="cityId != null">
+        city_id = #{cityId,jdbcType=INTEGER},
+      </if>
+      <if test="cityName != null">
+        city_name = #{cityName,jdbcType=VARCHAR},
+      </if>
+      <if test="lon != null">
+        lon = #{lon,jdbcType=REAL},
+      </if>
+      <if test="lat != null">
+        lat = #{lat,jdbcType=REAL},
+      </if>
+      <if test="zipCode != null">
+        zip_code = #{zipCode,jdbcType=INTEGER},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyDate != null">
+        modify_date = #{modifyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleted != null">
+        deleted = #{deleted,jdbcType=INTEGER},
+      </if>
+      <if test="data != null">
+        data = #{data,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.joyhong.model.Weather">
+    update weather
+    set time = #{time,jdbcType=TIMESTAMP},
+      city_id = #{cityId,jdbcType=INTEGER},
+      city_name = #{cityName,jdbcType=VARCHAR},
+      lon = #{lon,jdbcType=REAL},
+      lat = #{lat,jdbcType=REAL},
+      zip_code = #{zipCode,jdbcType=INTEGER},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      modify_date = #{modifyDate,jdbcType=TIMESTAMP},
+      deleted = #{deleted,jdbcType=INTEGER},
+      data = #{data,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.joyhong.model.Weather">
+    update weather
+    set time = #{time,jdbcType=TIMESTAMP},
+      city_id = #{cityId,jdbcType=INTEGER},
+      city_name = #{cityName,jdbcType=VARCHAR},
+      lon = #{lon,jdbcType=REAL},
+      lat = #{lat,jdbcType=REAL},
+      zip_code = #{zipCode,jdbcType=INTEGER},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      modify_date = #{modifyDate,jdbcType=TIMESTAMP},
+      deleted = #{deleted,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
