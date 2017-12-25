@@ -146,7 +146,7 @@ public class WeatherController {
 		JSONObject retval = new JSONObject();
 		
 		Weather weather = this.fetch_weather(city_id);
-		if( weather != null && invalid_time(weather) ){
+		if( weather != null && this.invalid_time(weather) ){
 			retval.put("status", true);
 			retval.put("time", weather.getTime().getTime()/1000);
 			retval.put("data", weather.getData());
@@ -170,9 +170,9 @@ public class WeatherController {
 					String data = result;
 					
 					if( weather == null ){
-						cache_weather(time, country, cityId, cityName, lon, lat, zipCode, data);
+						this.cache_weather(time, country, cityId, cityName, lon, lat, zipCode, data);
 					}else{
-						update_weather(weather.getId(), time, country, cityId, cityName, lon, lat, zipCode, data);
+						this.update_weather(weather.getId(), time, country, cityId, cityName, lon, lat, zipCode, data);
 					}
 					
 					retval.put("status", true);
@@ -203,7 +203,7 @@ public class WeatherController {
 		JSONObject retval = new JSONObject();
 		
 		Weather weather = this.fetch_weather(city_name, null);
-		if( weather != null && invalid_time(weather) ){
+		if( weather != null && this.invalid_time(weather) ){
 			retval.put("status", true);
 			retval.put("time", weather.getTime().getTime()/1000);
 			retval.put("data", weather.getData());
@@ -227,9 +227,9 @@ public class WeatherController {
 					String data = result;
 					
 					if( weather == null ){
-						cache_weather(time, country, cityId, cityName, lon, lat, zipCode, data);
+						this.cache_weather(time, country, cityId, cityName, lon, lat, zipCode, data);
 					}else{
-						update_weather(weather.getId(), time, country, cityId, cityName, lon, lat, zipCode, data);
+						this.update_weather(weather.getId(), time, country, cityId, cityName, lon, lat, zipCode, data);
 					}
 					
 					retval.put("status", true);
@@ -298,7 +298,7 @@ public class WeatherController {
 		JSONObject retval = new JSONObject();
 		
 		Weather weather = this.fetch_weather(null, zip_code);
-		if( weather != null && invalid_time(weather) ){
+		if( weather != null && this.invalid_time(weather) ){
 			retval.put("status", true);
 			retval.put("time", weather.getTime().getTime()/1000);
 			retval.put("data", weather.getData());
@@ -322,9 +322,9 @@ public class WeatherController {
 					String data = result;
 					
 					if( weather == null ){
-						cache_weather(time, country, cityId, cityName, lon, lat, zipCode, data);
+						this.cache_weather(time, country, cityId, cityName, lon, lat, zipCode, data);
 					}else{
-						update_weather(weather.getId(), time, country, cityId, cityName, lon, lat, zipCode, data);
+						this.update_weather(weather.getId(), time, country, cityId, cityName, lon, lat, zipCode, data);
 					}
 					
 					retval.put("status", true);

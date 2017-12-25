@@ -45,4 +45,9 @@
 	    <property name="mapperInterface" value="com.joyhong.dao.WeatherMapper" />  
 	    <property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
+	
+	<bean id="deviceMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">  
+	    <property name="mapperInterface" value="com.joyhong.dao.DeviceMapper" />  
+	    <property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
 </beans>
