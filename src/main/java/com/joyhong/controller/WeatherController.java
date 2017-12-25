@@ -79,9 +79,10 @@ public class WeatherController {
 	 * @param data
 	 * @return bool
 	 */
-	private int cache_weather(Date time, Integer cityId, String cityName, Float lon, Float lat, String zipCode, String data){
+	private int cache_weather(Date time, String country, Integer cityId, String cityName, Float lon, Float lat, String zipCode, String data){
 		Weather weather = new Weather();
 		weather.setTime(time);
+		weather.setCountry(country);
 		weather.setCityId(cityId);
 		weather.setCityName(cityName);
 		weather.setLon(lon);
@@ -111,10 +112,11 @@ public class WeatherController {
 	 * @param data
 	 * @return
 	 */
-	private int update_weather(Integer id, Date time, Integer cityId, String cityName, Float lon, Float lat, String zipCode, String data){
+	private int update_weather(Integer id, Date time, String country, Integer cityId, String cityName, Float lon, Float lat, String zipCode, String data){
 		Weather weather = new Weather();
 		weather.setId(id);
 		weather.setTime(time);
+		weather.setCountry(country);
 		weather.setCityId(cityId);
 		weather.setCityName(cityName);
 		weather.setLon(lon);
@@ -159,6 +161,7 @@ public class WeatherController {
 					JSONObject jsonResult = JSONObject.fromObject(result);
 					
 					Date time = new Date();
+					String country = jsonResult.getJSONObject("sys").getString("country");
 					Integer cityId = jsonResult.getInt("id");
 					String cityName = jsonResult.getString("name");
 					Float lon = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lon"));
@@ -167,9 +170,9 @@ public class WeatherController {
 					String data = result;
 					
 					if( weather == null ){
-						cache_weather(time, cityId, cityName, lon, lat, zipCode, data);
+						cache_weather(time, country, cityId, cityName, lon, lat, zipCode, data);
 					}else{
-						update_weather(weather.getId(), time, cityId, cityName, lon, lat, zipCode, data);
+						update_weather(weather.getId(), time, country, cityId, cityName, lon, lat, zipCode, data);
 					}
 					
 					retval.put("status", true);
@@ -215,6 +218,7 @@ public class WeatherController {
 					JSONObject jsonResult = JSONObject.fromObject(result);
 					
 					Date time = new Date();
+					String country = jsonResult.getJSONObject("sys").getString("country");
 					Integer cityId = jsonResult.getInt("id");
 					String cityName = jsonResult.getString("name");
 					Float lon = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lon"));
@@ -223,9 +227,9 @@ public class WeatherController {
 					String data = result;
 					
 					if( weather == null ){
-						cache_weather(time, cityId, cityName, lon, lat, zipCode, data);
+						cache_weather(time, country, cityId, cityName, lon, lat, zipCode, data);
 					}else{
-						update_weather(weather.getId(), time, cityId, cityName, lon, lat, zipCode, data);
+						update_weather(weather.getId(), time, country, cityId, cityName, lon, lat, zipCode, data);
 					}
 					
 					retval.put("status", true);
@@ -308,6 +312,7 @@ public class WeatherController {
 					JSONObject jsonResult = JSONObject.fromObject(result);
 					
 					Date time = new Date();
+					String country = jsonResult.getJSONObject("sys").getString("country");
 					Integer cityId = jsonResult.getInt("id");
 					String cityName = jsonResult.getString("name");
 					Float lon = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lon"));
@@ -316,9 +321,9 @@ public class WeatherController {
 					String data = result;
 					
 					if( weather == null ){
-						cache_weather(time, cityId, cityName, lon, lat, zipCode, data);
+						cache_weather(time, country, cityId, cityName, lon, lat, zipCode, data);
 					}else{
-						update_weather(weather.getId(), time, cityId, cityName, lon, lat, zipCode, data);
+						update_weather(weather.getId(), time, country, cityId, cityName, lon, lat, zipCode, data);
 					}
 					
 					retval.put("status", true);

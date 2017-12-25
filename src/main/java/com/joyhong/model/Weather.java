@@ -6,6 +6,8 @@ public class Weather {
     private Integer id;
 
     private Date time;
+    
+    private String country;
 
     private Integer cityId;
 
@@ -39,6 +41,14 @@ public class Weather {
 
     public void setTime(Date time) {
         this.time = time;
+    }
+    
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 
     public Integer getCityId() {
