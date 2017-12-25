@@ -37,7 +37,7 @@ public class WeatherServiceImpl implements WeatherService {
 		return weatherMapper.updateByPrimaryKey(record);
 	}
 
-	public Weather selectByZipCode(Integer zip_code) {
+	public Weather selectByZipCode(String zip_code) {
 		// TODO Auto-generated method stub
 		return weatherMapper.selectByZipCode(zip_code);
 	}

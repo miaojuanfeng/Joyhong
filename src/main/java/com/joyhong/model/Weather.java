@@ -15,7 +15,7 @@ public class Weather {
 
     private Float lat;
 
-    private Integer zipCode;
+    private String zipCode;
 
     private Date createDate;
 
@@ -73,11 +73,11 @@ public class Weather {
         this.lat = lat;
     }
 
-    public Integer getZipCode() {
+    public String getZipCode() {
         return zipCode;
     }
 
-    public void setZipCode(Integer zipCode) {
+    public void setZipCode(String zipCode) {
         this.zipCode = zipCode;
     }
 

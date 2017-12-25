@@ -41,13 +41,8 @@ public class WeatherController {
 	 * @param city_id
 	 * @return Weather
 	 */
-	private Weather fetch_weather(Integer city_id, Integer zip_code){
-		if( city_id != null ){
-			return this.weatherService.selectByCityId(city_id);
-		}else if( zip_code != null ){
-			return this.weatherService.selectByZipCode(zip_code);
-		}
-		return null;
+	private Weather fetch_weather(Integer city_id){
+		return this.weatherService.selectByCityId(city_id);
 	}
 	
 	/**
@@ -55,8 +50,13 @@ public class WeatherController {
 	 * @param city_name
 	 * @return Weather
 	 */
-	private Weather fetch_weather(String city_name){
-		return this.weatherService.selectByCityName(city_name);
+	private Weather fetch_weather(String city_name, String zip_code){
+		if( city_name != null ){
+			return this.weatherService.selectByCityName(city_name);
+		}else if( zip_code != null ){
+			return this.weatherService.selectByZipCode(zip_code);
+		}
+		return null;
 	}
 	
 	/**
@@ -79,7 +79,7 @@ public class WeatherController {
 	 * @param data
 	 * @return bool
 	 */
-	private int cache_weather(Date time, Integer cityId, String cityName, Float lon, Float lat, Integer zipCode, String data){
+	private int cache_weather(Date time, Integer cityId, String cityName, Float lon, Float lat, String zipCode, String data){
 		Weather weather = new Weather();
 		weather.setTime(time);
 		weather.setCityId(cityId);
@@ -111,7 +111,7 @@ public class WeatherController {
 	 * @param data
 	 * @return
 	 */
-	private int update_weather(Integer id, Date time, Integer cityId, String cityName, Float lon, Float lat, Integer zipCode, String data){
+	private int update_weather(Integer id, Date time, Integer cityId, String cityName, Float lon, Float lat, String zipCode, String data){
 		Weather weather = new Weather();
 		weather.setId(id);
 		weather.setTime(time);
@@ -143,7 +143,7 @@ public class WeatherController {
 	public String city_id(@RequestParam("city_id") Integer city_id){
 		JSONObject retval = new JSONObject();
 		
-		Weather weather = this.fetch_weather(city_id, null);
+		Weather weather = this.fetch_weather(city_id);
 		if( weather != null && invalid_time(weather) ){
 			retval.put("status", true);
 			retval.put("time", weather.getTime().getTime()/1000);
@@ -163,7 +163,7 @@ public class WeatherController {
 					String cityName = jsonResult.getString("name");
 					Float lon = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lon"));
 					Float lat = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lat"));
-					Integer zipCode = 0;
+					String zipCode = "";
 					String data = result;
 					
 					if( weather == null ){
@@ -199,7 +199,7 @@ public class WeatherController {
 	public String city_name(@RequestParam("city_name") String city_name){
 		JSONObject retval = new JSONObject();
 		
-		Weather weather = this.fetch_weather(city_name);
+		Weather weather = this.fetch_weather(city_name, null);
 		if( weather != null && invalid_time(weather) ){
 			retval.put("status", true);
 			retval.put("time", weather.getTime().getTime()/1000);
@@ -219,7 +219,7 @@ public class WeatherController {
 					String cityName = jsonResult.getString("name");
 					Float lon = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lon"));
 					Float lat = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lat"));
-					Integer zipCode = 0;
+					String zipCode = "";
 					String data = result;
 					
 					if( weather == null ){
@@ -289,7 +289,7 @@ public class WeatherController {
 	 */
 	@RequestMapping(value="/zip_code", method=RequestMethod.GET)
 	@ResponseBody
-	public String zip_code(@RequestParam("zip_code") Integer zip_code){
+	public String zip_code(@RequestParam("zip_code") String zip_code){
 		JSONObject retval = new JSONObject();
 		
 		Weather weather = this.fetch_weather(null, zip_code);
@@ -312,7 +312,7 @@ public class WeatherController {
 					String cityName = jsonResult.getString("name");
 					Float lon = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lon"));
 					Float lat = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lat"));
-					Integer zipCode = zip_code;
+					String zipCode = zip_code;
 					String data = result;
 					
 					if( weather == null ){

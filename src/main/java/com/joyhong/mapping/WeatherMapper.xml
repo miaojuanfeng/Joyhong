@@ -8,7 +8,7 @@
     <result column="city_name" jdbcType="VARCHAR" property="cityName" />
     <result column="lon" jdbcType="REAL" property="lon" />
     <result column="lat" jdbcType="REAL" property="lat" />
-    <result column="zip_code" jdbcType="INTEGER" property="zipCode" />
+    <result column="zip_code" jdbcType="VARCHAR" property="zipCode" />
     <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
     <result column="modify_date" jdbcType="TIMESTAMP" property="modifyDate" />
     <result column="deleted" jdbcType="INTEGER" property="deleted" />
@@ -47,7 +47,7 @@
     from weather
     where city_name = #{city_name,jdbcType=VARCHAR}
   </select>
-  <select id="selectByZipCode" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+  <select id="selectByZipCode" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
     select 
     <include refid="Base_Column_List" />
     ,
@@ -66,7 +66,7 @@
       create_date, modify_date, deleted, 
       data)
     values (#{id,jdbcType=INTEGER}, #{time,jdbcType=TIMESTAMP}, #{cityId,jdbcType=INTEGER}, 
-      #{cityName,jdbcType=VARCHAR}, #{lon,jdbcType=REAL}, #{lat,jdbcType=REAL}, #{zipCode,jdbcType=INTEGER}, 
+      #{cityName,jdbcType=VARCHAR}, #{lon,jdbcType=REAL}, #{lat,jdbcType=REAL}, #{zipCode,jdbcType=VARCHAR}, 
       #{createDate,jdbcType=TIMESTAMP}, #{modifyDate,jdbcType=TIMESTAMP}, #{deleted,jdbcType=INTEGER}, 
       #{data,jdbcType=LONGVARCHAR})
   </insert>
@@ -127,7 +127,7 @@
         #{lat,jdbcType=REAL},
       </if>
       <if test="zipCode != null">
-        #{zipCode,jdbcType=INTEGER},
+        #{zipCode,jdbcType=VARCHAR},
       </if>
       <if test="createDate != null">
         #{createDate,jdbcType=TIMESTAMP},
@@ -162,7 +162,7 @@
         lat = #{lat,jdbcType=REAL},
       </if>
       <if test="zipCode != null">
-        zip_code = #{zipCode,jdbcType=INTEGER},
+        zip_code = #{zipCode,jdbcType=VARCHAR},
       </if>
       <if test="createDate != null">
         create_date = #{createDate,jdbcType=TIMESTAMP},
@@ -186,7 +186,7 @@
       city_name = #{cityName,jdbcType=VARCHAR},
       lon = #{lon,jdbcType=REAL},
       lat = #{lat,jdbcType=REAL},
-      zip_code = #{zipCode,jdbcType=INTEGER},
+      zip_code = #{zipCode,jdbcType=VARCHAR},
       create_date = #{createDate,jdbcType=TIMESTAMP},
       modify_date = #{modifyDate,jdbcType=TIMESTAMP},
       deleted = #{deleted,jdbcType=INTEGER},
@@ -200,7 +200,7 @@
       city_name = #{cityName,jdbcType=VARCHAR},
       lon = #{lon,jdbcType=REAL},
       lat = #{lat,jdbcType=REAL},
-      zip_code = #{zipCode,jdbcType=INTEGER},
+      zip_code = #{zipCode,jdbcType=VARCHAR},
       create_date = #{createDate,jdbcType=TIMESTAMP},
       modify_date = #{modifyDate,jdbcType=TIMESTAMP},
       deleted = #{deleted,jdbcType=INTEGER}

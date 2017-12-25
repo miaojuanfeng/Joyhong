@@ -15,7 +15,7 @@ public interface WeatherMapper {
     
     Weather selectByCityName(String city_name);
     
-    Weather selectByZipCode(Integer zip_code);
+    Weather selectByZipCode(String zip_code);
 
     int updateByPrimaryKeySelective(Weather record);
 
