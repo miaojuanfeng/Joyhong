@@ -153,7 +153,7 @@ public class WeatherController {
 		}else{
 			try{
 				CloseableHttpClient httpclient = HttpClients.createDefault();
-				HttpGet httpget = new HttpGet(apiUrl + "weather" + appId + "id=" + city_id);
+				HttpGet httpget = new HttpGet(apiUrl + "forecast" + appId + "id=" + city_id);
 				CloseableHttpResponse response = httpclient.execute(httpget);
 				String result = EntityUtils.toString(response.getEntity());
 				
@@ -161,11 +161,11 @@ public class WeatherController {
 					JSONObject jsonResult = JSONObject.fromObject(result);
 					
 					Date time = new Date();
-					String country = jsonResult.getJSONObject("sys").getString("country");
-					Integer cityId = jsonResult.getInt("id");
-					String cityName = jsonResult.getString("name");
-					Float lon = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lon"));
-					Float lat = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lat"));
+					String country = jsonResult.getJSONObject("city").getString("country");
+					Integer cityId = jsonResult.getJSONObject("city").getInt("id");
+					String cityName = jsonResult.getJSONObject("city").getString("name");
+					Float lon = Float.parseFloat(jsonResult.getJSONObject("city").getJSONObject("coord").getString("lon"));
+					Float lat = Float.parseFloat(jsonResult.getJSONObject("city").getJSONObject("coord").getString("lat"));
 					String zipCode = "";
 					String data = result;
 					
@@ -210,7 +210,7 @@ public class WeatherController {
 		}else{
 			try{
 				CloseableHttpClient httpclient = HttpClients.createDefault();
-				HttpGet httpget = new HttpGet(apiUrl + "weather" + appId + "q=" + city_name);
+				HttpGet httpget = new HttpGet(apiUrl + "forecast" + appId + "q=" + city_name);
 				CloseableHttpResponse response = httpclient.execute(httpget);
 				String result = EntityUtils.toString(response.getEntity());
 				
@@ -218,11 +218,11 @@ public class WeatherController {
 					JSONObject jsonResult = JSONObject.fromObject(result);
 					
 					Date time = new Date();
-					String country = jsonResult.getJSONObject("sys").getString("country");
-					Integer cityId = jsonResult.getInt("id");
-					String cityName = jsonResult.getString("name");
-					Float lon = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lon"));
-					Float lat = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lat"));
+					String country = jsonResult.getJSONObject("city").getString("country");
+					Integer cityId = jsonResult.getJSONObject("city").getInt("id");
+					String cityName = jsonResult.getJSONObject("city").getString("name");
+					Float lon = Float.parseFloat(jsonResult.getJSONObject("city").getJSONObject("coord").getString("lon"));
+					Float lat = Float.parseFloat(jsonResult.getJSONObject("city").getJSONObject("coord").getString("lat"));
 					String zipCode = "";
 					String data = result;
 					
@@ -263,7 +263,7 @@ public class WeatherController {
 		// 根据经纬度查询的天气信息不缓存
 		try{
 			CloseableHttpClient httpclient = HttpClients.createDefault();
-			HttpGet httpget = new HttpGet(apiUrl + "weather" + appId + "lat=" + lat + "&lon=" + lon);
+			HttpGet httpget = new HttpGet(apiUrl + "forecast" + appId + "lat=" + lat + "&lon=" + lon);
 			CloseableHttpResponse response = httpclient.execute(httpget);
 			String result = EntityUtils.toString(response.getEntity());
 			
@@ -287,13 +287,14 @@ public class WeatherController {
 	
 	/**
 	 * 根据zip_code获取天气信息
-	 * @url https://well.bsimb.cn/weather/zip_code?zip_code={zip_code}
+	 * @url https://well.bsimb.cn/weather/zip_code?zip_code={zip_code}&country={country}
 	 * @param zip_code
+	 * @param country
 	 * @return json
 	 */
 	@RequestMapping(value="/zip_code", method=RequestMethod.GET)
 	@ResponseBody
-	public String zip_code(@RequestParam("zip_code") String zip_code){
+	public String zip_code(@RequestParam("zip_code") String zip_code, @RequestParam("country") String country){
 		JSONObject retval = new JSONObject();
 		
 		Weather weather = this.fetch_weather(null, zip_code);
@@ -304,7 +305,7 @@ public class WeatherController {
 		}else{
 			try{
 				CloseableHttpClient httpclient = HttpClients.createDefault();
-				HttpGet httpget = new HttpGet(apiUrl + "weather" + appId + "zip=" + zip_code);
+				HttpGet httpget = new HttpGet(apiUrl + "forecast" + appId + "zip=" + zip_code + "," + country);
 				CloseableHttpResponse response = httpclient.execute(httpget);
 				String result = EntityUtils.toString(response.getEntity());
 				
@@ -312,11 +313,11 @@ public class WeatherController {
 					JSONObject jsonResult = JSONObject.fromObject(result);
 					
 					Date time = new Date();
-					String country = jsonResult.getJSONObject("sys").getString("country");
-					Integer cityId = jsonResult.getInt("id");
-					String cityName = jsonResult.getString("name");
-					Float lon = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lon"));
-					Float lat = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lat"));
+					country = jsonResult.getJSONObject("city").getString("country");
+					Integer cityId = 0;
+					String cityName = jsonResult.getJSONObject("city").getString("name");
+					Float lon = Float.parseFloat(jsonResult.getJSONObject("city").getJSONObject("coord").getString("lon"));
+					Float lat = Float.parseFloat(jsonResult.getJSONObject("city").getJSONObject("coord").getString("lat"));
 					String zipCode = zip_code;
 					String data = result;
 					

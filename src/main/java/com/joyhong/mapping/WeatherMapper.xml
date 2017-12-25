@@ -215,7 +215,8 @@
       zip_code = #{zipCode,jdbcType=VARCHAR},
       create_date = #{createDate,jdbcType=TIMESTAMP},
       modify_date = #{modifyDate,jdbcType=TIMESTAMP},
-      deleted = #{deleted,jdbcType=INTEGER}
+      deleted = #{deleted,jdbcType=INTEGER},
+      data = #{data,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>
