@@ -30,6 +30,32 @@
     from weather
     where id = #{id,jdbcType=INTEGER}
   </select>
+  <!-- Michael.Miao -->
+  <select id="selectByCityId" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from weather
+    where city_id = #{city_id,jdbcType=INTEGER}
+  </select>
+  <select id="selectByCityName" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from weather
+    where city_name = #{city_name,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByZipCode" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from weather
+    where zip_code = #{zip_code,jdbcType=INTEGER}
+  </select>
+  <!-- Michael.Miao -->
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from weather
     where id = #{id,jdbcType=INTEGER}

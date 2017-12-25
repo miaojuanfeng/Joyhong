@@ -37,6 +37,38 @@ public class WeatherController {
 	private WeatherService weatherService;
 	
 	/**
+	 * 从mysql查询天气缓存信息
+	 * @param city_id
+	 * @return Weather
+	 */
+	private Weather fetch_weather(Integer city_id, Integer zip_code){
+		if( city_id != null ){
+			return this.weatherService.selectByCityId(city_id);
+		}else if( zip_code != null ){
+			return this.weatherService.selectByZipCode(zip_code);
+		}
+		return null;
+	}
+	
+	/**
+	 * 从mysql查询天气缓存信息
+	 * @param city_name
+	 * @return Weather
+	 */
+	private Weather fetch_weather(String city_name){
+		return this.weatherService.selectByCityName(city_name);
+	}
+	
+	/**
+	 * 检查缓存的天气数据是否过期
+	 * @param weather
+	 * @return bool
+	 */
+	private boolean invalid_time(Weather weather){
+		return ( new Date().getTime()/1000 - weather.getTime().getTime()/1000 ) < 3600;
+	}
+	
+	/**
 	 * 缓存天气信息到mysql
 	 * @param time
 	 * @param cityId
@@ -68,6 +100,39 @@ public class WeatherController {
 	}
 	
 	/**
+	 * 更新天气信息
+	 * @param id
+	 * @param time
+	 * @param cityId
+	 * @param cityName
+	 * @param lon
+	 * @param lat
+	 * @param zipCode
+	 * @param data
+	 * @return
+	 */
+	private int update_weather(Integer id, Date time, Integer cityId, String cityName, Float lon, Float lat, Integer zipCode, String data){
+		Weather weather = new Weather();
+		weather.setId(id);
+		weather.setTime(time);
+		weather.setCityId(cityId);
+		weather.setCityName(cityName);
+		weather.setLon(lon);
+		weather.setLat(lat);
+		weather.setZipCode(zipCode);
+		weather.setData(data);
+		weather.setCreateDate(new Date());
+		weather.setModifyDate(new Date());
+		weather.setDeleted(0);
+		
+		Integer retval = this.weatherService.updateByPrimaryKey(weather);
+		if( retval != 1 ){
+			logger.info("Update weather from database failed: " + data);
+		}
+		return retval;
+	}
+	
+	/**
 	 * 根据city id获取天气信息
 	 * @url https://well.bsimb.cn/weather/city_id?city_id={city_id}
 	 * @param city_id
@@ -78,36 +143,48 @@ public class WeatherController {
 	public String city_id(@RequestParam("city_id") Integer city_id){
 		JSONObject retval = new JSONObject();
 		
-		try{
-			CloseableHttpClient httpclient = HttpClients.createDefault();
-			HttpGet httpget = new HttpGet(apiUrl + "weather" + appId + "id=" + city_id);
-			CloseableHttpResponse response = httpclient.execute(httpget);
-			String result = EntityUtils.toString(response.getEntity());
-			
-			if (response.getStatusLine().getStatusCode() == 200) {
-				JSONObject jsonResult = JSONObject.fromObject(result);
+		Weather weather = this.fetch_weather(city_id, null);
+		if( weather != null && invalid_time(weather) ){
+			retval.put("status", true);
+			retval.put("time", weather.getTime().getTime()/1000);
+			retval.put("data", weather.getData());
+		}else{
+			try{
+				CloseableHttpClient httpclient = HttpClients.createDefault();
+				HttpGet httpget = new HttpGet(apiUrl + "weather" + appId + "id=" + city_id);
+				CloseableHttpResponse response = httpclient.execute(httpget);
+				String result = EntityUtils.toString(response.getEntity());
 				
-				Integer cityId = jsonResult.getInt("id");
-				String cityName = jsonResult.getString("name");
-				Float lon = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lon"));
-				Float lat = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lat"));
-				Integer zipCode = 0;
-				String data = result;
-				
-				cache_weather(new Date(), cityId, cityName, lon, lat, zipCode, data);
-				
-				retval.put("status", true);
-				retval.put("data", result);
-			}else{
+				if (response.getStatusLine().getStatusCode() == 200) {
+					JSONObject jsonResult = JSONObject.fromObject(result);
+					
+					Date time = new Date();
+					Integer cityId = jsonResult.getInt("id");
+					String cityName = jsonResult.getString("name");
+					Float lon = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lon"));
+					Float lat = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lat"));
+					Integer zipCode = 0;
+					String data = result;
+					
+					if( weather == null ){
+						cache_weather(time, cityId, cityName, lon, lat, zipCode, data);
+					}else{
+						update_weather(weather.getId(), time, cityId, cityName, lon, lat, zipCode, data);
+					}
+					
+					retval.put("status", true);
+					retval.put("time", time.getTime()/1000);
+					retval.put("data", result);
+				}else{
+					retval.put("status", false);
+					retval.put("msg", result);
+				}
+			}catch(Exception e){
+				logger.info(e.getMessage());
 				retval.put("status", false);
-				retval.put("msg", result);
+				retval.put("msg", e.getMessage());
 			}
-		}catch(Exception e){
-			logger.info(e.getMessage());
-			retval.put("status", "false");
-			retval.put("msg", e.getMessage());
 		}
-		
 		return retval.toString();
 	}
 	
@@ -122,36 +199,48 @@ public class WeatherController {
 	public String city_name(@RequestParam("city_name") String city_name){
 		JSONObject retval = new JSONObject();
 		
-		try{
-			CloseableHttpClient httpclient = HttpClients.createDefault();
-			HttpGet httpget = new HttpGet(apiUrl + "weather" + appId + "q=" + city_name);
-			CloseableHttpResponse response = httpclient.execute(httpget);
-			String result = EntityUtils.toString(response.getEntity());
-			
-			if (response.getStatusLine().getStatusCode() == 200) {
-				JSONObject jsonResult = JSONObject.fromObject(result);
+		Weather weather = this.fetch_weather(city_name);
+		if( weather != null && invalid_time(weather) ){
+			retval.put("status", true);
+			retval.put("time", weather.getTime().getTime()/1000);
+			retval.put("data", weather.getData());
+		}else{
+			try{
+				CloseableHttpClient httpclient = HttpClients.createDefault();
+				HttpGet httpget = new HttpGet(apiUrl + "weather" + appId + "q=" + city_name);
+				CloseableHttpResponse response = httpclient.execute(httpget);
+				String result = EntityUtils.toString(response.getEntity());
 				
-				Integer cityId = jsonResult.getInt("id");
-				String cityName = jsonResult.getString("name");
-				Float lon = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lon"));
-				Float lat = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lat"));
-				Integer zipCode = 0;
-				String data = result;
-				
-				cache_weather(new Date(), cityId, cityName, lon, lat, zipCode, data);
-				
-				retval.put("status", true);
-				retval.put("data", result);
-			}else{
+				if (response.getStatusLine().getStatusCode() == 200) {
+					JSONObject jsonResult = JSONObject.fromObject(result);
+					
+					Date time = new Date();
+					Integer cityId = jsonResult.getInt("id");
+					String cityName = jsonResult.getString("name");
+					Float lon = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lon"));
+					Float lat = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lat"));
+					Integer zipCode = 0;
+					String data = result;
+					
+					if( weather == null ){
+						cache_weather(time, cityId, cityName, lon, lat, zipCode, data);
+					}else{
+						update_weather(weather.getId(), time, cityId, cityName, lon, lat, zipCode, data);
+					}
+					
+					retval.put("status", true);
+					retval.put("time", time.getTime()/1000);
+					retval.put("data", result);
+				}else{
+					retval.put("status", false);
+					retval.put("msg", result);
+				}
+			}catch(Exception e){
+				logger.info(e.getMessage());
 				retval.put("status", false);
-				retval.put("msg", result);
+				retval.put("msg", e.getMessage());
 			}
-		}catch(Exception e){
-			logger.info(e.getMessage());
-			retval.put("status", "false");
-			retval.put("msg", e.getMessage());
 		}
-		
 		return retval.toString();
 	}
 	
@@ -167,6 +256,7 @@ public class WeatherController {
 	public String lat_lon(@RequestParam("lat") Float lat, @RequestParam("lon") Float lon){
 		JSONObject retval = new JSONObject();
 		
+		// 根据经纬度查询的天气信息不缓存
 		try{
 			CloseableHttpClient httpclient = HttpClients.createDefault();
 			HttpGet httpget = new HttpGet(apiUrl + "weather" + appId + "lat=" + lat + "&lon=" + lon);
@@ -174,18 +264,9 @@ public class WeatherController {
 			String result = EntityUtils.toString(response.getEntity());
 			
 			if (response.getStatusLine().getStatusCode() == 200) {
-				JSONObject jsonResult = JSONObject.fromObject(result);
-				
-				Integer cityId = jsonResult.getInt("id");
-				String cityName = jsonResult.getString("name");
-				lon = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lon"));
-				lat = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lat"));
-				Integer zipCode = 0;
-				String data = result;
-				
-				cache_weather(new Date(), cityId, cityName, lon, lat, zipCode, data);
-				
+				Date time = new Date();
 				retval.put("status", true);
+				retval.put("time", time.getTime()/1000);
 				retval.put("data", result);
 			}else{
 				retval.put("status", false);
@@ -193,10 +274,10 @@ public class WeatherController {
 			}
 		}catch(Exception e){
 			logger.info(e.getMessage());
-			retval.put("status", "false");
+			retval.put("status", false);
 			retval.put("msg", e.getMessage());
 		}
-		
+			
 		return retval.toString();
 	}
 	
@@ -211,36 +292,48 @@ public class WeatherController {
 	public String zip_code(@RequestParam("zip_code") Integer zip_code){
 		JSONObject retval = new JSONObject();
 		
-		try{
-			CloseableHttpClient httpclient = HttpClients.createDefault();
-			HttpGet httpget = new HttpGet(apiUrl + "weather" + appId + "zip=" + zip_code);
-			CloseableHttpResponse response = httpclient.execute(httpget);
-			String result = EntityUtils.toString(response.getEntity());
-			
-			if (response.getStatusLine().getStatusCode() == 200) {
-				JSONObject jsonResult = JSONObject.fromObject(result);
+		Weather weather = this.fetch_weather(null, zip_code);
+		if( weather != null && invalid_time(weather) ){
+			retval.put("status", true);
+			retval.put("time", weather.getTime().getTime()/1000);
+			retval.put("data", weather.getData());
+		}else{
+			try{
+				CloseableHttpClient httpclient = HttpClients.createDefault();
+				HttpGet httpget = new HttpGet(apiUrl + "weather" + appId + "zip=" + zip_code);
+				CloseableHttpResponse response = httpclient.execute(httpget);
+				String result = EntityUtils.toString(response.getEntity());
 				
-				Integer cityId = jsonResult.getInt("id");
-				String cityName = jsonResult.getString("name");
-				Float lon = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lon"));
-				Float lat = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lat"));
-				Integer zipCode = zip_code;
-				String data = result;
-				
-				cache_weather(new Date(), cityId, cityName, lon, lat, zipCode, data);
-				
-				retval.put("status", true);
-				retval.put("data", result);
-			}else{
+				if (response.getStatusLine().getStatusCode() == 200) {
+					JSONObject jsonResult = JSONObject.fromObject(result);
+					
+					Date time = new Date();
+					Integer cityId = jsonResult.getInt("id");
+					String cityName = jsonResult.getString("name");
+					Float lon = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lon"));
+					Float lat = Float.parseFloat(jsonResult.getJSONObject("coord").getString("lat"));
+					Integer zipCode = zip_code;
+					String data = result;
+					
+					if( weather == null ){
+						cache_weather(time, cityId, cityName, lon, lat, zipCode, data);
+					}else{
+						update_weather(weather.getId(), time, cityId, cityName, lon, lat, zipCode, data);
+					}
+					
+					retval.put("status", true);
+					retval.put("time", time.getTime()/1000);
+					retval.put("data", result);
+				}else{
+					retval.put("status", false);
+					retval.put("msg", result);
+				}
+			}catch(Exception e){
+				logger.info(e.getMessage());
 				retval.put("status", false);
-				retval.put("msg", result);
+				retval.put("msg", e.getMessage());
 			}
-		}catch(Exception e){
-			logger.info(e.getMessage());
-			retval.put("status", "false");
-			retval.put("msg", e.getMessage());
 		}
-		
 		return retval.toString();
 	}
 }

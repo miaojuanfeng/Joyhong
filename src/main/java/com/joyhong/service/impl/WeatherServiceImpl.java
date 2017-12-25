@@ -22,4 +22,26 @@ public class WeatherServiceImpl implements WeatherService {
 		return weatherMapper.selectByPrimaryKey(id);
 	}
 
+	public Weather selectByCityId(Integer city_id) {
+		// TODO Auto-generated method stub
+		return weatherMapper.selectByCityId(city_id);
+	}
+
+	public Weather selectByCityName(String city_name) {
+		// TODO Auto-generated method stub
+		return weatherMapper.selectByCityName(city_name);
+	}
+
+	public int updateByPrimaryKey(Weather record) {
+		// TODO Auto-generated method stub
+		return weatherMapper.updateByPrimaryKey(record);
+	}
+
+	public Weather selectByZipCode(Integer zip_code) {
+		// TODO Auto-generated method stub
+		return weatherMapper.selectByZipCode(zip_code);
+	}
+
+	
+
 }
