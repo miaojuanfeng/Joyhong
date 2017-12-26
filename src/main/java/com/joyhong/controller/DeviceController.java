@@ -1,6 +1,7 @@
 package com.joyhong.controller;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +12,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.joyhong.model.Device;
+import com.joyhong.model.User;
+import com.joyhong.model.UserDevice;
 import com.joyhong.service.DeviceService;
+import com.joyhong.service.UserDeviceService;
+import com.joyhong.service.UserService;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import twitter4j.MediaEntity;
 
 /**
  * 设备管理控制器
@@ -28,6 +35,12 @@ public class DeviceController {
 	
 	@Autowired
 	private DeviceService deviceService;
+	
+	@Autowired
+	private UserService userService;
+	
+	@Autowired
+	private UserDeviceService userDeviceService;
 	
 	/**
 	 * 注册device id与fcm token
@@ -73,12 +86,38 @@ public class DeviceController {
 	/**
 	 * 查询device id绑定的所有用户信息
 	 * @param device_id
-	 * @return
+	 * @return json
 	 */
 	@RequestMapping(value="/device_user", method=RequestMethod.POST)
 	@ResponseBody
 	public String device_user(@RequestParam("device_id") String device_id){
-		// facebook twitter 用户信息 头像
-		return "building";
+		JSONObject retval = new JSONObject();
+		
+		Device device = deviceService.selectByDeviceId(device_id);
+		if( device != null ){
+			List<UserDevice> userDevice = userDeviceService.selectByDeviceId(device.getId());
+			JSONArray temp = new JSONArray();
+			for(UserDevice ud : userDevice){
+				User user = userService.selectByPrimaryKey(ud.getUserId());
+				if( user != null){
+					JSONObject uTemp = new JSONObject();
+					uTemp.put("id", user.getId());
+					uTemp.put("username", user.getUsername());
+					uTemp.put("nickname", user.getNickname());
+					uTemp.put("profile", user.getProfile());
+					uTemp.put("platform", user.getPlatform());
+					uTemp.put("create_date", user.getCreateDate().getTime());
+					uTemp.put("modify_date", user.getModifyDate().getTime());
+					temp.add(uTemp);
+				}
+			}
+			retval.put("status", true);
+			retval.put("data", temp);
+		}else{
+			retval.put("status", false);
+			retval.put("msg", "The device id is not yet registered");
+		}
+		
+		return retval.toString();
 	}
 }

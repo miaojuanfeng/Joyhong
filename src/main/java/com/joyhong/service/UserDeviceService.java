@@ -1,5 +1,7 @@
 package com.joyhong.service;
 
+import java.util.List;
+
 import com.joyhong.model.UserDevice;
 
 public interface UserDeviceService {
@@ -12,6 +14,8 @@ public interface UserDeviceService {
     int insertSelective(UserDevice record);
 
     UserDevice selectByPrimaryKey(Integer id);
+    
+    List<UserDevice> selectByDeviceId(Integer deviceId);
 
     int updateByPrimaryKeySelective(UserDevice record);
 

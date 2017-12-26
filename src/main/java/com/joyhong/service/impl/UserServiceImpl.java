@@ -15,7 +15,7 @@ public class UserServiceImpl implements UserService {
 
 	public int deleteByPrimaryKey(Integer id) {
 		// TODO Auto-generated method stub
-		return 0;
+		return userMapper.deleteByPrimaryKey(id);
 	}
 
 	public int insert(User record) {
@@ -25,12 +25,12 @@ public class UserServiceImpl implements UserService {
 
 	public int insertSelective(User record) {
 		// TODO Auto-generated method stub
-		return 0;
+		return userMapper.insertSelective(record);
 	}
 
 	public User selectByPrimaryKey(Integer id) {
 		// TODO Auto-generated method stub
-		return null;
+		return userMapper.selectByPrimaryKey(id);
 	}
 
 	public User selectByUsername(String username) {
@@ -40,17 +40,17 @@ public class UserServiceImpl implements UserService {
 
 	public int updateByPrimaryKeySelective(User record) {
 		// TODO Auto-generated method stub
-		return 0;
+		return userMapper.updateByPrimaryKeySelective(record);
 	}
 
 	public int updateByPrimaryKeyWithBLOBs(User record) {
 		// TODO Auto-generated method stub
-		return 0;
+		return userMapper.updateByPrimaryKeyWithBLOBs(record);
 	}
 
 	public int updateByPrimaryKey(User record) {
 		// TODO Auto-generated method stub
-		return 0;
+		return userMapper.updateByPrimaryKey(record);
 	}
 
 

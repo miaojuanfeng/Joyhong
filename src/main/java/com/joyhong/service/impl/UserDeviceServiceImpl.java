@@ -1,5 +1,7 @@
 package com.joyhong.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +38,11 @@ public class UserDeviceServiceImpl implements UserDeviceService{
 	public UserDevice selectByPrimaryKey(Integer id) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public List<UserDevice> selectByDeviceId(Integer deviceId) {
+		// TODO Auto-generated method stub
+		return userDeviceMapper.selectByDeviceId(deviceId);
 	}
 
 	public int updateByPrimaryKeySelective(UserDevice record) {

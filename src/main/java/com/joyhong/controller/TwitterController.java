@@ -1,6 +1,7 @@
 package com.joyhong.controller;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -10,7 +11,6 @@ import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -20,7 +20,6 @@ import com.joyhong.model.UserDevice;
 import com.joyhong.service.DeviceService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
-import com.joyhong.service.WeatherService;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -41,9 +40,14 @@ import twitter4j.MediaEntity;
 import twitter4j.StallWarning;
 
 import java.io.PrintWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Date;
 import java.io.FileWriter;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 
 /**
  * Twitter消息控制器
@@ -119,15 +123,40 @@ public class TwitterController {
 		
 		public String getUserProfile(Long userId){
 			JSONObject retval = new JSONObject();
+			
+			String filePath = "/home/wwwroot/default/facebook/users/" + String.valueOf(userId) + "/";
+			String fileName = "";
+			String fileUrl = "http://47.89.32.89/facebook/users/" + String.valueOf(userId) + "/";
+			
 			try{
 		        User user = this.twitter.showUser(userId);
 		        retval.put("id", user.getId());
 		        retval.put("name", user.getName());
 		        retval.put("screen_name", user.getScreenName());
-		        retval.put("mini_image", user.getMiniProfileImageURL());
-		        retval.put("normal_image", user.getProfileImageURL());
-		        retval.put("bigger_image", user.getBiggerProfileImageURL());
-		        retval.put("origin_image", user.getOriginalProfileImageURL());
+		        /**
+		         * Cache mini image
+		         */
+		        fileName = user.getMiniProfileImageURL().substring(user.getMiniProfileImageURL().lastIndexOf("/"));
+		        this.saveUrlAs(user.getMiniProfileImageURL(), filePath, fileName);
+		        retval.put("mini_image", fileUrl + fileName);
+		        /**
+		         * Cache normal image
+		         */
+		        fileName = user.getProfileImageURL().substring(user.getProfileImageURL().lastIndexOf("/"));
+		        this.saveUrlAs(user.getProfileImageURL(), filePath, fileName);
+		        retval.put("normal_image", fileUrl + fileName);
+		        /**
+		         * Cache big image
+		         */
+		        fileName = user.getBiggerProfileImageURL().substring(user.getBiggerProfileImageURL().lastIndexOf("/"));
+		        this.saveUrlAs(user.getBiggerProfileImageURL(), filePath, fileName);
+		        retval.put("bigger_image", fileUrl + fileName);
+		        /**
+		         * Cache origin image
+		         */
+		        fileName = user.getOriginalProfileImageURL().substring(user.getOriginalProfileImageURL().lastIndexOf("/"));
+		        this.saveUrlAs(user.getOriginalProfileImageURL(), filePath, fileName);
+		        retval.put("origin_image", fileUrl + fileName);
 		        if( user.getURL() != null ){
 		        	retval.put("url", user.getURL());
 		        }else{
@@ -150,7 +179,12 @@ public class TwitterController {
 		        retval.put("listed_count", user.getListedCount());
 		        retval.put("statuses_count", user.getStatusesCount());
 		        retval.put("background_color", user.getProfileBackgroundColor());
-		        retval.put("background_image", user.getProfileBackgroundImageURL());
+		        /*
+		         * Cache background image
+		         */
+		        fileName = user.getProfileBackgroundImageURL().substring(user.getProfileBackgroundImageURL().lastIndexOf("/"));
+		        this.saveUrlAs(user.getProfileBackgroundImageURL(), filePath, fileName);
+		        retval.put("background_image", fileUrl + fileName);
 		        
 			} catch (TwitterException e) {
 		        logger.info(e.getMessage());
@@ -188,6 +222,52 @@ public class TwitterController {
 			userDevice.setDeleted(0);
 			
 			return userDeviceService.insert(userDevice);
+		}
+		
+		/**
+		 * 同步图片视频到本地服务器
+		 * @param url
+		 * @param filePath
+		 */
+		private void saveUrlAs(String url, String filePath, String fileName){   
+		     FileOutputStream fileOut = null;  
+		     HttpURLConnection conn = null;  
+		     InputStream inputStream = null;  
+		     try {
+		    	 if (!filePath.endsWith("/")) {  
+		             filePath += "/";
+		         }
+		    	 File file = new File(filePath);
+		    	 if(!file.exists()){
+		    		 file .mkdir();
+		    	 }
+
+		         URL httpUrl=new URL(url);  
+		         conn=(HttpURLConnection) httpUrl.openConnection();  
+		         conn.setRequestMethod("GET");  
+		         conn.setDoInput(true);    
+		         conn.setDoOutput(true);   
+		         conn.setUseCaches(false);  
+		         conn.connect();  
+		         inputStream=conn.getInputStream();  
+		         BufferedInputStream bis = new BufferedInputStream(inputStream);  
+		         
+		         fileOut = new FileOutputStream(filePath+fileName);  
+		         BufferedOutputStream bos = new BufferedOutputStream(fileOut);  
+		           
+		         byte[] buf = new byte[4096];
+		         int length = bis.read(buf);
+		         while(length != -1)  
+		         {  
+		             bos.write(buf, 0, length);  
+		             length = bis.read(buf);  
+		         }
+		         bos.close();
+		         bis.close();
+		         conn.disconnect();
+		    } catch (Exception e)  {
+		         logger.info(e.getMessage());
+		    }
 		}
 		
         public void onDirectMessage(DirectMessage message) {
