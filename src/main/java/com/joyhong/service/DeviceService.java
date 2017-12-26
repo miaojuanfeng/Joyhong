@@ -11,6 +11,8 @@ public interface DeviceService {
     int insertSelective(Device record);
 
     Device selectByPrimaryKey(Integer id);
+    
+    Device selectByDeviceId(String device_id);
 
     int updateByPrimaryKeySelective(Device record);
 

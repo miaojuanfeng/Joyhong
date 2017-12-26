@@ -15,6 +15,11 @@ import com.joyhong.service.DeviceService;
 
 import net.sf.json.JSONObject;
 
+/**
+ * 设备管理控制器
+ * @url https://well.bsimb.cn/device/{method}
+ * @author Michael.Miao
+ */
 @Controller
 @RequestMapping("/device")
 public class DeviceController {
@@ -43,11 +48,23 @@ public class DeviceController {
 		device.setModifyDate(new Date());
 		device.setDeleted(0);
 		
-		if( this.deviceService.insert(device) == 1 ){
-			retval.put("status", true);
+		Device exist_device = this.deviceService.selectByDeviceId(device_id);
+		if( exist_device == null ){
+			if( this.deviceService.insert(device) == 1 ){
+				retval.put("status", true);
+			}else{
+				retval.put("status", false);
+				logger.info("Save device to database failed: " + device_id + " - " + device_fcm_token);
+			}
 		}else{
-			retval.put("status", false);
-			logger.info("Save device to database failed: " + device_id + " - " + device_fcm_token);
+			device.setId(exist_device.getId());
+			device.setCreateDate(exist_device.getCreateDate());
+			if( this.deviceService.updateByPrimaryKey(device) == 1 ){
+				retval.put("status", true);
+			}else{
+				retval.put("status", false);
+				logger.info("Update device to database failed: " + device_id + " - " + device_fcm_token);
+			}
 		}
 		
 		return retval.toString();

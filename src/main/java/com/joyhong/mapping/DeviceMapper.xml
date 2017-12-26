@@ -18,6 +18,14 @@
     from device
     where id = #{id,jdbcType=INTEGER}
   </select>
+  <!-- Michael.Miao -->
+  <select id="selectByDeviceId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from device
+    where device_id = #{deviceId,jdbcType=VARCHAR}
+  </select>
+  <!-- Michael.Miao -->
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from device
     where id = #{id,jdbcType=INTEGER}

@@ -23,10 +23,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import net.sf.json.JSONObject;
 
+/**
+ * Facebook消息控制器
+ * @url https://well.bsimb.cn/facebook/{method}
+ * @author Michael.Miao
+ */
 @Controller
 @RequestMapping("/facebook")
 public class FacebookController {
 	
+	/**
+	 * 监听facebook发来的消息
+	 * @url Invoked by the Facebook server
+	 */
 	@RequestMapping(value="/listener", method = {RequestMethod.GET, RequestMethod.POST})
 	@ResponseBody
 	public void listener(HttpServletRequest request, HttpServletResponse response){
@@ -151,6 +160,12 @@ public class FacebookController {
 		}
 	}
 	
+	/**
+	 * 同步图片视频到本地服务器
+	 * @param url
+	 * @param filePath
+	 * @param method
+	 */
 	private void saveUrlAs(String url, String filePath, String method){   
 	     FileOutputStream fileOut = null;  
 	     HttpURLConnection conn = null;  

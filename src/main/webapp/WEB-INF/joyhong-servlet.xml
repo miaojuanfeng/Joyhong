@@ -50,4 +50,14 @@
 	    <property name="mapperInterface" value="com.joyhong.dao.DeviceMapper" />  
 	    <property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
+	
+	<bean id="userMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">  
+	    <property name="mapperInterface" value="com.joyhong.dao.UserMapper" />  
+	    <property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+	
+	<bean id="userDeviceMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">  
+	    <property name="mapperInterface" value="com.joyhong.dao.UserDeviceMapper" />  
+	    <property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
 </beans>

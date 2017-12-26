@@ -1,54 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.joyhong.dao.DeviceMapper">
-  <resultMap id="BaseResultMap" type="com.joyhong.model.Device">
+<mapper namespace="com.joyhong.dao.UserDeviceMapper">
+  <resultMap id="BaseResultMap" type="com.joyhong.model.UserDevice">
     <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="device_id" jdbcType="VARCHAR" property="deviceId" />
-    <result column="device_fcm_token" jdbcType="VARCHAR" property="deviceFcmToken" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="device_id" jdbcType="INTEGER" property="deviceId" />
     <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
     <result column="modify_date" jdbcType="TIMESTAMP" property="modifyDate" />
     <result column="deleted" jdbcType="INTEGER" property="deleted" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, device_id, device_fcm_token, create_date, modify_date, deleted
+    id, user_id, device_id, create_date, modify_date, deleted
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from device
+    from z_user_device
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <!-- Michael.Miao -->
-  <select id="selectByDeviceId" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from device
-    where device_id = #{deviceId,jdbcType=VARCHAR}
-  </select>
-  <!-- Michael.Miao -->
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from device
+    delete from z_user_device
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.joyhong.model.Device">
-    insert into device (id, device_id, device_fcm_token, 
+  <delete id="deleteByUserId" parameterType="java.lang.Integer">
+    delete from z_user_device
+    where user_id = #{userId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.joyhong.model.UserDevice">
+    insert into z_user_device (id, user_id, device_id, 
       create_date, modify_date, deleted
       )
-    values (#{id,jdbcType=INTEGER}, #{deviceId,jdbcType=VARCHAR}, #{deviceFcmToken,jdbcType=VARCHAR}, 
+    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{deviceId,jdbcType=INTEGER}, 
       #{createDate,jdbcType=TIMESTAMP}, #{modifyDate,jdbcType=TIMESTAMP}, #{deleted,jdbcType=INTEGER}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.joyhong.model.Device">
-    insert into device
+  <insert id="insertSelective" parameterType="com.joyhong.model.UserDevice">
+    insert into z_user_device
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
       </if>
+      <if test="userId != null">
+        user_id,
+      </if>
       <if test="deviceId != null">
         device_id,
-      </if>
-      <if test="deviceFcmToken != null">
-        device_fcm_token,
       </if>
       <if test="createDate != null">
         create_date,
@@ -64,11 +60,11 @@
       <if test="id != null">
         #{id,jdbcType=INTEGER},
       </if>
-      <if test="deviceId != null">
-        #{deviceId,jdbcType=VARCHAR},
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
       </if>
-      <if test="deviceFcmToken != null">
-        #{deviceFcmToken,jdbcType=VARCHAR},
+      <if test="deviceId != null">
+        #{deviceId,jdbcType=INTEGER},
       </if>
       <if test="createDate != null">
         #{createDate,jdbcType=TIMESTAMP},
@@ -81,14 +77,14 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.joyhong.model.Device">
-    update device
+  <update id="updateByPrimaryKeySelective" parameterType="com.joyhong.model.UserDevice">
+    update z_user_device
     <set>
-      <if test="deviceId != null">
-        device_id = #{deviceId,jdbcType=VARCHAR},
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
       </if>
-      <if test="deviceFcmToken != null">
-        device_fcm_token = #{deviceFcmToken,jdbcType=VARCHAR},
+      <if test="deviceId != null">
+        device_id = #{deviceId,jdbcType=INTEGER},
       </if>
       <if test="createDate != null">
         create_date = #{createDate,jdbcType=TIMESTAMP},
@@ -102,10 +98,10 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.joyhong.model.Device">
-    update device
-    set device_id = #{deviceId,jdbcType=VARCHAR},
-      device_fcm_token = #{deviceFcmToken,jdbcType=VARCHAR},
+  <update id="updateByPrimaryKey" parameterType="com.joyhong.model.UserDevice">
+    update z_user_device
+    set user_id = #{userId,jdbcType=INTEGER},
+      device_id = #{deviceId,jdbcType=INTEGER},
       create_date = #{createDate,jdbcType=TIMESTAMP},
       modify_date = #{modifyDate,jdbcType=TIMESTAMP},
       deleted = #{deleted,jdbcType=INTEGER}

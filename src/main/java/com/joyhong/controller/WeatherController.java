@@ -112,7 +112,7 @@ public class WeatherController {
 	 * @param data
 	 * @return
 	 */
-	private int update_weather(Integer id, Date time, String country, Integer cityId, String cityName, Float lon, Float lat, String zipCode, String data){
+	private int update_weather(Integer id, Date time, String country, Integer cityId, String cityName, Float lon, Float lat, String zipCode, String data, Date createDate){
 		Weather weather = new Weather();
 		weather.setId(id);
 		weather.setTime(time);
@@ -123,7 +123,7 @@ public class WeatherController {
 		weather.setLat(lat);
 		weather.setZipCode(zipCode);
 		weather.setData(data);
-		weather.setCreateDate(new Date());
+		weather.setCreateDate(createDate);
 		weather.setModifyDate(new Date());
 		weather.setDeleted(0);
 		
@@ -172,7 +172,7 @@ public class WeatherController {
 					if( weather == null ){
 						this.cache_weather(time, country, cityId, cityName, lon, lat, zipCode, data);
 					}else{
-						this.update_weather(weather.getId(), time, country, cityId, cityName, lon, lat, zipCode, data);
+						this.update_weather(weather.getId(), time, country, cityId, cityName, lon, lat, zipCode, data, weather.getCreateDate());
 					}
 					
 					retval.put("status", true);
@@ -229,7 +229,7 @@ public class WeatherController {
 					if( weather == null ){
 						this.cache_weather(time, country, cityId, cityName, lon, lat, zipCode, data);
 					}else{
-						this.update_weather(weather.getId(), time, country, cityId, cityName, lon, lat, zipCode, data);
+						this.update_weather(weather.getId(), time, country, cityId, cityName, lon, lat, zipCode, data, weather.getCreateDate());
 					}
 					
 					retval.put("status", true);
@@ -324,7 +324,7 @@ public class WeatherController {
 					if( weather == null ){
 						this.cache_weather(time, country, cityId, cityName, lon, lat, zipCode, data);
 					}else{
-						this.update_weather(weather.getId(), time, country, cityId, cityName, lon, lat, zipCode, data);
+						this.update_weather(weather.getId(), time, country, cityId, cityName, lon, lat, zipCode, data, weather.getCreateDate());
 					}
 					
 					retval.put("status", true);

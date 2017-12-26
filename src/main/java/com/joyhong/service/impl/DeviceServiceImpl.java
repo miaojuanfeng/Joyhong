@@ -40,7 +40,12 @@ public class DeviceServiceImpl implements DeviceService {
 
 	public int updateByPrimaryKey(Device record) {
 		// TODO Auto-generated method stub
-		return 0;
+		return deviceMapper.updateByPrimaryKey(record);
+	}
+
+	public Device selectByDeviceId(String device_id) {
+		// TODO Auto-generated method stub
+		return deviceMapper.selectByDeviceId(device_id);
 	}
 
 }
