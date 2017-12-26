@@ -12,14 +12,28 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.joyhong.model.Device;
+import com.joyhong.model.UserDevice;
+import com.joyhong.service.DeviceService;
+import com.joyhong.service.UserDeviceService;
+import com.joyhong.service.UserService;
 
 import net.sf.json.JSONObject;
 
@@ -31,6 +45,17 @@ import net.sf.json.JSONObject;
 @Controller
 @RequestMapping("/facebook")
 public class FacebookController {
+	
+	private Logger logger = Logger.getLogger(this.getClass());
+	
+	@Autowired
+	private DeviceService deviceService;
+	
+	@Autowired
+	private UserService userService;
+	
+	@Autowired
+	private UserDeviceService userDeviceService;
 	
 	/**
 	 * 监听facebook发来的消息
@@ -104,7 +129,7 @@ public class FacebookController {
 			        fileName = fileName.substring(0, fileName.lastIndexOf("?"));
   
 			        String filePath = "/home/wwwroot/default/facebook/attachments/" + type + "/";   
-			        this.saveUrlAs(fileUrl, filePath + fileName, "GET");
+			        this.saveUrlAs(fileUrl, filePath, fileName);
 			        
 			        postdata = postdata.replace(oldUrl, "http://47.89.32.89/facebook/attachments/" + type + fileName);
 				}
@@ -112,8 +137,32 @@ public class FacebookController {
 				String sender_id = json_obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("sender").getString("id");
 				
 				String postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'Sorry, I can not understand what you say.'}}";
-				if( message.has("text") && message.getString("text").equals("Hello") ){
-					postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'hello world'}}";
+				if( message.has("text") ){
+					String msgStr = message.getString("text");
+					if( msgStr.equals("Hello") ){
+						postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'hello world'}}";
+					}else{
+						String[] msg = msgStr.split(":", 2);
+						if( msg[0].equals("bindDevice") && msg[1] != null ){
+		        			String device_id = msg[1];
+		        			Device device = deviceService.selectByDeviceId(device_id);
+		        			if( device != null ){
+		        				Integer user_id = this.insertUserIfNotExist(json_obj);
+		        				insertUserDeviceAfterDelete(user_id, device.getId());
+		        				try{
+		        					postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'Success, the device id is bind to: \nid: " + sender_id + "'}}";
+		        				}catch(Exception e){
+		        					logger.info(e.getMessage());
+		        				}
+		        			}else{
+		        				try{
+		        					postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'Sorry, the device id is not yet registered'}}";
+		        				}catch(Exception e){
+		        					logger.info(e.getMessage());
+		        				}
+		        			}
+		        		}
+					}
 				}
 				
 				String url = "https://graph.facebook.com/v2.6/me/messages?access_token=EAAHQ2lh6o2UBAAeLni23hen920ECISXqjY5SsJXPeUKrHRid3f3huz82pdu8ptYSmCI8yhGJmjc0E3InZAl3mgKZBGTjMyIZCGGniep8lnGRVaheHfZB7h0dh06YDvV5mAmFL7pdfKgOMJTP9aUFM9ZAGZAuldUPUwPG5oQoY2wIvNEaZCuZAN4DLyQqURJKH9IZD";
@@ -131,10 +180,10 @@ public class FacebookController {
 				wr.flush();
 				wr.close();
 								  
-				int responseCode = con.getResponseCode();
-				System.out.println("nSending 'POST' request to URL : " + url);
-				System.out.println("Post Data : " + postJsonData);
-				System.out.println("Response Code : " + responseCode);
+//				int responseCode = con.getResponseCode();
+//				System.out.println("nSending 'POST' request to URL : " + url);
+//				System.out.println("Post Data : " + postJsonData);
+//				System.out.println("Response Code : " + responseCode);
 				
 				FileWriter fw = null;
 			    try {
@@ -160,30 +209,133 @@ public class FacebookController {
 		}
 	}
 	
+	public Integer insertUserDeviceAfterDelete(Integer userId, Integer deviceId){
+		userDeviceService.deleteByUserId(userId);
+		
+		UserDevice userDevice = new UserDevice();
+		userDevice.setUserId(userId);
+		userDevice.setDeviceId(deviceId);
+		userDevice.setCreateDate(new Date());
+		userDevice.setModifyDate(new Date());
+		userDevice.setDeleted(0);
+		
+		return userDeviceService.insert(userDevice);
+	}
+	
+	public String getUserProfile(String userId){
+		JSONObject retval = new JSONObject();
+		
+		String filePath = "/home/wwwroot/default/facebook/users/" + userId + "/";
+		String fileName = "";
+		String fileUrl = "http://47.89.32.89/facebook/users/" + userId + "/";
+		
+		try{
+			CloseableHttpClient httpclient = HttpClients.createDefault();
+			HttpGet httpget = new HttpGet("https://graph.facebook.com/v2.6/"+userId+"?access_token=EAAHQ2lh6o2UBAAeLni23hen920ECISXqjY5SsJXPeUKrHRid3f3huz82pdu8ptYSmCI8yhGJmjc0E3InZAl3mgKZBGTjMyIZCGGniep8lnGRVaheHfZB7h0dh06YDvV5mAmFL7pdfKgOMJTP9aUFM9ZAGZAuldUPUwPG5oQoY2wIvNEaZCuZAN4DLyQqURJKH9IZD");
+
+			CloseableHttpResponse response = httpclient.execute(httpget);
+			if (response.getStatusLine().getStatusCode() == 200) {
+                String str = EntityUtils.toString(response.getEntity());
+                
+                JSONObject json_obj = JSONObject.fromObject(str);
+                
+                String username = "";
+                if( json_obj.has("name") ){
+                	username = json_obj.getString("name");
+                }else{
+	                if( json_obj.has("last_name") ){
+	                	username += json_obj.getString("last_name");
+	                }
+	                if( json_obj.has("first_name") ){
+	                	username += json_obj.getString("first_name");
+	                }
+                }
+                retval.put("username", username);
+                /**
+    	         * Cache profile_pic
+    	         */
+                if( json_obj.has("profile_pic") ){
+	    	        fileName = json_obj.getString("profile_pic").substring(json_obj.getString("profile_pic").lastIndexOf("/"));
+	    	        fileName = fileName.substring(0, fileName.lastIndexOf("?"));
+	    	        this.saveUrlAs(json_obj.getString("profile_pic"), filePath, fileName);
+	    	        retval.put("profile_pic", fileUrl + fileName);
+                }
+                if( json_obj.has("locale") ){
+                	retval.put("locale", json_obj.getString("locale"));
+                }
+                if( json_obj.has("timezone") ){
+                	retval.put("timezone", json_obj.getString("timezone"));
+                }
+                if( json_obj.has("gender") ){
+                	retval.put("gender", json_obj.getString("gender"));
+                }
+                if( json_obj.has("id") ){
+                	retval.put("id", json_obj.getString("id"));
+                }
+			}
+		} catch (Exception e) {
+	        logger.info(e.getMessage());
+	    }
+		return retval.toString();
+	}
+	
+	public Integer insertUserIfNotExist(JSONObject json_obj){
+		String sender_id = json_obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("sender").getString("id");
+		com.joyhong.model.User user = userService.selectByUsername(sender_id);
+		if( user == null ){
+			String u = this.getUserProfile(sender_id);
+			JSONObject uJson = JSONObject.fromObject(u);
+			String username = "";
+			if( uJson.has("username") ){
+				username = uJson.getString("username");
+			}
+			
+			user = new com.joyhong.model.User();
+			user.setUsername(sender_id);
+			user.setPassword(sender_id);
+			user.setNickname(username);
+			user.setProfile(u);
+			user.setPlatform("facebook");
+			user.setCreateDate(new Date());
+			user.setModifyDate(new Date());
+			user.setDeleted(0);
+			userService.insert(user);
+			return user.getId();
+		}else{
+			return user.getId();
+		}
+	}
+	
 	/**
 	 * 同步图片视频到本地服务器
 	 * @param url
 	 * @param filePath
 	 * @param method
 	 */
-	private void saveUrlAs(String url, String filePath, String method){   
+	private void saveUrlAs(String url, String filePath, String fileName){   
 	     FileOutputStream fileOut = null;  
 	     HttpURLConnection conn = null;  
 	     InputStream inputStream = null;  
 	     try {
+	    	 if (!filePath.endsWith("/")) {  
+	             filePath += "/";
+	         }
+	    	 File file = new File(filePath);
+	    	 if(!file.exists()){
+	    		 file .mkdir();
+	    	 }
+	    	 
 	         URL httpUrl=new URL(url);  
 	         conn=(HttpURLConnection) httpUrl.openConnection();  
-	         conn.setRequestMethod(method);  
+	         conn.setRequestMethod("GET");  
 	         conn.setDoInput(true);    
 	         conn.setDoOutput(true);   
 	         conn.setUseCaches(false);  
 	         conn.connect();  
 	         inputStream=conn.getInputStream();  
-	         BufferedInputStream bis = new BufferedInputStream(inputStream);  
-	         if (!filePath.endsWith("/")) {  
-	             filePath += "/";
-	         }  
-	         fileOut = new FileOutputStream(filePath);  
+	         BufferedInputStream bis = new BufferedInputStream(inputStream);
+	         
+	         fileOut = new FileOutputStream(filePath+fileName);  
 	         BufferedOutputStream bos = new BufferedOutputStream(fileOut);  
 	           
 	         byte[] buf = new byte[4096];
@@ -197,8 +349,7 @@ public class FacebookController {
 	         bis.close();
 	         conn.disconnect();
 	    } catch (Exception e)  {
-	         e.printStackTrace();
-	         System.out.println("抛出异常！！");
+	    	logger.info(e.getMessage());
 	    }
 	 }
 }

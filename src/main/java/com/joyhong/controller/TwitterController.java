@@ -124,9 +124,9 @@ public class TwitterController {
 		public String getUserProfile(Long userId){
 			JSONObject retval = new JSONObject();
 			
-			String filePath = "/home/wwwroot/default/facebook/users/" + String.valueOf(userId) + "/";
+			String filePath = "/home/wwwroot/default/twitter/users/" + String.valueOf(userId) + "/";
 			String fileName = "";
-			String fileUrl = "http://47.89.32.89/facebook/users/" + String.valueOf(userId) + "/";
+			String fileUrl = "http://47.89.32.89/twitter/users/" + String.valueOf(userId) + "/";
 			
 			try{
 		        User user = this.twitter.showUser(userId);

@@ -20,7 +20,6 @@ import com.joyhong.service.UserService;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import twitter4j.MediaEntity;
 
 /**
  * 设备管理控制器
