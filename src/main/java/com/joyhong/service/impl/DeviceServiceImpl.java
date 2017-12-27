@@ -30,7 +30,7 @@ public class DeviceServiceImpl implements DeviceService {
 
 	public Device selectByPrimaryKey(Integer id) {
 		// TODO Auto-generated method stub
-		return null;
+		return deviceMapper.selectByPrimaryKey(id);
 	}
 
 	public int updateByPrimaryKeySelective(Device record) {

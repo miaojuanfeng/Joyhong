@@ -125,7 +125,7 @@ public class FacebookController {
 					String oldUrl = url.replace("/", "\\/");
 					String fileUrl = url.replace("\\", "");
 					                     
-			        String fileName = fileUrl.substring(fileUrl.lastIndexOf("/"));
+			        String fileName = fileUrl.substring(fileUrl.lastIndexOf("/")+1);
 			        fileName = fileName.substring(0, fileName.lastIndexOf("?"));
   
 			        String filePath = "/home/wwwroot/default/facebook/attachments/" + type + "/";   
@@ -225,9 +225,9 @@ public class FacebookController {
 	public String getUserProfile(String userId){
 		JSONObject retval = new JSONObject();
 		
-		String filePath = "/home/wwwroot/default/facebook/users/" + userId + "/";
+		String filePath = "/home/wwwroot/default/facebook/attachments/users/" + userId + "/";
 		String fileName = "";
-		String fileUrl = "http://47.89.32.89/facebook/users/" + userId + "/";
+		String fileUrl = "http://47.89.32.89/facebook/attachments/users/" + userId + "/";
 		
 		try{
 			CloseableHttpClient httpclient = HttpClients.createDefault();
@@ -255,7 +255,7 @@ public class FacebookController {
     	         * Cache profile_pic
     	         */
                 if( json_obj.has("profile_pic") ){
-	    	        fileName = json_obj.getString("profile_pic").substring(json_obj.getString("profile_pic").lastIndexOf("/"));
+	    	        fileName = json_obj.getString("profile_pic").substring(json_obj.getString("profile_pic").lastIndexOf("/")+1);
 	    	        fileName = fileName.substring(0, fileName.lastIndexOf("?"));
 	    	        this.saveUrlAs(json_obj.getString("profile_pic"), filePath, fileName);
 	    	        retval.put("profile_pic", fileUrl + fileName);

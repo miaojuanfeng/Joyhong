@@ -44,6 +44,11 @@ public class UserDeviceServiceImpl implements UserDeviceService{
 		// TODO Auto-generated method stub
 		return userDeviceMapper.selectByDeviceId(deviceId);
 	}
+	
+	public List<UserDevice> selectByUserId(Integer userId) {
+		// TODO Auto-generated method stub
+		return userDeviceMapper.selectByUserId(userId);
+	}
 
 	public int updateByPrimaryKeySelective(UserDevice record) {
 		// TODO Auto-generated method stub

@@ -124,9 +124,9 @@ public class TwitterController {
 		public String getUserProfile(Long userId){
 			JSONObject retval = new JSONObject();
 			
-			String filePath = "/home/wwwroot/default/twitter/users/" + String.valueOf(userId) + "/";
+			String filePath = "/home/wwwroot/default/twitter/attachments/users/" + String.valueOf(userId) + "/";
 			String fileName = "";
-			String fileUrl = "http://47.89.32.89/twitter/users/" + String.valueOf(userId) + "/";
+			String fileUrl = "http://47.89.32.89/twitter/attachments/users/" + String.valueOf(userId) + "/";
 			
 			try{
 		        User user = this.twitter.showUser(userId);
@@ -136,25 +136,25 @@ public class TwitterController {
 		        /**
 		         * Cache mini image
 		         */
-		        fileName = user.getMiniProfileImageURL().substring(user.getMiniProfileImageURL().lastIndexOf("/"));
+		        fileName = user.getMiniProfileImageURL().substring(user.getMiniProfileImageURL().lastIndexOf("/")+1);
 		        this.saveUrlAs(user.getMiniProfileImageURL(), filePath, fileName);
 		        retval.put("mini_image", fileUrl + fileName);
 		        /**
 		         * Cache normal image
 		         */
-		        fileName = user.getProfileImageURL().substring(user.getProfileImageURL().lastIndexOf("/"));
+		        fileName = user.getProfileImageURL().substring(user.getProfileImageURL().lastIndexOf("/")+1);
 		        this.saveUrlAs(user.getProfileImageURL(), filePath, fileName);
 		        retval.put("normal_image", fileUrl + fileName);
 		        /**
 		         * Cache big image
 		         */
-		        fileName = user.getBiggerProfileImageURL().substring(user.getBiggerProfileImageURL().lastIndexOf("/"));
+		        fileName = user.getBiggerProfileImageURL().substring(user.getBiggerProfileImageURL().lastIndexOf("/")+1);
 		        this.saveUrlAs(user.getBiggerProfileImageURL(), filePath, fileName);
 		        retval.put("bigger_image", fileUrl + fileName);
 		        /**
 		         * Cache origin image
 		         */
-		        fileName = user.getOriginalProfileImageURL().substring(user.getOriginalProfileImageURL().lastIndexOf("/"));
+		        fileName = user.getOriginalProfileImageURL().substring(user.getOriginalProfileImageURL().lastIndexOf("/")+1);
 		        this.saveUrlAs(user.getOriginalProfileImageURL(), filePath, fileName);
 		        retval.put("origin_image", fileUrl + fileName);
 		        if( user.getURL() != null ){
@@ -182,9 +182,13 @@ public class TwitterController {
 		        /*
 		         * Cache background image
 		         */
-		        fileName = user.getProfileBackgroundImageURL().substring(user.getProfileBackgroundImageURL().lastIndexOf("/"));
-		        this.saveUrlAs(user.getProfileBackgroundImageURL(), filePath, fileName);
-		        retval.put("background_image", fileUrl + fileName);
+		        if( user.getProfileBackgroundImageURL() != null ){
+		        	fileName = user.getProfileBackgroundImageURL().substring(user.getProfileBackgroundImageURL().lastIndexOf("/")+1);
+			        this.saveUrlAs(user.getProfileBackgroundImageURL(), filePath, fileName);
+			        retval.put("background_image", fileUrl + fileName);
+		        }else{
+		        	retval.put("background_image", "");
+		        }
 		        
 			} catch (TwitterException e) {
 		        logger.info(e.getMessage());
@@ -252,15 +256,15 @@ public class TwitterController {
 		         inputStream=conn.getInputStream();  
 		         BufferedInputStream bis = new BufferedInputStream(inputStream);  
 		         
-		         fileOut = new FileOutputStream(filePath+fileName);  
-		         BufferedOutputStream bos = new BufferedOutputStream(fileOut);  
-		           
+		         fileOut = new FileOutputStream(filePath+fileName);
+		         BufferedOutputStream bos = new BufferedOutputStream(fileOut);
+		         
 		         byte[] buf = new byte[4096];
 		         int length = bis.read(buf);
-		         while(length != -1)  
-		         {  
-		             bos.write(buf, 0, length);  
-		             length = bis.read(buf);  
+		         while(length != -1)
+		         {
+		             bos.write(buf, 0, length);
+		             length = bis.read(buf);
 		         }
 		         bos.close();
 		         bis.close();

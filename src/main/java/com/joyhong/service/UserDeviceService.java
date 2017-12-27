@@ -16,6 +16,8 @@ public interface UserDeviceService {
     UserDevice selectByPrimaryKey(Integer id);
     
     List<UserDevice> selectByDeviceId(Integer deviceId);
+    
+    List<UserDevice> selectByUserId(Integer userId);
 
     int updateByPrimaryKeySelective(UserDevice record);
 

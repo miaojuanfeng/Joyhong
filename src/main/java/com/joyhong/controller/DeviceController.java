@@ -87,7 +87,7 @@ public class DeviceController {
 	 * @param device_id
 	 * @return json
 	 */
-	@RequestMapping(value="/device_user", method=RequestMethod.POST)
+	@RequestMapping(value="/device_user", method=RequestMethod.GET)
 	@ResponseBody
 	public String device_user(@RequestParam("device_id") String device_id){
 		JSONObject retval = new JSONObject();
