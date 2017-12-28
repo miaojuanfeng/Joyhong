@@ -149,17 +149,9 @@ public class FacebookController {
 		        			if( device != null ){
 		        				Integer user_id = this.insertUserIfNotExist(json_obj);
 		        				insertUserDeviceAfterDelete(user_id, device.getId());
-		        				try{
-		        					postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'Success, the device id is bind to: \nid: " + sender_id + "'}}";
-		        				}catch(Exception e){
-		        					logger.info(e.getMessage());
-		        				}
+		        				postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'Success, the device id is bind to " + sender_id + "'}}";
 		        			}else{
-		        				try{
-		        					postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'Sorry, the device id is not yet registered'}}";
-		        				}catch(Exception e){
-		        					logger.info(e.getMessage());
-		        				}
+		        				postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'Sorry, the device id is not yet registered'}}";
 		        			}
 		        		}
 					}
@@ -179,10 +171,13 @@ public class FacebookController {
 				wr.writeBytes(postJsonData);
 				wr.flush();
 				wr.close();
-								  
-//				int responseCode = con.getResponseCode();
+				
+				/*
+				 * not work comment this line
+				 */
+				int responseCode = con.getResponseCode();
 //				System.out.println("nSending 'POST' request to URL : " + url);
-//				System.out.println("Post Data : " + postJsonData);
+//				System.out.println("Post Data : " + con.getResponseMessage());
 //				System.out.println("Response Code : " + responseCode);
 				
 				FileWriter fw = null;

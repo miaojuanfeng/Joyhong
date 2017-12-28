@@ -1,5 +1,7 @@
 package com.joyhong.dao;
 
+import java.util.List;
+
 import com.joyhong.model.Device;
 
 public interface DeviceMapper {
@@ -12,6 +14,8 @@ public interface DeviceMapper {
     Device selectByPrimaryKey(Integer id);
     
     Device selectByDeviceId(String device_id);
+    
+    List<Device> selectLikeDeviceId(String device_id);
 
     int updateByPrimaryKeySelective(Device record);
 

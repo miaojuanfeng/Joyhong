@@ -1,5 +1,7 @@
 package com.joyhong.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,6 +48,11 @@ public class DeviceServiceImpl implements DeviceService {
 	public Device selectByDeviceId(String device_id) {
 		// TODO Auto-generated method stub
 		return deviceMapper.selectByDeviceId(device_id);
+	}
+	
+	public List<Device> selectLikeDeviceId(String device_id) {
+		// TODO Auto-generated method stub
+		return deviceMapper.selectLikeDeviceId(device_id); 
 	}
 
 }
