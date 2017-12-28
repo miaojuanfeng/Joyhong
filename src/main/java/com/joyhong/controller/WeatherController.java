@@ -1,5 +1,6 @@
 package com.joyhong.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.joyhong.model.Weather;
 import com.joyhong.service.WeatherService;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
@@ -134,6 +136,96 @@ public class WeatherController {
 		return retval;
 	}
 	
+	/** 
+     * 时间戳转换成日期格式字符串 
+     * @param seconds 精确到秒的字符串 
+     * @param formatStr 
+     * @return 
+     */  
+    private String timeStamp2Date(String seconds, String format) {  
+        if(seconds == null || seconds.isEmpty() || seconds.equals("null")){  
+            return "";  
+        }  
+        if(format == null || format.isEmpty()){
+            format = "yyyy-MM-dd HH:mm:ss";
+        }   
+        SimpleDateFormat sdf = new SimpleDateFormat(format);  
+        return sdf.format(new Date(Long.valueOf(seconds+"000")));  
+    }
+	
+	private String weather_data(String zip_code, Date time, Weather weather, JSONObject jsonResult, boolean isSave){
+		JSONObject retval = new JSONObject();
+		
+		String country = jsonResult.getJSONObject("city").getString("country");
+		Integer cityId = 0;
+		String cityName = jsonResult.getJSONObject("city").getString("name");
+		Float lon = Float.parseFloat(jsonResult.getJSONObject("city").getJSONObject("coord").getString("lon"));
+		Float lat = Float.parseFloat(jsonResult.getJSONObject("city").getJSONObject("coord").getString("lat"));
+		String zipCode = "";
+		if( zip_code == null ){
+			cityId = jsonResult.getJSONObject("city").getInt("id");
+		}else{
+			zipCode = zip_code;
+		}
+		JSONArray list = jsonResult.getJSONArray("list");
+		Integer i;
+		String today = timeStamp2Date(String.valueOf(new Date().getTime()/1000), "yyyy-MM-dd");
+		Float temp_min = 0.0F;
+		Float temp_max = 99999999.0F;
+		JSONObject day_max = null;
+		JSONObject day_min = null;
+		for(i = 0; i < list.size(); i++){
+			try{
+				JSONObject timeStamp = list.getJSONObject(i);
+				/*
+				 * 当前时间
+				 */
+				if( i == 0 ){
+					retval.put("now", timeStamp);
+				}
+				/*
+				 * 未来时间的最高温和最低温
+				 */
+				String date = timeStamp2Date(timeStamp.getString("dt"), "yyyy-MM-dd");
+				if( !date.equals(today) ){
+					if( !retval.has(date) ){
+						if( day_min != null && day_max != null ){
+							JSONObject day_temp = new JSONObject();
+							day_temp.put("min", day_min);
+							day_temp.put("max", day_max);
+							retval.put(date, day_temp);
+						}
+						
+						temp_min = Float.valueOf(timeStamp.getJSONObject("main").getString("temp_min"));
+						temp_max = Float.valueOf(timeStamp.getJSONObject("main").getString("temp_max"));
+						day_min = timeStamp;
+						day_max = timeStamp;
+					}
+					if( Float.valueOf(timeStamp.getJSONObject("main").getString("temp_min")) < temp_min ){
+						temp_min = Float.valueOf(timeStamp.getJSONObject("main").getString("temp_min"));
+						day_min = timeStamp;
+					}
+					if( Float.valueOf(timeStamp.getJSONObject("main").getString("temp_min")) > temp_max ){
+						temp_max = Float.valueOf(timeStamp.getJSONObject("main").getString("temp_min"));
+						day_max = timeStamp;
+					}
+				}
+			}catch(Exception e){
+				logger.info(e.getMessage());
+			}
+		}
+		
+		if( isSave ){
+			if( weather == null ){
+				this.cache_weather(time, country, cityId, cityName, lon, lat, zipCode, retval.toString());
+			}else{
+				this.update_weather(weather.getId(), time, country, cityId, cityName, lon, lat, zipCode, retval.toString(), weather.getCreateDate());
+			}
+		}
+		
+		return retval.toString();
+	}
+	
 	/**
 	 * 根据city id获取天气信息
 	 * @url https://well.bsimb.cn/weather/city_id?city_id={city_id}
@@ -161,19 +253,7 @@ public class WeatherController {
 					JSONObject jsonResult = JSONObject.fromObject(result);
 					
 					Date time = new Date();
-					String country = jsonResult.getJSONObject("city").getString("country");
-					Integer cityId = jsonResult.getJSONObject("city").getInt("id");
-					String cityName = jsonResult.getJSONObject("city").getString("name");
-					Float lon = Float.parseFloat(jsonResult.getJSONObject("city").getJSONObject("coord").getString("lon"));
-					Float lat = Float.parseFloat(jsonResult.getJSONObject("city").getJSONObject("coord").getString("lat"));
-					String zipCode = "";
-					String data = result;
-					
-					if( weather == null ){
-						this.cache_weather(time, country, cityId, cityName, lon, lat, zipCode, data);
-					}else{
-						this.update_weather(weather.getId(), time, country, cityId, cityName, lon, lat, zipCode, data, weather.getCreateDate());
-					}
+					result = weather_data(null, time, weather, jsonResult, true);
 					
 					retval.put("status", true);
 					retval.put("time", time.getTime()/1000);
@@ -218,19 +298,7 @@ public class WeatherController {
 					JSONObject jsonResult = JSONObject.fromObject(result);
 					
 					Date time = new Date();
-					String country = jsonResult.getJSONObject("city").getString("country");
-					Integer cityId = jsonResult.getJSONObject("city").getInt("id");
-					String cityName = jsonResult.getJSONObject("city").getString("name");
-					Float lon = Float.parseFloat(jsonResult.getJSONObject("city").getJSONObject("coord").getString("lon"));
-					Float lat = Float.parseFloat(jsonResult.getJSONObject("city").getJSONObject("coord").getString("lat"));
-					String zipCode = "";
-					String data = result;
-					
-					if( weather == null ){
-						this.cache_weather(time, country, cityId, cityName, lon, lat, zipCode, data);
-					}else{
-						this.update_weather(weather.getId(), time, country, cityId, cityName, lon, lat, zipCode, data, weather.getCreateDate());
-					}
+					result = weather_data(null, time, weather, jsonResult, true);
 					
 					retval.put("status", true);
 					retval.put("time", time.getTime()/1000);
@@ -268,7 +336,11 @@ public class WeatherController {
 			String result = EntityUtils.toString(response.getEntity());
 			
 			if (response.getStatusLine().getStatusCode() == 200) {
+				JSONObject jsonResult = JSONObject.fromObject(result);
+				
 				Date time = new Date();
+				result = weather_data(null, time, null, jsonResult, false);
+				
 				retval.put("status", true);
 				retval.put("time", time.getTime()/1000);
 				retval.put("data", result);
@@ -313,19 +385,7 @@ public class WeatherController {
 					JSONObject jsonResult = JSONObject.fromObject(result);
 					
 					Date time = new Date();
-					country = jsonResult.getJSONObject("city").getString("country");
-					Integer cityId = 0;
-					String cityName = jsonResult.getJSONObject("city").getString("name");
-					Float lon = Float.parseFloat(jsonResult.getJSONObject("city").getJSONObject("coord").getString("lon"));
-					Float lat = Float.parseFloat(jsonResult.getJSONObject("city").getJSONObject("coord").getString("lat"));
-					String zipCode = zip_code;
-					String data = result;
-					
-					if( weather == null ){
-						this.cache_weather(time, country, cityId, cityName, lon, lat, zipCode, data);
-					}else{
-						this.update_weather(weather.getId(), time, country, cityId, cityName, lon, lat, zipCode, data, weather.getCreateDate());
-					}
+					result = weather_data(zip_code, time, weather, jsonResult, true);
 					
 					retval.put("status", true);
 					retval.put("time", time.getTime()/1000);

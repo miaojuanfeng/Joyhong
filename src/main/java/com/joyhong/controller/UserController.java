@@ -39,7 +39,7 @@ public class UserController {
 	 * @param user_id 数据库id
 	 * @return json
 	 */
-	@RequestMapping(value="/user_device", method=RequestMethod.GET)
+	@RequestMapping(value="/user_device", method=RequestMethod.POST)
 	@ResponseBody
 	public String user_device(@RequestParam("user_id") Integer user_id){
 		JSONObject retval = new JSONObject();

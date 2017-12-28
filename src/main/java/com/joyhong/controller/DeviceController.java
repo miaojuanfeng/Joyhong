@@ -87,7 +87,7 @@ public class DeviceController {
 	 * @param device_id
 	 * @return json
 	 */
-	@RequestMapping(value="/device_user", method=RequestMethod.GET)
+	@RequestMapping(value="/device_user", method=RequestMethod.POST)
 	@ResponseBody
 	public String device_user(@RequestParam("device_id") String device_id){
 		JSONObject retval = new JSONObject();
@@ -116,6 +116,22 @@ public class DeviceController {
 			retval.put("status", false);
 			retval.put("msg", "The device id is not yet registered");
 		}
+		
+		return retval.toString();
+	}
+	
+	/**
+	 * 根据设备号搜索设备
+	 * @param device_id
+	 * @return
+	 */
+	@RequestMapping(value="/search", method=RequestMethod.POST)
+	@ResponseBody
+	public String search(@RequestParam("device_id") String device_id){
+		JSONObject retval = new JSONObject();
+		
+//		Devive device = deviceService.selectByDeviceId(device_id);
+		
 		
 		return retval.toString();
 	}
