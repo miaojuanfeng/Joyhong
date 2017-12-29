@@ -23,7 +23,7 @@ import net.sf.json.JSONObject;
 
 /**
  * 设备管理控制器
- * @url https://well.bsimb.cn/device/{method}
+ * @url {base_url}/device/{method}
  * @author Michael.Miao
  */
 @Controller
@@ -43,7 +43,7 @@ public class DeviceController {
 	
 	/**
 	 * 注册device id与fcm token
-	 * @url https://well.bsimb.cn/device/signin
+	 * @url {base_url}/device/signin
 	 * @param device_id
 	 * @param device_fcm_token
 	 * @return json
@@ -84,6 +84,7 @@ public class DeviceController {
 	
 	/**
 	 * 查询device id绑定的所有用户信息
+	 * @url {base_url}/device/device_user
 	 * @param device_id
 	 * @return json
 	 */
@@ -122,16 +123,30 @@ public class DeviceController {
 	
 	/**
 	 * 根据设备号搜索设备
+	 * @url {base_url}/device/search
 	 * @param device_id
-	 * @return
+	 * @return json
 	 */
 	@RequestMapping(value="/search", method=RequestMethod.POST)
 	@ResponseBody
 	public String search(@RequestParam("device_id") String device_id){
 		JSONObject retval = new JSONObject();
 		
-//		Devive device = deviceService.selectByDeviceId(device_id);
+		List<Device> device = deviceService.selectLikeDeviceId(device_id);
 		
+		JSONArray array = new JSONArray();
+		for( Device d : device ){
+			JSONObject temp = new JSONObject();
+			temp.put("id", d.getId());
+			temp.put("device_id", d.getDeviceId());
+			temp.put("device_fcm_token", d.getDeviceFcmToken());
+			temp.put("create_date", d.getCreateDate().getTime());
+			temp.put("modify_date", d.getModifyDate().getTime());
+			array.add(temp);
+		}
+		
+		retval.put("status", true);
+		retval.put("data", array);
 		
 		return retval.toString();
 	}

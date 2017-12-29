@@ -51,7 +51,7 @@ import java.io.FileOutputStream;
 
 /**
  * Twitter消息控制器
- * @url https://well.bsimb.cn/twitter/{method}
+ * @url {base_url}/twitter/{method}
  * @author Michael.Miao
  */
 @Controller
@@ -89,7 +89,7 @@ public class TwitterController {
 	
 	/**
 	 * 监听twitter发来的消息
-	 * @url https://well.bsimb.cn/twitter/listener
+	 * @url {base_url}/twitter/listener
 	 * @return json
 	 */
 	@RequestMapping(value="/listener", method = RequestMethod.GET)
@@ -109,6 +109,9 @@ public class TwitterController {
 
 		private Twitter twitter = null;
 		
+		/**
+		 * 初始化twitter工厂
+		 */
 		public void init(){
 			ConfigurationBuilder cb2 = new ConfigurationBuilder();
 		    cb2.setDebugEnabled(true)
@@ -121,6 +124,11 @@ public class TwitterController {
 		    this.twitter = twitterFactory.getInstance();
 		}
 		
+		/**
+		 * 获取用户信息并同步图片
+		 * @param userId
+		 * @return json
+		 */
 		public String getUserProfile(Long userId){
 			JSONObject retval = new JSONObject();
 			
@@ -196,6 +204,11 @@ public class TwitterController {
 			return retval.toString();
 		}
 		
+		/**
+		 * 如果用户不存在就新增twitter用户
+		 * @param message
+		 * @return Integer
+		 */
 		public Integer insertUserIfNotExist(DirectMessage message){
 			com.joyhong.model.User user = userService.selectByUsername(String.valueOf(message.getSenderId()));
 			if( user == null ){
@@ -215,6 +228,12 @@ public class TwitterController {
 			}
 		}
 		
+		/**
+		 * 插入用户与设备之间的关联信息
+		 * @param userId
+		 * @param deviceId
+		 * @return Integer
+		 */
 		public Integer insertUserDeviceAfterDelete(Integer userId, Integer deviceId){
 			userDeviceService.deleteByUserId(userId);
 			
@@ -274,6 +293,9 @@ public class TwitterController {
 		    }
 		}
 		
+		/**
+		 * 监听到消息事件
+		 */
         public void onDirectMessage(DirectMessage message) {
             // TODO Auto-generated method stub
         	JSONObject retval = new JSONObject();

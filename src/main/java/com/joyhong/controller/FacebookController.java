@@ -39,7 +39,7 @@ import net.sf.json.JSONObject;
 
 /**
  * Facebook消息控制器
- * @url https://well.bsimb.cn/facebook/{method}
+ * @url {base_url}/facebook/{method}
  * @author Michael.Miao
  */
 @Controller
@@ -204,7 +204,13 @@ public class FacebookController {
 		}
 	}
 	
-	public Integer insertUserDeviceAfterDelete(Integer userId, Integer deviceId){
+	/**
+	 * 插入用户与设备之间的关联信息
+	 * @param userId
+	 * @param deviceId
+	 * @return Integer
+	 */
+	private Integer insertUserDeviceAfterDelete(Integer userId, Integer deviceId){
 		userDeviceService.deleteByUserId(userId);
 		
 		UserDevice userDevice = new UserDevice();
@@ -217,7 +223,12 @@ public class FacebookController {
 		return userDeviceService.insert(userDevice);
 	}
 	
-	public String getUserProfile(String userId){
+	/**
+	 * 获取用户信息并同步图片
+	 * @param userId
+	 * @return json
+	 */
+	private String getUserProfile(String userId){
 		JSONObject retval = new JSONObject();
 		
 		String filePath = "/home/wwwroot/default/facebook/attachments/users/" + userId + "/";
@@ -274,6 +285,11 @@ public class FacebookController {
 		return retval.toString();
 	}
 	
+	/**
+	 * 如果用户不存在就新增facebook用户
+	 * @param json_obj
+	 * @return Integer
+	 */
 	public Integer insertUserIfNotExist(JSONObject json_obj){
 		String sender_id = json_obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("sender").getString("id");
 		com.joyhong.model.User user = userService.selectByUsername(sender_id);

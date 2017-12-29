@@ -20,6 +20,7 @@ import net.sf.json.JSONObject;
 
 /**
  * 用户管理控制器
+ * @url {base_url}/user/{method}
  * @author Michael.Miao
  */
 @Controller
@@ -36,6 +37,7 @@ public class UserController {
 	
 	/**
 	 * 获取用户绑定的设备列表
+	 * @url {base_url}/user/user_device
 	 * @param user_id 数据库id
 	 * @return json
 	 */

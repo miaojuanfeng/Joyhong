@@ -24,7 +24,7 @@ import net.sf.json.JSONObject;
 
 /**
  * 天气接口控制器
- * @url https://well.bsimb.cn/weather/{method}
+ * @url {base_url}/weather/{method}
  * @author Michael.Miao
  */
 @Controller
@@ -169,46 +169,42 @@ public class WeatherController {
 		}
 		JSONArray list = jsonResult.getJSONArray("list");
 		Integer i;
-		String today = timeStamp2Date(String.valueOf(new Date().getTime()/1000), "yyyy-MM-dd");
-		Float temp_min = 0.0F;
-		Float temp_max = 99999999.0F;
-		JSONObject day_max = null;
-		JSONObject day_min = null;
+		String todayDate = timeStamp2Date(String.valueOf(new Date().getTime()/1000), "yyyy-MM-dd");
+		String todayDatetime = timeStamp2Date(String.valueOf(new Date().getTime()/1000), "yyyy-MM-dd HH:mm:ss");
+		Float temp_min = 99999999.0F;
+		Float temp_max = 0.0F;
+		JSONObject day_temp = null;
+		
 		for(i = 0; i < list.size(); i++){
 			try{
 				JSONObject timeStamp = list.getJSONObject(i);
+				String date = timeStamp.getString("dt_txt").substring(0, 10);
+				String datetime = timeStamp.getString("dt_txt");
 				/*
 				 * 当前时间
 				 */
-				if( i == 0 ){
+				if( !retval.has("now") && datetime.compareTo(todayDatetime) > 0 ){
 					retval.put("now", timeStamp);
 				}
 				/*
 				 * 未来时间的最高温和最低温
 				 */
-				String date = timeStamp2Date(timeStamp.getString("dt"), "yyyy-MM-dd");
-				if( !date.equals(today) ){
+				if( !date.equals(todayDate) ){
+					
 					if( !retval.has(date) ){
-						if( day_min != null && day_max != null ){
-							JSONObject day_temp = new JSONObject();
-							day_temp.put("min", day_min);
-							day_temp.put("max", day_max);
-							retval.put(date, day_temp);
-						}
-						
-						temp_min = Float.valueOf(timeStamp.getJSONObject("main").getString("temp_min"));
-						temp_max = Float.valueOf(timeStamp.getJSONObject("main").getString("temp_max"));
-						day_min = timeStamp;
-						day_max = timeStamp;
+						temp_min = 99999999.0F;
+						temp_max = 0.0F;
+						day_temp = new JSONObject();
 					}
 					if( Float.valueOf(timeStamp.getJSONObject("main").getString("temp_min")) < temp_min ){
 						temp_min = Float.valueOf(timeStamp.getJSONObject("main").getString("temp_min"));
-						day_min = timeStamp;
+						day_temp.put("min", timeStamp);
 					}
 					if( Float.valueOf(timeStamp.getJSONObject("main").getString("temp_min")) > temp_max ){
 						temp_max = Float.valueOf(timeStamp.getJSONObject("main").getString("temp_min"));
-						day_max = timeStamp;
+						day_temp.put("max", timeStamp);
 					}
+					retval.put(date, day_temp);
 				}
 			}catch(Exception e){
 				logger.info(e.getMessage());
@@ -228,7 +224,7 @@ public class WeatherController {
 	
 	/**
 	 * 根据city id获取天气信息
-	 * @url https://well.bsimb.cn/weather/city_id?city_id={city_id}
+	 * @url {base_url}/weather/city_id?city_id={city_id}
 	 * @param city_id
 	 * @return json
 	 */
@@ -273,7 +269,7 @@ public class WeatherController {
 	
 	/**
 	 * 根据city name获取天气信息
-	 * @url https://well.bsimb.cn/weather/city_name?city_name={city_name}
+	 * @url {base_url}/weather/city_name?city_name={city_name}
 	 * @param city_name
 	 * @return json
 	 */
@@ -318,7 +314,7 @@ public class WeatherController {
 	
 	/**
 	 * 根据lat lon获取天气信息
-	 * @url https://well.bsimb.cn/weather/lat_lon?lat={lat}&lon={lon}
+	 * @url {base_url}/weather/lat_lon?lat={lat}&lon={lon}
 	 * @param lat
 	 * @param lon
 	 * @return json
@@ -359,7 +355,7 @@ public class WeatherController {
 	
 	/**
 	 * 根据zip_code获取天气信息
-	 * @url https://well.bsimb.cn/weather/zip_code?zip_code={zip_code}&country={country}
+	 * @url {base_url}/weather/zip_code?zip_code={zip_code}&country={country}
 	 * @param zip_code
 	 * @param country
 	 * @return json

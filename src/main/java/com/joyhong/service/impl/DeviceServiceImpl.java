@@ -52,7 +52,7 @@ public class DeviceServiceImpl implements DeviceService {
 	
 	public List<Device> selectLikeDeviceId(String device_id) {
 		// TODO Auto-generated method stub
-		return deviceMapper.selectLikeDeviceId(device_id); 
+		return deviceMapper.selectLikeDeviceId("%"+device_id+"%"); 
 	}
 
 }
