@@ -2,6 +2,7 @@ package com.joyhong.controller;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -153,8 +154,17 @@ public class WeatherController {
         return sdf.format(new Date(Long.valueOf(seconds+"000")));  
     }
 	
+    /**
+     * 处理天气数据
+     * @param zip_code
+     * @param time
+     * @param weather
+     * @param jsonResult
+     * @param isSave
+     * @return
+     */
 	private String weather_data(String zip_code, Date time, Weather weather, JSONObject jsonResult, boolean isSave){
-		JSONObject retval = new JSONObject();
+		JSONObject retObj = new JSONObject();
 		
 		String country = jsonResult.getJSONObject("city").getString("country");
 		Integer cityId = 0;
@@ -183,15 +193,15 @@ public class WeatherController {
 				/*
 				 * 当前时间
 				 */
-				if( !retval.has("now") && datetime.compareTo(todayDatetime) > 0 ){
-					retval.put("now", timeStamp);
+				if( !retObj.has("now") && datetime.compareTo(todayDatetime) > 0 ){
+					retObj.put("now", timeStamp);
 				}
 				/*
 				 * 未来时间的最高温和最低温
 				 */
 				if( !date.equals(todayDate) ){
 					
-					if( !retval.has(date) ){
+					if( !retObj.has(date) ){
 						temp_min = 99999999.0F;
 						temp_max = 0.0F;
 						day_temp = new JSONObject();
@@ -204,12 +214,30 @@ public class WeatherController {
 						temp_max = Float.valueOf(timeStamp.getJSONObject("main").getString("temp_min"));
 						day_temp.put("max", timeStamp);
 					}
-					retval.put(date, day_temp);
+					retObj.put(date, day_temp);
 				}
 			}catch(Exception e){
 				logger.info(e.getMessage());
 			}
 		}
+		
+		Iterator iterator = retObj.keys();
+		String key;
+		String value;
+		JSONObject retval = new JSONObject();
+		JSONArray retArr = new JSONArray();
+		
+		while(iterator.hasNext()){
+			key = (String) iterator.next();
+			value = retObj.getString(key);
+			if( key.equals("now") ){
+				retval.put("cur_data", value);
+			}else{
+				retArr.add(value);
+			}
+		}
+		retval.put("days_data", retArr);
+		retval.put("city", jsonResult.getJSONObject("city"));
 		
 		if( isSave ){
 			if( weather == null ){
