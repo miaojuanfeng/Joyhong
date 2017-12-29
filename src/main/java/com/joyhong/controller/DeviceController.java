@@ -150,4 +150,23 @@ public class DeviceController {
 		
 		return retval.toString();
 	}
+	
+	/**
+	 * 改变用户和设备的绑定状态
+	 * @url {base_url}/device/status
+	 * @param user_id
+	 * @param device_id
+	 * @param status
+	 * @return json
+	 */
+	@RequestMapping(value="/status", method=RequestMethod.POST)
+	@ResponseBody
+	public String status(@RequestParam("user_id") String user_id, @RequestParam("device_id") String device_id, @RequestParam("status") String status){
+		JSONObject retval = new JSONObject();
+		
+		retval.put("status", true);
+		retval.put("data", "test");
+		
+		return retval.toString();
+	}
 }
