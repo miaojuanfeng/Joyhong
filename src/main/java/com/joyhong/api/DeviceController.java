@@ -163,7 +163,7 @@ public class DeviceController {
 	 * @method POST
 	 * @param user_id
 	 * @param device_id
-	 * @param status，3种状态，unbind：app端解除绑定，lock：设备端锁定，delete：设备端删除
+	 * @param status，4种状态，unbind：app端解除绑定，lock：设备端锁定，unlock：设备端解锁，delete：设备端删除
 	 * @return json
 	 */
 	@RequestMapping(value="/status", method=RequestMethod.POST)
@@ -171,8 +171,70 @@ public class DeviceController {
 	public String status(@RequestParam("user_id") Integer user_id, @RequestParam("device_id") Integer device_id, @RequestParam("status") String status){
 		JSONObject retval = new JSONObject();
 		
-		retval.put("status", true);
-		retval.put("data", "test");
+		if( status.equals("unbind") ){
+			if( userDeviceService.deleteByUserIdAndDeviceId(user_id, device_id) == 1 ){
+				retval.put("status", true);
+				retval.put("msg", "Success");
+			}else{
+				retval.put("status", false);
+				retval.put("msg", "Unable to find the relationship between user and device");
+			}
+		}else if( status.equals("lock") ){
+			// 检查设备与用户是否已关联
+			UserDevice user_device = userDeviceService.selectByUserIdAndDeviceId(user_id, device_id);
+			if( user_device != null ){
+				User user = userService.selectByPrimaryKey(user_device.getUserId());
+				if( user != null ){
+					user.setAccepted("0");
+					if( userService.updateByPrimaryKey(user) == 1 ){
+						retval.put("status", true);
+						retval.put("msg", "Success");
+					}else{
+						retval.put("status", false);
+						retval.put("msg", "Update user status failed, please try again later");
+					}
+				}else{
+					retval.put("status", false);
+					retval.put("msg", "The user has been deleted");
+				}
+			}else{
+				retval.put("status", false);
+				retval.put("msg", "Unable to find the relationship between user and device");
+			}
+		}else if( status.equals("unlock") ){
+			// 检查设备与用户是否已关联
+			UserDevice user_device = userDeviceService.selectByUserIdAndDeviceId(user_id, device_id);
+			if( user_device != null ){
+				User user = userService.selectByPrimaryKey(user_device.getUserId());
+				if( user != null ){
+					user.setAccepted("1");
+					if( userService.updateByPrimaryKey(user) == 1 ){
+						retval.put("status", true);
+						retval.put("msg", "Success");
+					}else{
+						retval.put("status", false);
+						retval.put("msg", "Update user status failed, please try again later");
+					}
+				}else{
+					retval.put("status", false);
+					retval.put("msg", "The user has been deleted");
+				}
+			}else{
+				retval.put("status", false);
+				retval.put("msg", "Unable to find the relationship between user and device");
+			}
+		}else if( status.equals("delete") ){
+			if( userDeviceService.deleteByUserIdAndDeviceId(user_id, device_id) == 1 ){
+				retval.put("status", true);
+				retval.put("msg", "Success");
+			}else{
+				retval.put("status", false);
+				retval.put("msg", "Unable to find the relationship between user and device");
+			}
+		}else{
+			retval.put("status", false);
+			retval.put("msg", "Unknow action");
+		}
 		
 		return retval.toString();
 	}

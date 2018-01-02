@@ -8,6 +8,8 @@ public interface UserDeviceService {
 	int deleteByPrimaryKey(Integer id);
 	
 	int deleteByUserId(Integer userId);
+	
+	int deleteByUserIdAndDeviceId(Integer userId, Integer deviceId);
 
     int insert(UserDevice record);
 
@@ -18,6 +20,8 @@ public interface UserDeviceService {
     List<UserDevice> selectByDeviceId(Integer deviceId);
     
     List<UserDevice> selectByUserId(Integer userId);
+    
+    UserDevice selectByUserIdAndDeviceId(Integer userId, Integer deviceId);
 
     int updateByPrimaryKeySelective(UserDevice record);
 

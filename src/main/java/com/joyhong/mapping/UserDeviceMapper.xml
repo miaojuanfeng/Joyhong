@@ -30,6 +30,12 @@
     from z_user_device
     where device_id = #{deviceId,jdbcType=INTEGER}
   </select>
+  <select id="selectByUserIdAndDeviceId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from z_user_device
+    where user_id = #{0} and device_id = #{1}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from z_user_device
     where id = #{id,jdbcType=INTEGER}
@@ -37,6 +43,10 @@
   <delete id="deleteByUserId" parameterType="java.lang.Integer">
     delete from z_user_device
     where user_id = #{userId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByUserIdAndDeviceId" parameterType="java.lang.Integer">
+    delete from z_user_device
+    where user_id = #{0} and device_id = #{1}
   </delete>
   <insert id="insert" parameterType="com.joyhong.model.UserDevice">
     insert into z_user_device (id, user_id, device_id, 

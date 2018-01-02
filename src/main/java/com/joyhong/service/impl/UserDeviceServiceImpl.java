@@ -24,6 +24,11 @@ public class UserDeviceServiceImpl implements UserDeviceService{
 		// TODO Auto-generated method stub
 		return userDeviceMapper.deleteByUserId(userId);
 	}
+	
+	public int deleteByUserIdAndDeviceId(Integer userId, Integer deviceId){
+		// TODO Auto-generated method stub
+		return userDeviceMapper.deleteByUserIdAndDeviceId(userId, deviceId);
+	}
 
 	public int insert(UserDevice record) {
 		// TODO Auto-generated method stub
@@ -48,6 +53,11 @@ public class UserDeviceServiceImpl implements UserDeviceService{
 	public List<UserDevice> selectByUserId(Integer userId) {
 		// TODO Auto-generated method stub
 		return userDeviceMapper.selectByUserId(userId);
+	}
+	
+	public UserDevice selectByUserIdAndDeviceId(Integer userId, Integer deviceId) {
+		// TODO Auto-generated method stub
+		return userDeviceMapper.selectByUserIdAndDeviceId(userId, deviceId);
 	}
 
 	public int updateByPrimaryKeySelective(UserDevice record) {
