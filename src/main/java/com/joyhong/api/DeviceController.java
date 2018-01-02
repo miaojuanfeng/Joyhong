@@ -242,4 +242,59 @@ public class DeviceController {
 		
 		return retval.toString();
 	}
+	
+	/**
+	 * 绑定多个设备
+	 * @url {base_url}/device/bind
+	 * @method POST
+	 * @param user_id
+	 * @param List<String> device_token
+	 * @return
+	 */
+	@RequestMapping(value="/bind", method=RequestMethod.POST)
+	@ResponseBody
+	public String bind(@RequestParam("user_id") Integer user_id, @RequestParam("device_token") List<String> device_token){
+		JSONObject retval = new JSONObject();
+		
+		User user = userService.selectByPrimaryKey(user_id);
+		if( user != null ){
+			JSONObject temp = new JSONObject();
+			JSONArray successful = new JSONArray();
+			JSONArray failed = new JSONArray();
+			JSONArray existent = new JSONArray();
+			for(String dt : device_token){
+				Device device = deviceService.selectByDeviceToken(dt);
+				if( device != null ){
+					if( userDeviceService.selectByUserIdAndDeviceId(user_id, device.getId()) == null ){
+						UserDevice ud = new UserDevice();
+						ud.setUserId(user_id);
+						ud.setDeviceId(device.getId());
+						ud.setCreateDate(new Date());
+						ud.setModifyDate(new Date());
+						ud.setDeleted(0);
+						if( userDeviceService.insert(ud) == 1 ){
+							successful.add(dt);
+						}else{
+							failed.add(dt);
+						}
+					}else{
+						existent.add(dt);
+					}
+				}else{
+					failed.add(dt);
+				}
+			}
+			temp.put("existent", existent);
+			temp.put("successful", successful);
+			temp.put("failed", failed);
+			
+			retval.put("status", true);
+			retval.put("data", temp);
+		}else{
+			retval.put("status", false);
+			retval.put("msg", "Unable to find the user");
+		}
+		
+		return retval.toString();
+	}
 }
