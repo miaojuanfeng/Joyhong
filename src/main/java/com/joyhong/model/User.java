@@ -10,16 +10,18 @@ public class User {
     private String password;
 
     private String nickname;
+    
+    private String profileImage;
 
     private String platform;
+    
+    private String accepted;
 
     private Date createDate;
 
     private Date modifyDate;
 
     private Integer deleted;
-
-    private String profile;
 
     public Integer getId() {
         return id;
@@ -52,6 +54,14 @@ public class User {
     public void setNickname(String nickname) {
         this.nickname = nickname == null ? null : nickname.trim();
     }
+    
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage == null ? null : profileImage.trim();
+    }
 
     public String getPlatform() {
         return platform;
@@ -59,6 +69,14 @@ public class User {
 
     public void setPlatform(String platform) {
         this.platform = platform == null ? null : platform.trim();
+    }
+    
+    public String getAccepted() {
+        return accepted;
+    }
+
+    public void setAccepted(String accepted) {
+        this.accepted = accepted == null ? null : accepted.trim();
     }
 
     public Date getCreateDate() {
@@ -84,12 +102,5 @@ public class User {
     public void setDeleted(Integer deleted) {
         this.deleted = deleted;
     }
-
-    public String getProfile() {
-        return profile;
-    }
-
-    public void setProfile(String profile) {
-        this.profile = profile == null ? null : profile.trim();
-    }
+    
 }

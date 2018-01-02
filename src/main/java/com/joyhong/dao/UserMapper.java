@@ -15,7 +15,5 @@ public interface UserMapper {
 
     int updateByPrimaryKeySelective(User record);
 
-    int updateByPrimaryKeyWithBLOBs(User record);
-
     int updateByPrimaryKey(User record);
 }

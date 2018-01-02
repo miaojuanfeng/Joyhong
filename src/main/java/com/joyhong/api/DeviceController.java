@@ -1,4 +1,4 @@
-package com.joyhong.controller;
+package com.joyhong.api;
 
 import java.util.Date;
 import java.util.List;
@@ -104,15 +104,21 @@ public class DeviceController {
 					uTemp.put("id", user.getId());
 					uTemp.put("username", user.getUsername());
 					uTemp.put("nickname", user.getNickname());
-					uTemp.put("profile", user.getProfile());
+					uTemp.put("profile_image", user.getProfileImage());
 					uTemp.put("platform", user.getPlatform());
+					uTemp.put("accepted", user.getAccepted());
 					uTemp.put("create_date", user.getCreateDate().getTime());
 					uTemp.put("modify_date", user.getModifyDate().getTime());
 					temp.add(uTemp);
 				}
 			}
+			
+			JSONObject dTemp = new JSONObject();
+			dTemp.put("device_id", device.getId());
+			dTemp.put("users", temp);
+			
 			retval.put("status", true);
-			retval.put("data", temp);
+			retval.put("data", dTemp);
 		}else{
 			retval.put("status", false);
 			retval.put("msg", "The device id is not yet registered");

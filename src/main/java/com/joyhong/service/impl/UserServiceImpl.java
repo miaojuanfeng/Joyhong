@@ -43,11 +43,6 @@ public class UserServiceImpl implements UserService {
 		return userMapper.updateByPrimaryKeySelective(record);
 	}
 
-	public int updateByPrimaryKeyWithBLOBs(User record) {
-		// TODO Auto-generated method stub
-		return userMapper.updateByPrimaryKeyWithBLOBs(record);
-	}
-
 	public int updateByPrimaryKey(User record) {
 		// TODO Auto-generated method stub
 		return userMapper.updateByPrimaryKey(record);

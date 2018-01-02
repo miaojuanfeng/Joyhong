@@ -1,4 +1,4 @@
-package com.joyhong.controller;
+package com.joyhong.api;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -266,18 +266,18 @@ public class FacebookController {
 	    	        this.saveUrlAs(json_obj.getString("profile_pic"), filePath, fileName);
 	    	        retval.put("profile_pic", fileUrl + fileName);
                 }
-                if( json_obj.has("locale") ){
-                	retval.put("locale", json_obj.getString("locale"));
-                }
-                if( json_obj.has("timezone") ){
-                	retval.put("timezone", json_obj.getString("timezone"));
-                }
-                if( json_obj.has("gender") ){
-                	retval.put("gender", json_obj.getString("gender"));
-                }
-                if( json_obj.has("id") ){
-                	retval.put("id", json_obj.getString("id"));
-                }
+//                if( json_obj.has("locale") ){
+//                	retval.put("locale", json_obj.getString("locale"));
+//                }
+//                if( json_obj.has("timezone") ){
+//                	retval.put("timezone", json_obj.getString("timezone"));
+//                }
+//                if( json_obj.has("gender") ){
+//                	retval.put("gender", json_obj.getString("gender"));
+//                }
+//                if( json_obj.has("id") ){
+//                	retval.put("id", json_obj.getString("id"));
+//                }
 			}
 		} catch (Exception e) {
 	        logger.info(e.getMessage());
@@ -305,8 +305,13 @@ public class FacebookController {
 			user.setUsername(sender_id);
 			user.setPassword(sender_id);
 			user.setNickname(username);
-			user.setProfile(u);
+			if( uJson.has("profile_pic") ){
+				user.setProfileImage(uJson.getString("profile_pic"));
+			}else{
+				user.setProfileImage("");
+			}
 			user.setPlatform("facebook");
+			user.setAccepted("1");
 			user.setCreateDate(new Date());
 			user.setModifyDate(new Date());
 			user.setDeleted(0);

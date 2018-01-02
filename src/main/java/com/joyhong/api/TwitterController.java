@@ -1,4 +1,4 @@
-package com.joyhong.controller;
+package com.joyhong.api;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -130,7 +130,7 @@ public class TwitterController {
 		 * @return json
 		 */
 		public String getUserProfile(Long userId){
-			JSONObject retval = new JSONObject();
+			String retval = "";
 			
 			String filePath = "/home/wwwroot/default/twitter/attachments/users/" + String.valueOf(userId) + "/";
 			String fileName = "";
@@ -138,70 +138,70 @@ public class TwitterController {
 			
 			try{
 		        User user = this.twitter.showUser(userId);
-		        retval.put("id", user.getId());
-		        retval.put("name", user.getName());
-		        retval.put("screen_name", user.getScreenName());
-		        /**
-		         * Cache mini image
-		         */
-		        fileName = user.getMiniProfileImageURL().substring(user.getMiniProfileImageURL().lastIndexOf("/")+1);
-		        this.saveUrlAs(user.getMiniProfileImageURL(), filePath, fileName);
-		        retval.put("mini_image", fileUrl + fileName);
-		        /**
-		         * Cache normal image
-		         */
-		        fileName = user.getProfileImageURL().substring(user.getProfileImageURL().lastIndexOf("/")+1);
-		        this.saveUrlAs(user.getProfileImageURL(), filePath, fileName);
-		        retval.put("normal_image", fileUrl + fileName);
-		        /**
-		         * Cache big image
-		         */
-		        fileName = user.getBiggerProfileImageURL().substring(user.getBiggerProfileImageURL().lastIndexOf("/")+1);
-		        this.saveUrlAs(user.getBiggerProfileImageURL(), filePath, fileName);
-		        retval.put("bigger_image", fileUrl + fileName);
+//		        retval.put("id", user.getId());
+//		        retval.put("name", user.getName());
+//		        retval.put("screen_name", user.getScreenName());
+//		        /**
+//		         * Cache mini image
+//		         */
+//		        fileName = user.getMiniProfileImageURL().substring(user.getMiniProfileImageURL().lastIndexOf("/")+1);
+//		        this.saveUrlAs(user.getMiniProfileImageURL(), filePath, fileName);
+//		        retval.put("mini_image", fileUrl + fileName);
+//		        /**
+//		         * Cache normal image
+//		         */
+//		        fileName = user.getProfileImageURL().substring(user.getProfileImageURL().lastIndexOf("/")+1);
+//		        this.saveUrlAs(user.getProfileImageURL(), filePath, fileName);
+//		        retval.put("normal_image", fileUrl + fileName);
+//		        /**
+//		         * Cache big image
+//		         */
+//		        fileName = user.getBiggerProfileImageURL().substring(user.getBiggerProfileImageURL().lastIndexOf("/")+1);
+//		        this.saveUrlAs(user.getBiggerProfileImageURL(), filePath, fileName);
+//		        retval.put("bigger_image", fileUrl + fileName);
 		        /**
 		         * Cache origin image
 		         */
 		        fileName = user.getOriginalProfileImageURL().substring(user.getOriginalProfileImageURL().lastIndexOf("/")+1);
 		        this.saveUrlAs(user.getOriginalProfileImageURL(), filePath, fileName);
-		        retval.put("origin_image", fileUrl + fileName);
-		        if( user.getURL() != null ){
-		        	retval.put("url", user.getURL());
-		        }else{
-		        	retval.put("url", "");
-		        }
-		        if( user.getDescription() != null ){
-		        	retval.put("description", user.getDescription());
-		        }else{
-		        	retval.put("description", "");
-		        }
-		        if( user.getLocation() != null ){
-		        	retval.put("location", user.getLocation());
-		        }else{
-		        	retval.put("location", "");
-		        }
-		        retval.put("language", user.getLang());
-		        retval.put("favourites_count", user.getFavouritesCount());
-		        retval.put("followers_count", user.getFollowersCount());
-		        retval.put("friends_count", user.getFriendsCount());
-		        retval.put("listed_count", user.getListedCount());
-		        retval.put("statuses_count", user.getStatusesCount());
-		        retval.put("background_color", user.getProfileBackgroundColor());
-		        /*
-		         * Cache background image
-		         */
-		        if( user.getProfileBackgroundImageURL() != null ){
-		        	fileName = user.getProfileBackgroundImageURL().substring(user.getProfileBackgroundImageURL().lastIndexOf("/")+1);
-			        this.saveUrlAs(user.getProfileBackgroundImageURL(), filePath, fileName);
-			        retval.put("background_image", fileUrl + fileName);
-		        }else{
-		        	retval.put("background_image", "");
-		        }
+		        retval = fileUrl + fileName;
+//		        if( user.getURL() != null ){
+//		        	retval.put("url", user.getURL());
+//		        }else{
+//		        	retval.put("url", "");
+//		        }
+//		        if( user.getDescription() != null ){
+//		        	retval.put("description", user.getDescription());
+//		        }else{
+//		        	retval.put("description", "");
+//		        }
+//		        if( user.getLocation() != null ){
+//		        	retval.put("location", user.getLocation());
+//		        }else{
+//		        	retval.put("location", "");
+//		        }
+//		        retval.put("language", user.getLang());
+//		        retval.put("favourites_count", user.getFavouritesCount());
+//		        retval.put("followers_count", user.getFollowersCount());
+//		        retval.put("friends_count", user.getFriendsCount());
+//		        retval.put("listed_count", user.getListedCount());
+//		        retval.put("statuses_count", user.getStatusesCount());
+//		        retval.put("background_color", user.getProfileBackgroundColor());
+//		        /*
+//		         * Cache background image
+//		         */
+//		        if( user.getProfileBackgroundImageURL() != null ){
+//		        	fileName = user.getProfileBackgroundImageURL().substring(user.getProfileBackgroundImageURL().lastIndexOf("/")+1);
+//			        this.saveUrlAs(user.getProfileBackgroundImageURL(), filePath, fileName);
+//			        retval.put("background_image", fileUrl + fileName);
+//		        }else{
+//		        	retval.put("background_image", "");
+//		        }
 		        
 			} catch (TwitterException e) {
 		        logger.info(e.getMessage());
 		    }
-			return retval.toString();
+			return retval;
 		}
 		
 		/**
@@ -216,8 +216,9 @@ public class TwitterController {
 				user.setUsername(String.valueOf(message.getSenderId()));
 				user.setPassword(String.valueOf(message.getSenderId()));
 				user.setNickname(message.getSenderScreenName());
-				user.setProfile(this.getUserProfile(message.getSenderId()));
+				user.setProfileImage(this.getUserProfile(message.getSenderId()));
 				user.setPlatform("twitter");
+				user.setAccepted("1");
 				user.setCreateDate(new Date());
 				user.setModifyDate(new Date());
 				user.setDeleted(0);

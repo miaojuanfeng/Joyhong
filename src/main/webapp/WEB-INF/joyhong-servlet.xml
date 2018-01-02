@@ -10,7 +10,7 @@
         http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">  
   
   	<!-- 开启自动扫包 -->
-    <context:component-scan base-package="com.joyhong.controller,com.joyhong.service" />
+    <context:component-scan base-package="com.joyhong.api,com.joyhong.service" />
     
     <!-- 引入外部数据源配置信息 -->
     <context:property-placeholder location="classpath:jdbc.properties" />
