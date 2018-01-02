@@ -3,14 +3,14 @@
 <mapper namespace="com.joyhong.dao.DeviceMapper">
   <resultMap id="BaseResultMap" type="com.joyhong.model.Device">
     <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="device_id" jdbcType="VARCHAR" property="deviceId" />
+    <result column="device_token" jdbcType="VARCHAR" property="deviceToken" />
     <result column="device_fcm_token" jdbcType="VARCHAR" property="deviceFcmToken" />
     <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
     <result column="modify_date" jdbcType="TIMESTAMP" property="modifyDate" />
     <result column="deleted" jdbcType="INTEGER" property="deleted" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, device_id, device_fcm_token, create_date, modify_date, deleted
+    id, device_token, device_fcm_token, create_date, modify_date, deleted
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -19,17 +19,17 @@
     where id = #{id,jdbcType=INTEGER}
   </select>
   <!-- Michael.Miao -->
-  <select id="selectByDeviceId" parameterType="java.lang.String" resultMap="BaseResultMap">
+  <select id="selectByDeviceToken" parameterType="java.lang.String" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from device
-    where device_id = #{deviceId,jdbcType=VARCHAR}
+    where device_token = #{deviceToken,jdbcType=VARCHAR}
   </select>
-  <select id="selectLikeDeviceId" parameterType="java.lang.String" resultMap="BaseResultMap">
+  <select id="selectLikeDeviceToken" parameterType="java.lang.String" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from device
-    where device_id like #{deviceId,jdbcType=VARCHAR}
+    where device_token like #{deviceToken,jdbcType=VARCHAR}
   </select>
   <!-- Michael.Miao -->
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
@@ -37,10 +37,10 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.joyhong.model.Device">
-    insert into device (id, device_id, device_fcm_token, 
+    insert into device (id, device_token, device_fcm_token, 
       create_date, modify_date, deleted
       )
-    values (#{id,jdbcType=INTEGER}, #{deviceId,jdbcType=VARCHAR}, #{deviceFcmToken,jdbcType=VARCHAR}, 
+    values (#{id,jdbcType=INTEGER}, #{deviceToken,jdbcType=VARCHAR}, #{deviceFcmToken,jdbcType=VARCHAR}, 
       #{createDate,jdbcType=TIMESTAMP}, #{modifyDate,jdbcType=TIMESTAMP}, #{deleted,jdbcType=INTEGER}
       )
   </insert>
@@ -50,8 +50,8 @@
       <if test="id != null">
         id,
       </if>
-      <if test="deviceId != null">
-        device_id,
+      <if test="deviceToken != null">
+        device_token,
       </if>
       <if test="deviceFcmToken != null">
         device_fcm_token,
@@ -70,8 +70,8 @@
       <if test="id != null">
         #{id,jdbcType=INTEGER},
       </if>
-      <if test="deviceId != null">
-        #{deviceId,jdbcType=VARCHAR},
+      <if test="deviceToken != null">
+        #{deviceToken,jdbcType=VARCHAR},
       </if>
       <if test="deviceFcmToken != null">
         #{deviceFcmToken,jdbcType=VARCHAR},
@@ -90,8 +90,8 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.joyhong.model.Device">
     update device
     <set>
-      <if test="deviceId != null">
-        device_id = #{deviceId,jdbcType=VARCHAR},
+      <if test="deviceToken != null">
+        device_token = #{deviceToken,jdbcType=VARCHAR},
       </if>
       <if test="deviceFcmToken != null">
         device_fcm_token = #{deviceFcmToken,jdbcType=VARCHAR},
@@ -110,7 +110,7 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.joyhong.model.Device">
     update device
-    set device_id = #{deviceId,jdbcType=VARCHAR},
+    set device_token = #{deviceToken,jdbcType=VARCHAR},
       device_fcm_token = #{deviceFcmToken,jdbcType=VARCHAR},
       create_date = #{createDate,jdbcType=TIMESTAMP},
       modify_date = #{modifyDate,jdbcType=TIMESTAMP},

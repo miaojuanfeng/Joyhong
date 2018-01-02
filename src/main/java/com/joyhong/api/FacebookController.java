@@ -144,8 +144,8 @@ public class FacebookController {
 					}else{
 						String[] msg = msgStr.split(":", 2);
 						if( msg[0].equals("bindDevice") && msg[1] != null ){
-		        			String device_id = msg[1];
-		        			Device device = deviceService.selectByDeviceId(device_id);
+		        			String device_token = msg[1];
+		        			Device device = deviceService.selectByDeviceToken(device_token);
 		        			if( device != null ){
 		        				Integer user_id = this.insertUserIfNotExist(json_obj);
 		        				insertUserDeviceAfterDelete(user_id, device.getId());

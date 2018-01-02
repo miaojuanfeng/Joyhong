@@ -5,7 +5,7 @@ import java.util.Date;
 public class Device {
     private Integer id;
 
-    private String deviceId;
+    private String deviceToken;
 
     private String deviceFcmToken;
 
@@ -23,12 +23,12 @@ public class Device {
         this.id = id;
     }
 
-    public String getDeviceId() {
-        return deviceId;
+    public String getDeviceToken() {
+        return deviceToken;
     }
 
-    public void setDeviceId(String deviceId) {
-        this.deviceId = deviceId == null ? null : deviceId.trim();
+    public void setDeviceToken(String deviceToken) {
+        this.deviceToken = deviceToken == null ? null : deviceToken.trim();
     }
 
     public String getDeviceFcmToken() {

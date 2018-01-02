@@ -53,7 +53,7 @@ public class UserController {
 			if( device != null){
 				JSONObject uTemp = new JSONObject();
 				uTemp.put("id", device.getId());
-				uTemp.put("device_id", device.getDeviceId());
+				uTemp.put("device_token", device.getDeviceToken());
 				uTemp.put("device_fcm_token", device.getDeviceFcmToken());
 				uTemp.put("create_date", device.getCreateDate().getTime());
 				uTemp.put("modify_date", device.getModifyDate().getTime());

@@ -44,29 +44,29 @@ public class DeviceController {
 	/**
 	 * 注册device id与fcm token
 	 * @url {base_url}/device/signin
-	 * @param device_id
+	 * @param device_token
 	 * @param device_fcm_token
 	 * @return json
 	 */
 	@RequestMapping(value="/signin", method=RequestMethod.POST)
 	@ResponseBody
-	public String signin(@RequestParam("device_id") String device_id, @RequestParam("device_fcm_token") String device_fcm_token){
+	public String signin(@RequestParam("device_token") String device_token, @RequestParam("device_fcm_token") String device_fcm_token){
 		JSONObject retval = new JSONObject();
 		
 		Device device = new Device();
-		device.setDeviceId(device_id);
+		device.setDeviceToken(device_token);
 		device.setDeviceFcmToken(device_fcm_token);
 		device.setCreateDate(new Date());
 		device.setModifyDate(new Date());
 		device.setDeleted(0);
 		
-		Device exist_device = this.deviceService.selectByDeviceId(device_id);
+		Device exist_device = this.deviceService.selectByDeviceToken(device_token);
 		if( exist_device == null ){
 			if( this.deviceService.insert(device) == 1 ){
 				retval.put("status", true);
 			}else{
 				retval.put("status", false);
-				logger.info("Save device to database failed: " + device_id + " - " + device_fcm_token);
+				logger.info("Save device to database failed: " + device_token + " - " + device_fcm_token);
 			}
 		}else{
 			device.setId(exist_device.getId());
@@ -75,7 +75,7 @@ public class DeviceController {
 				retval.put("status", true);
 			}else{
 				retval.put("status", false);
-				logger.info("Update device to database failed: " + device_id + " - " + device_fcm_token);
+				logger.info("Update device to database failed: " + device_token + " - " + device_fcm_token);
 			}
 		}
 		
@@ -83,9 +83,9 @@ public class DeviceController {
 	}
 	
 	/**
-	 * 查询device id绑定的所有用户信息
+	 * 查询device token绑定的所有用户信息
 	 * @url {base_url}/device/device_user
-	 * @param device_id
+	 * @param device_token
 	 * @return json
 	 */
 	@RequestMapping(value="/device_user", method=RequestMethod.POST)
@@ -93,7 +93,7 @@ public class DeviceController {
 	public String device_user(@RequestParam("device_id") String device_id){
 		JSONObject retval = new JSONObject();
 		
-		Device device = deviceService.selectByDeviceId(device_id);
+		Device device = deviceService.selectByDeviceToken(device_id);
 		if( device != null ){
 			List<UserDevice> userDevice = userDeviceService.selectByDeviceId(device.getId());
 			JSONArray temp = new JSONArray();
@@ -130,21 +130,21 @@ public class DeviceController {
 	/**
 	 * 根据设备号搜索设备
 	 * @url {base_url}/device/search
-	 * @param device_id
+	 * @param device_token
 	 * @return json
 	 */
 	@RequestMapping(value="/search", method=RequestMethod.POST)
 	@ResponseBody
-	public String search(@RequestParam("device_id") String device_id){
+	public String search(@RequestParam("device_token") String device_token){
 		JSONObject retval = new JSONObject();
 		
-		List<Device> device = deviceService.selectLikeDeviceId(device_id);
+		List<Device> device = deviceService.selectLikeDeviceToken(device_token);
 		
 		JSONArray array = new JSONArray();
 		for( Device d : device ){
 			JSONObject temp = new JSONObject();
 			temp.put("id", d.getId());
-			temp.put("device_id", d.getDeviceId());
+			temp.put("device_token", d.getDeviceToken());
 			temp.put("device_fcm_token", d.getDeviceFcmToken());
 			temp.put("create_date", d.getCreateDate().getTime());
 			temp.put("modify_date", d.getModifyDate().getTime());
@@ -160,14 +160,15 @@ public class DeviceController {
 	/**
 	 * 改变用户和设备的绑定状态
 	 * @url {base_url}/device/status
+	 * @method POST
 	 * @param user_id
 	 * @param device_id
-	 * @param status
+	 * @param status，3种状态，unbind：app端解除绑定，lock：设备端锁定，delete：设备端删除
 	 * @return json
 	 */
 	@RequestMapping(value="/status", method=RequestMethod.POST)
 	@ResponseBody
-	public String status(@RequestParam("user_id") String user_id, @RequestParam("device_id") String device_id, @RequestParam("status") String status){
+	public String status(@RequestParam("user_id") Integer user_id, @RequestParam("device_id") Integer device_id, @RequestParam("status") String status){
 		JSONObject retval = new JSONObject();
 		
 		retval.put("status", true);

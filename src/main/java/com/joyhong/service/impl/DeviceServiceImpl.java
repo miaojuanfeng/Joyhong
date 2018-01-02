@@ -45,14 +45,14 @@ public class DeviceServiceImpl implements DeviceService {
 		return deviceMapper.updateByPrimaryKey(record);
 	}
 
-	public Device selectByDeviceId(String device_id) {
+	public Device selectByDeviceToken(String device_token) {
 		// TODO Auto-generated method stub
-		return deviceMapper.selectByDeviceId(device_id);
+		return deviceMapper.selectByDeviceToken(device_token);
 	}
 	
-	public List<Device> selectLikeDeviceId(String device_id) {
+	public List<Device> selectLikeDeviceToken(String device_token) {
 		// TODO Auto-generated method stub
-		return deviceMapper.selectLikeDeviceId("%"+device_id+"%"); 
+		return deviceMapper.selectLikeDeviceToken("%"+device_token+"%"); 
 	}
 
 }

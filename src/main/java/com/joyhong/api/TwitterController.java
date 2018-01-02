@@ -313,8 +313,8 @@ public class TwitterController {
         	if( message.getText() != "" ){
         		String[] msg = message.getText().split(":", 2);
         		if( msg[0].equals("bindDevice") && msg[1] != null ){
-        			String device_id = msg[1];
-        			Device device = deviceService.selectByDeviceId(device_id);
+        			String device_token = msg[1];
+        			Device device = deviceService.selectByDeviceToken(device_token);
         			init();
         			if( device != null ){
         				Integer user_id = this.insertUserIfNotExist(message);

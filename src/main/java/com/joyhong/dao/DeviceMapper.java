@@ -13,9 +13,9 @@ public interface DeviceMapper {
 
     Device selectByPrimaryKey(Integer id);
     
-    Device selectByDeviceId(String device_id);
+    Device selectByDeviceToken(String device_token);
     
-    List<Device> selectLikeDeviceId(String device_id);
+    List<Device> selectLikeDeviceToken(String device_token);
 
     int updateByPrimaryKeySelective(Device record);
 
