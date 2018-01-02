@@ -64,6 +64,7 @@ public class DeviceController {
 		if( exist_device == null ){
 			if( this.deviceService.insert(device) == 1 ){
 				retval.put("status", true);
+				retval.put("msg", "Success");
 			}else{
 				retval.put("status", false);
 				logger.info("Save device to database failed: " + device_token + " - " + device_fcm_token);
@@ -73,6 +74,7 @@ public class DeviceController {
 			device.setCreateDate(exist_device.getCreateDate());
 			if( this.deviceService.updateByPrimaryKey(device) == 1 ){
 				retval.put("status", true);
+				retval.put("msg", "Success");
 			}else{
 				retval.put("status", false);
 				logger.info("Update device to database failed: " + device_token + " - " + device_fcm_token);
@@ -186,6 +188,7 @@ public class DeviceController {
 				User user = userService.selectByPrimaryKey(user_device.getUserId());
 				if( user != null ){
 					user.setAccepted("0");
+					user.setModifyDate(new Date());
 					if( userService.updateByPrimaryKey(user) == 1 ){
 						retval.put("status", true);
 						retval.put("msg", "Success");
@@ -208,6 +211,7 @@ public class DeviceController {
 				User user = userService.selectByPrimaryKey(user_device.getUserId());
 				if( user != null ){
 					user.setAccepted("1");
+					user.setModifyDate(new Date());
 					if( userService.updateByPrimaryKey(user) == 1 ){
 						retval.put("status", true);
 						retval.put("msg", "Success");

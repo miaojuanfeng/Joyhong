@@ -157,6 +157,38 @@ public class UserController {
 	}
 	
 	/**
+	 * 更新账号信息
+	 * @url {base_url}/user/update_profile
+	 * @method POST
+	 * @param user_id
+	 * @param user_nickname
+	 * @return json
+	 */
+	@RequestMapping(value="/update_profile", method=RequestMethod.POST)
+	@ResponseBody
+	public String update_profile(@RequestParam("user_id") Integer user_id, @RequestParam("user_nickname") String user_nickname){
+		JSONObject retval = new JSONObject();
+		
+		User user = userService.selectByPrimaryKey(user_id);
+		if( user != null ){
+			user.setNickname(user_nickname);
+			user.setModifyDate(new Date());
+			if( userService.updateByPrimaryKey(user) == 1 ){
+				retval.put("status", true);
+				retval.put("msg", "Success");
+			}else{
+				retval.put("status", false);
+				retval.put("msg", "Update user profile failed, please try again later");
+			}
+		}else{
+			retval.put("status", false);
+			retval.put("msg", "Unable to find the user");
+		}
+		
+		return retval.toString();
+	}
+	
+	/**
 	 * 计算user token
 	 * @param user
 	 * @return String
