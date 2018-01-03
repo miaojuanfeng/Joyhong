@@ -67,7 +67,7 @@ public class UserDeviceServiceImpl implements UserDeviceService{
 
 	public int updateByPrimaryKey(UserDevice record) {
 		// TODO Auto-generated method stub
-		return 0;
+		return userDeviceMapper.updateByPrimaryKey(record);
 	}
 
 }

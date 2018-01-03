@@ -8,8 +8,10 @@ public class UserDevice {
     private Integer userId;
 
     private Integer deviceId;
+    
+    private String deviceName;
 
-    private Date createDate;
+	private Date createDate;
 
     private Date modifyDate;
 
@@ -38,6 +40,14 @@ public class UserDevice {
     public void setDeviceId(Integer deviceId) {
         this.deviceId = deviceId;
     }
+    
+    public String getDeviceName() {
+		return deviceName;
+	}
+
+	public void setDeviceName(String deviceName) {
+		this.deviceName = deviceName;
+	}
 
     public Date getCreateDate() {
         return createDate;

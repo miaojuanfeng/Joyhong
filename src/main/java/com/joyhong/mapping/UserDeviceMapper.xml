@@ -5,12 +5,13 @@
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="user_id" jdbcType="INTEGER" property="userId" />
     <result column="device_id" jdbcType="INTEGER" property="deviceId" />
+    <result column="device_name" jdbcType="VARCHAR" property="deviceName" />
     <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
     <result column="modify_date" jdbcType="TIMESTAMP" property="modifyDate" />
     <result column="deleted" jdbcType="INTEGER" property="deleted" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, user_id, device_id, create_date, modify_date, deleted
+    id, user_id, device_id, device_name, create_date, modify_date, deleted
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -49,10 +50,10 @@
     where user_id = #{0} and device_id = #{1}
   </delete>
   <insert id="insert" parameterType="com.joyhong.model.UserDevice">
-    insert into z_user_device (id, user_id, device_id, 
+    insert into z_user_device (id, user_id, device_id, device_name,
       create_date, modify_date, deleted
       )
-    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{deviceId,jdbcType=INTEGER}, 
+    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{deviceId,jdbcType=INTEGER}, #{deviceName,jdbcType=VARCHAR},
       #{createDate,jdbcType=TIMESTAMP}, #{modifyDate,jdbcType=TIMESTAMP}, #{deleted,jdbcType=INTEGER}
       )
   </insert>
@@ -67,6 +68,9 @@
       </if>
       <if test="deviceId != null">
         device_id,
+      </if>
+      <if test="deviceName != null">
+        device_name,
       </if>
       <if test="createDate != null">
         create_date,
@@ -88,6 +92,9 @@
       <if test="deviceId != null">
         #{deviceId,jdbcType=INTEGER},
       </if>
+      <if test="deviceName != null">
+        #{deviceName,jdbcType=VARCHAR},
+      </if>
       <if test="createDate != null">
         #{createDate,jdbcType=TIMESTAMP},
       </if>
@@ -108,6 +115,9 @@
       <if test="deviceId != null">
         device_id = #{deviceId,jdbcType=INTEGER},
       </if>
+      <if test="deviceName != null">
+        device_name = #{deviceName,jdbcType=VARCHAR},
+      </if>
       <if test="createDate != null">
         create_date = #{createDate,jdbcType=TIMESTAMP},
       </if>
@@ -124,6 +134,7 @@
     update z_user_device
     set user_id = #{userId,jdbcType=INTEGER},
       device_id = #{deviceId,jdbcType=INTEGER},
+      device_name = #{deviceName,jdbcType=VARCHAR},
       create_date = #{createDate,jdbcType=TIMESTAMP},
       modify_date = #{modifyDate,jdbcType=TIMESTAMP},
       deleted = #{deleted,jdbcType=INTEGER}

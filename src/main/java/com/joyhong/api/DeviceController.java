@@ -269,6 +269,7 @@ public class DeviceController {
 						UserDevice ud = new UserDevice();
 						ud.setUserId(user_id);
 						ud.setDeviceId(device.getId());
+						ud.setDeviceName("");
 						ud.setCreateDate(new Date());
 						ud.setModifyDate(new Date());
 						ud.setDeleted(0);
@@ -293,6 +294,53 @@ public class DeviceController {
 		}else{
 			retval.put("status", false);
 			retval.put("msg", "Unable to find the user");
+		}
+		
+		return retval.toString();
+	}
+	
+	/**
+	 * 重命名多个设备名称
+	 * @url {base_url}/device/rename
+	 * @method POST
+	 * @param Integer user_id
+	 * @param List<Integer> device_id
+	 * @param List<String> device_name
+	 * @return
+	 */
+	@RequestMapping(value="/rename", method=RequestMethod.POST)
+	@ResponseBody
+	public String rename(@RequestParam("user_id") Integer user_id, @RequestParam("device_id") List<Integer> device_id, @RequestParam("device_name") List<String> device_name){
+		JSONObject retval = new JSONObject();
+		
+		if( device_id.size() == device_name.size() ){
+		
+			JSONObject temp = new JSONObject();
+			JSONArray successful = new JSONArray();
+			JSONArray failed = new JSONArray();
+			
+			Integer i = 0;
+			for( i = 0; i < device_id.size(); i++ ){
+				UserDevice ud = userDeviceService.selectByUserIdAndDeviceId(user_id, device_id.get(i));
+				if( ud != null ){
+					ud.setDeviceName(device_name.get(i));
+					if( userDeviceService.updateByPrimaryKey(ud) == 1 ){
+						successful.add(device_name.get(i));
+					}else{
+						failed.add(device_name.get(i));
+					}
+				}else{
+					failed.add(device_name.get(i));
+				}
+			}
+			temp.put("successful", successful);
+			temp.put("failed", failed);
+			
+			retval.put("status", true);
+			retval.put("data", temp);
+		}else{
+			retval.put("status", false);
+			retval.put("msg", "The device_id count should be equal to the device_name count.");
 		}
 		
 		return retval.toString();

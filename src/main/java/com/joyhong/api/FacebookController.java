@@ -216,6 +216,7 @@ public class FacebookController {
 		UserDevice userDevice = new UserDevice();
 		userDevice.setUserId(userId);
 		userDevice.setDeviceId(deviceId);
+		userDevice.setDeviceName("");
 		userDevice.setCreateDate(new Date());
 		userDevice.setModifyDate(new Date());
 		userDevice.setDeleted(0);
