@@ -91,8 +91,8 @@
 
 
 
-
-		<%-- <div class="content-area">
+	<c:if test="${router == 'insert' || router == 'update'}">
+		<div class="content-area">
 
 			<div class="container-fluid">
 				<div class="row">
@@ -280,8 +280,8 @@
 
 
 
-		</div> --%>
-		
+		</div>
+	</c:if>	
 
 		
 
@@ -326,7 +326,7 @@
 
 
 
-
+	<c:if test="${router == 'select'}">
 		<div class="content-area">
 
 			<div class="container-fluid">
@@ -401,7 +401,7 @@
 												</th>
 												<th width="40"></th>
 												<th width="40" class="text-right">
-													<a href="<?=base_url('cms/device/insert')?>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Insert">
+													<a href="<%=request.getContextPath() %>/cms/device/insert" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Insert">
 														<i class="glyphicon glyphicon-plus"></i>
 													</a>
 												</th>
@@ -414,7 +414,7 @@
 												<td class="expandable"><fmt:formatDate  value="${item.createDate}"  pattern="yyyy-MM-dd" /></td>
 												<td class="expandable"><fmt:formatDate  value="${item.modifyDate}"  pattern="yyyy-MM-dd" /></td>
 												<td class="text-right">
-													<a href="<?=base_url('cms/device/update/device_id/'.$value->device_id)?>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Update">
+													<a href="<%=request.getContextPath() %>/cms/device/update/${item.id}" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Update">
 														<i class="glyphicon glyphicon-pencil"></i>
 													</a>
 												</td>
@@ -464,7 +464,7 @@
 			</div>
 
 		</div>
-
+	</c:if>
 
 
 

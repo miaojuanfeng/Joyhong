@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
+import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,7 +27,33 @@ public class DeviceCtrl {
 	@RequestMapping(value="/select", method=RequestMethod.GET)
 	public String select(Model model, HttpSession httpSession){
 		
-		if( !permission(model, httpSession) ){
+		if( !permission(model, httpSession, "select") ){
+			return "redirect:/cms/user/login";
+		}
+		
+		List<Device> device = deviceService.selectLikeDeviceToken("");
+		model.addAttribute("device", device);
+		
+		return "DeviceView";
+	}
+	
+	@RequestMapping(value="/insert", method={RequestMethod.GET,RequestMethod.POST})
+	public String insert(Model model, HttpSession httpSession){
+		
+		if( !permission(model, httpSession, "insert") ){
+			return "redirect:/cms/user/login";
+		}
+		
+		List<Device> device = deviceService.selectLikeDeviceToken("");
+		model.addAttribute("device", device);
+		
+		return "DeviceView";
+	}
+	
+	@RequestMapping(value="/update/{device_id}", method={RequestMethod.GET,RequestMethod.POST})
+	public String update(@PathParam("device_id") Integer device_id, Model model, HttpSession httpSession){
+		
+		if( !permission(model, httpSession, "update") ){
 			return "redirect:/cms/user/login";
 		}
 		
@@ -39,7 +66,7 @@ public class DeviceCtrl {
 	@RequestMapping(value="/delete", method=RequestMethod.POST)
 	public String delete(@RequestParam("device_id") Integer device_id, Model model, HttpSession httpSession){
 		
-		if( !permission(model, httpSession) ){
+		if( !permission(model, httpSession, "delete") ){
 			return "redirect:/cms/user/login";
 		}
 		
@@ -53,11 +80,12 @@ public class DeviceCtrl {
 		return "redirect:/cms/device/select";
 	}
 	
-	private boolean permission(Model model, HttpSession httpSession){
+	private boolean permission(Model model, HttpSession httpSession, String router){
 		User user = (User)httpSession.getAttribute("user");
 		if( user == null ){
 			return false;
 		}
+		model.addAttribute("router", router);
 		model.addAttribute("user_nickname", user.getNickname());
 		return true;
 	}
