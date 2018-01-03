@@ -17,7 +17,7 @@ public class DeviceServiceImpl implements DeviceService {
 
 	public int deleteByPrimaryKey(Integer id) {
 		// TODO Auto-generated method stub
-		return 0;
+		return deviceMapper.deleteByPrimaryKey(id);
 	}
 
 	public int insert(Device record) {
@@ -27,7 +27,7 @@ public class DeviceServiceImpl implements DeviceService {
 
 	public int insertSelective(Device record) {
 		// TODO Auto-generated method stub
-		return 0;
+		return deviceMapper.insertSelective(record);
 	}
 
 	public Device selectByPrimaryKey(Integer id) {
@@ -37,7 +37,7 @@ public class DeviceServiceImpl implements DeviceService {
 
 	public int updateByPrimaryKeySelective(Device record) {
 		// TODO Auto-generated method stub
-		return 0;
+		return deviceMapper.updateByPrimaryKeySelective(record);
 	}
 
 	public int updateByPrimaryKey(Device record) {

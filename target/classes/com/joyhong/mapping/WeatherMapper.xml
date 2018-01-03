@@ -29,7 +29,7 @@
     ,
     <include refid="Blob_Column_List" />
     from weather
-    where id = #{id,jdbcType=INTEGER}
+    where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </select>
   <!-- Michael.Miao -->
   <select id="selectByCityId" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
@@ -38,7 +38,7 @@
     ,
     <include refid="Blob_Column_List" />
     from weather
-    where city_id = #{city_id,jdbcType=INTEGER}
+    where deleted = 0 and city_id = #{city_id,jdbcType=INTEGER}
   </select>
   <select id="selectByCityName" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
     select 
@@ -46,7 +46,7 @@
     ,
     <include refid="Blob_Column_List" />
     from weather
-    where city_name = #{city_name,jdbcType=VARCHAR}
+    where deleted = 0 and city_name = #{city_name,jdbcType=VARCHAR}
   </select>
   <select id="selectByZipCode" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
     select 
@@ -54,12 +54,12 @@
     ,
     <include refid="Blob_Column_List" />
     from weather
-    where zip_code = #{zip_code,jdbcType=INTEGER}
+    where deleted = 0 and zip_code = #{zip_code,jdbcType=INTEGER}
   </select>
   <!-- Michael.Miao -->
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from weather
-    where id = #{id,jdbcType=INTEGER}
+    where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.joyhong.model.Weather">
     insert into weather (id, time, country, city_id, 
@@ -187,7 +187,7 @@
         data = #{data,jdbcType=LONGVARCHAR},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
+    where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.joyhong.model.Weather">
     update weather
@@ -202,7 +202,7 @@
       modify_date = #{modifyDate,jdbcType=TIMESTAMP},
       deleted = #{deleted,jdbcType=INTEGER},
       data = #{data,jdbcType=LONGVARCHAR}
-    where id = #{id,jdbcType=INTEGER}
+    where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.joyhong.model.Weather">
     update weather
@@ -217,6 +217,6 @@
       modify_date = #{modifyDate,jdbcType=TIMESTAMP},
       deleted = #{deleted,jdbcType=INTEGER},
       data = #{data,jdbcType=LONGVARCHAR}
-    where id = #{id,jdbcType=INTEGER}
+    where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

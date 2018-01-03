@@ -314,7 +314,6 @@ public class DeviceController {
 		JSONObject retval = new JSONObject();
 		
 		if( device_id.size() == device_name.size() ){
-		
 			JSONObject temp = new JSONObject();
 			JSONArray successful = new JSONArray();
 			JSONArray failed = new JSONArray();

@@ -127,7 +127,7 @@ textarea.form-control.alternate {
 /* show myself */
 .show-myself {
 	position: absolute;
-	top:56px;
+	top:50px;
 	right:15px;
 	z-index:1;
 }

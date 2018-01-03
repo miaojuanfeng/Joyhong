@@ -1,4 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -24,16 +25,11 @@
 		<script src="<%=request.getContextPath() %>/assets/js/jquery.validate.js"></script>
 		<script src="<%=request.getContextPath() %>/assets/js/additional-methods.min.js"></script>
 		<script src="<%=request.getContextPath() %>/assets/js/cms-function.js"></script>
-
-		<script>
-		$(function(){
-			$('#user_username').focus();
-		});
-		</script>
 	</head>
 
 	<body>
 		<div class="login-area">
+			<div class="error">${error}</div>
 			<div class="container-fluid">
 				<div class="row">
 					<div class="content-column-area col-sm-7 col-xs-12">
@@ -44,21 +40,11 @@
 									<tbody>
 										<tr>
 											<td><label for="user_username">Username</label></td>
-											<td><input type="text" id="user_username" name="user_username" class="form-control input-sm required" placeholder="Username" value="chuyan" /></td>
+											<td><input type="text" id="user_username" name="user_username" class="form-control input-sm required" placeholder="Username" value="${user_username}" /></td>
 										</tr>
 										<tr>
 											<td><label for="user_password">Password</label></td>
-											<td><input type="password" id="user_password" name="user_password" class="form-control input-sm required" placeholder="Password" value="chuyan" /></td>
-										</tr>
-										<tr>
-											<!--td><label for="code">Sec. code</label></td>
-											<td><input type="password" id="code" name="code" class="form-control input-sm" placeholder="Code" /></td-->
-											<td><label for="code">Country</label></td>
-											<td>
-												<select id="user_country" name="user_country" data-placeholder="country" class="chosen-select">
-													
-												</select>
-											</td>
+											<td><input type="password" id="user_password" name="user_password" class="form-control input-sm required" placeholder="Password" value="${user_password}" /></td>
 										</tr>
 										<tr>
 											<td></td>
@@ -71,7 +57,7 @@
 					</div>
 					<div class="content-column-area col-sm-5 col-xs-12">
 						<div class="fieldset right">
-							<p>Please use IE9.0 version or later / Firefox, Chrome and Safari 2015-01-01 version or later</p>
+							<p>Please use IE9.0 version or later / Firefox, Chrome, Safari 2015-01-01 version or later</p>
 							<p>Javascript is required</p>
 						</div>
 					</div>
