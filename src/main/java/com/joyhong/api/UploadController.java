@@ -3,13 +3,18 @@ package com.joyhong.api;
 import java.io.File;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.joyhong.model.Upload;
+import com.joyhong.service.UploadService;
 
 import net.sf.json.JSONObject;
 
@@ -21,8 +26,12 @@ import net.sf.json.JSONObject;
 @Controller
 public class UploadController {
 	
-	private String tempPath = "/Users/user/Desktop/";
-	private String filePath = "/Users/user/Desktop/";
+	@Autowired
+	private UploadService uploadService;
+	
+	private String tempPath = "/home/wwwroot/default/upload/";
+	private String filePath = "/home/wwwroot/default/upload/";
+	private String fileUrl = "http://47.89.32.89/upload/";
 	
 	/**
 	 * 上传文件
@@ -155,11 +164,52 @@ public class UploadController {
         
 		JSONObject temp = new JSONObject();
 		if( end == endPoint ){
-			String error = renameFile(tempPath, fileName+".temp", fileName);
+			/*
+    		 * 获取用户id
+    		 */
+    		String userId = request.getHeader("User-Id");
+    		int user_id = 0;
+    		if( null != userId ){
+    			try{
+    				user_id = Integer.parseInt(userId);
+    			}catch(Exception e){
+    				retval.put("status", false);
+    				retval.put("msg", "User-Id property format error");
+    				return retval.toString();
+    			}
+    		}else{
+    			retval.put("status", false);
+    			retval.put("msg", "User-Id property is not set");
+    			return retval.toString();
+    		}
+    		/*
+    		 * 获取文件描述
+    		 */
+    		String fileDesc = request.getHeader("File-Desc");
+    		String file_desc = "";
+    		if( null != fileDesc ){
+    			file_desc = fileDesc;
+    		}
+    		/*
+    		 * 写入完成，重命名文件
+    		 */
+			String error = renameFile(tempPath, filePath, fileName+".temp", fileName);
 			if( error == null ){
-				retval.put("status", true);
-				temp.put("complete", true);
-				temp.put("file", filePath+fileName);
+				Upload upload = new Upload();
+				upload.setUserId(user_id);
+				upload.setDescription(file_desc);
+				upload.setUrl(fileUrl+fileName);
+				upload.setCreateDate(new Date());
+				upload.setModifyDate(new Date());
+				upload.setDeleted(0);
+				if( uploadService.insert(upload) == 1 ){
+					retval.put("status", true);
+					temp.put("complete", true);
+					temp.put("file", fileUrl + fileName);
+				}else{
+					retval.put("status", false);
+					retval.put("msg", "Save file url to database failed, please try again later");
+				}
 			}else{
 				retval.put("status", false);
 				retval.put("msg", error);
@@ -183,15 +233,15 @@ public class UploadController {
 	 * @param newname
 	 * @return
 	 */
-	private String renameFile(String path, String oldname, String newname){
+	private String renameFile(String oldPath, String newPath, String oldname, String newname){
 		
-        File oldfile = new File(path+"/"+oldname); 
-        File newfile = new File(path+"/"+newname); 
+        File oldfile = new File(oldPath + "/" + oldname); 
+        File newfile = new File(newPath + "/" + newname); 
         if( !oldfile.exists() ){
-            return "Temp file not exists";//重命名文件不存在
+            return oldname + " not exists";//重命名文件不存在
         }
         if( newfile.exists() ){//若在该目录下已经有一个文件和新文件名相同，则不允许重命名 
-            return newname + "already exists"; 
+            return newname + " already exists"; 
         }else{ 
             oldfile.renameTo(newfile); 
         } 

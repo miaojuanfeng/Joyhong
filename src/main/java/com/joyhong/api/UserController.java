@@ -3,8 +3,6 @@ package com.joyhong.api;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +29,7 @@ import net.sf.json.JSONObject;
 @RequestMapping("/user")
 public class UserController {
 	
-	private Logger logger = Logger.getLogger(this.getClass());
+//	private Logger logger = Logger.getLogger(this.getClass());
 	
 	@Autowired
 	private UserDeviceService userDeviceService;
@@ -50,19 +48,62 @@ public class UserController {
 	 * @param password
 	 * @return json
 	 */
-	@RequestMapping(value="/signup", method=RequestMethod.POST)
+//	@RequestMapping(value="/signup", method=RequestMethod.POST)
+//	@ResponseBody
+//	public String signup(@RequestParam("username") String username, @RequestParam("password") String password){
+//		JSONObject retval = new JSONObject();
+//		
+//		User user = userService.selectByUsername(username);
+//		if( user == null ){
+//			password = DigestUtils.md5Hex(password);
+//	        
+//			user = new User();
+//			user.setUsername(username);
+//			user.setPassword(password);
+//			user.setNickname(username);
+//			user.setProfileImage("");
+//			user.setPlatform("app");
+//			user.setAccepted("1");
+//			user.setCreateDate(new Date());
+//			user.setModifyDate(new Date());
+//			user.setDeleted(0);
+//			if( userService.insert(user) == 1 ){
+//				JSONObject uJson = new JSONObject();
+//				uJson.put("user_id", user.getId());
+//				uJson.put("user_token", get_user_token(user));
+//				
+//				retval.put("status", true);
+//				retval.put("data", uJson);
+//			}else{
+//				retval.put("status", false);
+//				retval.put("msg", "User registration failed, please try again later");
+//			}
+//		}else{
+//			retval.put("status", false);
+//			retval.put("msg", "The username has been registered");
+//		}
+//		
+//		return retval.toString();
+//	}
+	
+	/**
+	 * App用户登录
+	 * @url {base_url}/user/signin
+	 * @method POST
+	 * @param user_imei
+	 * @return json
+	 */
+	@RequestMapping(value="/signin", method=RequestMethod.POST)
 	@ResponseBody
-	public String signup(@RequestParam("username") String username, @RequestParam("password") String password){
+	public String signin(@RequestParam("user_imei") String user_imei){
 		JSONObject retval = new JSONObject();
+		JSONObject uJson = new JSONObject();
 		
-		User user = userService.selectByUsername(username);
+		User user = userService.selectByUsername(user_imei);
 		if( user == null ){
-			password = DigestUtils.md5Hex(password);
-	        
 			user = new User();
-			user.setUsername(username);
-			user.setPassword(password);
-			user.setNickname(username);
+			user.setUsername(user_imei);
+			user.setNickname(user_imei);
 			user.setProfileImage("");
 			user.setPlatform("app");
 			user.setAccepted("1");
@@ -70,9 +111,7 @@ public class UserController {
 			user.setModifyDate(new Date());
 			user.setDeleted(0);
 			if( userService.insert(user) == 1 ){
-				JSONObject uJson = new JSONObject();
 				uJson.put("user_id", user.getId());
-				uJson.put("user_token", get_user_token(user));
 				
 				retval.put("status", true);
 				retval.put("data", uJson);
@@ -81,42 +120,10 @@ public class UserController {
 				retval.put("msg", "User registration failed, please try again later");
 			}
 		}else{
-			retval.put("status", false);
-			retval.put("msg", "The username has been registered");
-		}
-		
-		return retval.toString();
-	}
-	
-	/**
-	 * App用户登录
-	 * @url {base_url}/user/signin
-	 * @method POST
-	 * @param username
-	 * @param password
-	 * @return json
-	 */
-	@RequestMapping(value="/signin", method=RequestMethod.POST)
-	@ResponseBody
-	public String signin(@RequestParam("username") String username, @RequestParam("password") String password){
-		JSONObject retval = new JSONObject();
-		
-		User user = userService.selectByUsername(username);
-		if( user != null ){
-			if( DigestUtils.md5Hex(password).equals(user.getPassword()) ){
-				JSONObject uJson = new JSONObject();
-				uJson.put("user_id", user.getId());
-				uJson.put("user_token", get_user_token(user));
-				
-				retval.put("status", true);
-				retval.put("data", uJson);
-			}else{
-				retval.put("status", false);
-				retval.put("msg", "Incorrect user password");
-			}
-		}else{
-			retval.put("status", false);
-			retval.put("msg", "Unable to find the user");
+			uJson.put("user_id", user.getId());
+			
+			retval.put("status", true);
+			retval.put("data", uJson);
 		}
 		
 		return retval.toString();
@@ -130,31 +137,31 @@ public class UserController {
 	 * @param user_token
 	 * @return json
 	 */
-	@RequestMapping(value="/auto_signin", method=RequestMethod.POST)
-	@ResponseBody
-	public String auto_signin(@RequestParam("user_id") Integer user_id, @RequestParam("user_token") String user_token){
-		JSONObject retval = new JSONObject();
-		
-		User user = userService.selectByPrimaryKey(user_id);
-		if( user != null ){
-			if( get_user_token(user).equals(user_token) ){
-				JSONObject uJson = new JSONObject();
-				uJson.put("user_id", user.getId());
-				uJson.put("user_token", get_user_token(user));
-				
-				retval.put("status", true);
-				retval.put("data", uJson);
-			}else{
-				retval.put("status", false);
-				retval.put("msg", "Incorrect user token");
-			}
-		}else{
-			retval.put("status", false);
-			retval.put("msg", "Unable to find the user");
-		}
-		
-		return retval.toString();
-	}
+//	@RequestMapping(value="/auto_signin", method=RequestMethod.POST)
+//	@ResponseBody
+//	public String auto_signin(@RequestParam("user_id") Integer user_id, @RequestParam("user_token") String user_token){
+//		JSONObject retval = new JSONObject();
+//		
+//		User user = userService.selectByPrimaryKey(user_id);
+//		if( user != null ){
+//			if( get_user_token(user).equals(user_token) ){
+//				JSONObject uJson = new JSONObject();
+//				uJson.put("user_id", user.getId());
+//				uJson.put("user_token", get_user_token(user));
+//				
+//				retval.put("status", true);
+//				retval.put("data", uJson);
+//			}else{
+//				retval.put("status", false);
+//				retval.put("msg", "Incorrect user token");
+//			}
+//		}else{
+//			retval.put("status", false);
+//			retval.put("msg", "Unable to find the user");
+//		}
+//		
+//		return retval.toString();
+//	}
 	
 	/**
 	 * 更新账号信息
@@ -193,16 +200,16 @@ public class UserController {
 	 * @param user
 	 * @return String
 	 */
-	private String get_user_token(User user){
-		String user_id = String.valueOf(user.getId());
-		String user_name = user.getUsername();
-		String user_platform = user.getPlatform();
-		String random_key = "#N5$8cA&a*X";
-		
-		String user_token = user_platform + user_id + user_name + random_key;
-		
-		return DigestUtils.md5Hex(user_token);
-	}
+//	private String get_user_token(User user){
+//		String user_id = String.valueOf(user.getId());
+//		String user_name = user.getUsername();
+//		String user_platform = user.getPlatform();
+//		String random_key = "#N5$8cA&a*X";
+//		
+//		String user_token = user_platform + user_id + user_name + random_key;
+//		
+//		return DigestUtils.md5Hex(user_token);
+//	}
 	
 	/**
 	 * 获取用户绑定的设备列表

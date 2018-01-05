@@ -4,7 +4,6 @@
   <resultMap id="BaseResultMap" type="com.joyhong.model.User">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="username" jdbcType="VARCHAR" property="username" />
-    <result column="password" jdbcType="VARCHAR" property="password" />
     <result column="nickname" jdbcType="VARCHAR" property="nickname" />
     <result column="profile_image" jdbcType="VARCHAR" property="profileImage" />
     <result column="platform" jdbcType="CHAR" property="platform" />
@@ -14,7 +13,7 @@
     <result column="deleted" jdbcType="INTEGER" property="deleted" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, username, password, nickname, profile_image, platform, accepted, create_date, 
+    id, username, nickname, profile_image, platform, accepted, create_date, 
     modify_date, deleted
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -34,11 +33,11 @@
     where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.joyhong.model.User" useGeneratedKeys="true" keyProperty="id">
-    insert into jh_user (id, username, password, 
+    insert into jh_user (id, username, 
       nickname, profile_image, platform, 
       accepted, create_date, modify_date, 
       deleted)
-    values (#{id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+    values (#{id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, 
       #{nickname,jdbcType=VARCHAR}, #{profileImage,jdbcType=VARCHAR}, #{platform,jdbcType=CHAR}, 
       #{accepted,jdbcType=CHAR}, #{createDate,jdbcType=TIMESTAMP}, #{modifyDate,jdbcType=TIMESTAMP}, 
       #{deleted,jdbcType=INTEGER})
@@ -51,9 +50,6 @@
       </if>
       <if test="username != null">
         username,
-      </if>
-      <if test="password != null">
-        password,
       </if>
       <if test="nickname != null">
         nickname,
@@ -84,9 +80,6 @@
       <if test="username != null">
         #{username,jdbcType=VARCHAR},
       </if>
-      <if test="password != null">
-        #{password,jdbcType=VARCHAR},
-      </if>
       <if test="nickname != null">
         #{nickname,jdbcType=VARCHAR},
       </if>
@@ -116,9 +109,6 @@
       <if test="username != null">
         username = #{username,jdbcType=VARCHAR},
       </if>
-      <if test="password != null">
-        password = #{password,jdbcType=VARCHAR},
-      </if>
       <if test="nickname != null">
         nickname = #{nickname,jdbcType=VARCHAR},
       </if>
@@ -146,7 +136,6 @@
   <update id="updateByPrimaryKey" parameterType="com.joyhong.model.User">
     update jh_user
     set username = #{username,jdbcType=VARCHAR},
-      password = #{password,jdbcType=VARCHAR},
       nickname = #{nickname,jdbcType=VARCHAR},
       profile_image = #{profileImage,jdbcType=VARCHAR},
       platform = #{platform,jdbcType=CHAR},

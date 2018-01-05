@@ -214,7 +214,6 @@ public class TwitterController {
 			if( user == null ){
 				user = new com.joyhong.model.User();
 				user.setUsername(String.valueOf(message.getSenderId()));
-				user.setPassword(String.valueOf(message.getSenderId()));
 				user.setNickname(message.getSenderScreenName());
 				user.setProfileImage(this.getUserProfile(message.getSenderId()));
 				user.setPlatform("twitter");

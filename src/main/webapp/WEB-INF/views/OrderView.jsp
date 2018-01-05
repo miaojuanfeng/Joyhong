@@ -107,151 +107,49 @@
 							<div class="fieldset">
 								<div class="row">
 									<div class="col-sm-4 col-xs-12 pull-right">
-										<h4 class="corpcolor-font">Basic information</h4>
-										<p class="form-group">
-											<label for="order_menu">Menu <span class="highlight">*</span></label>
-											<select id="z_order_menu_menu_id" name="z_order_menu_menu_id[]" data-placeholder="Menu" class="chosen-select required" multiple="multiple">
-												
-											</select>
-										</p>
-										<?php
-										if($this->router->fetch_method() == 'update'){
-											$order_photo_link = '/assets/uploads/order/'.$order->order_photo;
-											$order_photo = $_SERVER['DOCUMENT_ROOT'].'/minedition'.$order_photo_link;
-											if(file_exists($order_photo)){
-												echo '<h4 class="corpcolor-font">Order photo</h4>';
-												echo '<img class="box-bg" src="'.base_url($order_photo_link).'?'.time().'" />';
-											}
-											// $order_photos_link = '/assets/images/order_photos/'.$order->order_id.'/';
-											// foreach($order_photos as $key => $value){
-											// 	echo ($key == 0) ? '<h4 class="corpcolor-font">Photos</h4>' : '';
-											// 	echo '<div class="box-bg" id="box_'.$key.'" style="background-image:url('.$order_photos_link.$value.'?'.time().');">';
-											// 	echo '<div class="box-function-area">';
-											// 	echo '<div class="text-right">';
-											// 	echo '<input type="checkbox" id="'.$key.'" name="photos_remove[]" value="'.$value.'" />';
-											// 	echo '<a id="a_'.$key.'" onclick="check_photos_delete('.$key.');" class="btn btn-sm btn-primary" data-toggle="tooltip" title="åªé¤">';
-											// 	echo '<i class="glyphicon glyphicon-remove"></i>';
-											// 	echo '</a>';
-											// 	echo '</div>';
-											// 	echo '</div>';
-											// 	echo '</div>';
-											// }
-										}
-										?>
+										
 									</div>
 									<div class="col-sm-4 col-xs-12">
 										<h4 class="corpcolor-font">Basic information</h4>
 										<p class="form-group">
-											<label for="order_name">Name <span class="highlight">*</span></label>
-											<input id="order_name" name="order_name" type="text" class="form-control input-sm required" placeholder="Name" value="<?=$order->order_name?>" />
+											<label for="order_code">Order code <span class="highlight">*</span></label>
+											<input id="order_code" name="order_code" type="text" class="form-control input-sm required" placeholder="Order code" value="" maxlength="4" />
 										</p>
 										<p class="form-group">
-											<label for="order_author">Author <span class="highlight">*</span></label>
-											<select id="order_author" name="order_author" data-placeholder="author" class="chosen-select">
+											<label for="machine_code">Machine code <span class="highlight">*</span></label>
+											<!--  <select id="machine_code" name="machine_code" data-placeholder="Machine code" class="chosen-select">
 												<?php
 												foreach($author as $key => $value){
 													$selected = ($value->ai_id == $order->order_author) ? ' selected="selected"' : "" ;
 													echo '<option value="'.$value->ai_id.'"'.$selected.'>'.$value->ai_name.'</option>';
 												}
 												?>
-											</select>
+											</select> -->
+											<input id="machine_code" name="machine_code" type="text" class="form-control input-sm required" placeholder="Machine code" value="" maxlength="2" />
 										</p>
 										<p class="form-group">
-											<label for="order_illustrator">Illustrator <span class="highlight">*</span></label>
-											<select id="order_illustrator" name="order_illustrator" data-placeholder="illustrator" class="chosen-select">
+											<label for="dealer_code">Dealer code <span class="highlight">*</span></label>
+											<!-- <select id="order_illustrator" name="order_illustrator" data-placeholder="illustrator" class="chosen-select">
 												<?php
 												foreach($illustrator as $key => $value){
 													$selected = ($value->ai_id == $order->order_illustrator) ? ' selected="selected"' : "" ;
 													echo '<option value="'.$value->ai_id.'"'.$selected.'>'.$value->ai_name.'</option>';
 												}
 												?>
-											</select>
+											</select> -->
+											<input id="dealer_code" name="dealer_code" type="text" class="form-control input-sm required" placeholder="Dealer code" value="" maxlength="2" />
 										</p>
 										<p class="form-group">
-											<label for="order_isbn">ISBN <span class="highlight">*</span></label>
-											<input id="order_isbn" name="order_isbn" type="text" class="form-control input-sm required" placeholder="ISBN" value="<?=$order->order_isbn?>" />
+											<label for="hardware_code">Hardware code <span class="highlight">*</span></label>
+											<input id="hardware_code" name="hardware_code" type="text" class="form-control input-sm required" placeholder="Hardware code" value="" maxlength="2" />
 										</p>
 										<p class="form-group">
-											<label for="order_price">Price <span class="highlight">*</span></label>
-											<input id="order_price" name="order_price" type="text" class="form-control input-sm required" placeholder="Price" value="<?=$order->order_price?>" />
+											<label for="order_qty">Order qty <span class="highlight">*</span></label>
+											<input id="order_qty" name="order_qty" type="number" min="0" class="form-control input-sm required" placeholder="Order qty" value="" />
 										</p>
-										<p class="form-group">
-											<label for="order_pages">Pages <span class="highlight">*</span></label>
-											<input id="order_pages" name="order_pages" type="text" class="form-control input-sm required" placeholder="Pages" value="<?=$order->order_pages?>" />
-										</p>
-										<p class="form-group">
-											<label for="order_size">Size <span class="highlight">*</span></label>
-											<input id="order_size" name="order_size" type="text" class="form-control input-sm required" placeholder="Size" value="<?=$order->order_size?>" />
-										</p>
-										<p class="form-group">
-											<label for="order_shopping_cart">Shopping cart</label>
-											<input id="order_shopping_cart" name="order_shopping_cart" type="text" class="form-control input-sm" placeholder="Shopping cart" value="<?=$order->order_shopping_cart?>" />
-											<small>Please type the link with http://</small>
-										</p>
-										<p class="form-group">
-											<label for="order_sort">Sort</label>
-											<input id="order_sort" name="order_sort" type="text" class="form-control input-sm" placeholder="Size" value="<?=$order->order_sort?>" />
-										</p>
-										<p class="form-group">
-											<label for="order_hide">Hide?</label>
-											<select id="order_hide" name="order_hide" data-placeholder="Hide" class="chosen-select">
-												<option value="1" <?php if($order->order_hide == 1) echo "selected='selected'"; ?>>Y</option>
-												<option value="0" <?php if($order->order_hide == 0) echo "selected='selected'"; ?>>N</option>
-											</select>
-										</p>
-										<?php
-										if( $this->session->userdata('country_id') == 2 ){
-										?>
-										<p class="form-group">
-											<label for="order_sodia_code">Sodia code <span class="highlight">*</span></label>
-											<input id="order_sodia_code" name="order_sodia_code" type="text" class="form-control input-sm required" placeholder="Sodia code" value="<?=$order->order_sodia_code?>" />
-										</p>
-										<?php
-										}
-										?>
 									</div>
 									<div class="col-sm-4 col-xs-12">
-										<h4 class="corpcolor-font">Related information</h4>
-										<p class="form-group">
-											<?php if($this->router->fetch_method() == 'update'){ ?>
-											<label for="order_photo">Order cover <span class="highlight">(360px * 360px)</span></label>
-											<input id="order_photo" name="order_photo" type="file" accept="image/*" />
-											<?php }else{ ?>
-											<label for="order_photo">Order cover <span class="highlight">* (360px * 360px)</span></label>
-											<input id="order_photo" name="order_photo" type="file" accept="image/*" class="required" />
-											<?php } ?>
-										</p>
-										<p class="form-group">
-											<?php if($this->router->fetch_method() == 'update'){ ?>
-											<label for="order_cover">Order cover (High resolutions) <span class="highlight">!!!</span></label>
-											<input id="order_cover" name="order_cover" type="file" accept="image/*" />
-											<?php }else{ ?>
-											<label for="order_cover">Order cover (High resolutions) <span class="highlight">!!!</span></label>
-											<input id="order_cover" name="order_cover" type="file" accept="image/*" class="required" />
-											<?php } ?>
-										</p>
-										<p class="form-group">
-											<?php if($this->router->fetch_method() == 'update'){ ?>
-											<label for="order_file">Download file <span class="highlight">!!!</span></label>
-											<input id="order_file" name="order_file" type="file" accept="image/*" />
-											<?php }else{ ?>
-											<label for="order_file">Download file <span class="highlight">!!!</span></label>
-											<input id="order_file" name="order_file" type="file" accept="image/*" class="required" />
-											<?php } ?>
-										</p>
-										<p class="form-group">
-											<label>Flip order link <span class="highlight">!!!</span></label>
-											<input type="text" class="form-control input-sm" placeholder="Flip order link" />
-											<small>Please type the link with http://</small>
-										</p>
-										<p class="form-group">
-											<label for="order_info">Information</label>
-											<textarea id="order_info" name="order_info" class="form-control input-sm" placeholder="Information"><?=$order->order_info?></textarea>
-										</p>
-										<p class="form-group">
-											<label for="order_desc">Description</label>
-											<textarea id="order_desc" name="order_desc" class="form-control input-sm summernote" placeholder="Information"><?=$order->order_desc?></textarea>
-										</p>
+										
 									</div>
 								</div>
 

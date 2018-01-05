@@ -1,6 +1,4 @@
-		
-
-		<div class="header-area">
+<div class="header-area">
 
 			<h1 class="btn btn-primary btn-md"><i class="glyphicon glyphicon-check"></i>&nbsp;&nbsp;&nbsp;JoyHong CMS</h1>
 			<div class="shadow-area"></div>
@@ -39,5 +37,3 @@
 				<li><a href="<c:url value="/cms/user/logout"></c:url>">Logout: ${user_nickname}</a></li>
 			</ul>
 		</div>
-
-
