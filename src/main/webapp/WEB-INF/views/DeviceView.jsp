@@ -97,7 +97,7 @@
 			<div class="container-fluid">
 				<div class="row">
 
-					<h2 class="col-sm-12"><a href="<?=base_url('cms/device')?>">Device management</a> > <?=ucfirst($this->router->fetch_method())?> device</h2>
+					<h2 class="col-sm-12"><a href="<c:url value="/cms/device/select"></c:url>">Device management</a> > ${router} device</h2>
 
 					<div class="col-sm-12">
 						<form method="post" enctype="multipart/form-data">
@@ -111,16 +111,7 @@
 										<p class="form-group">
 											<label for="device_menu">Menu <span class="highlight">*</span></label>
 											<select id="z_device_menu_menu_id" name="z_device_menu_menu_id[]" data-placeholder="Menu" class="chosen-select required" multiple="multiple">
-												<?php
-												foreach($device_menu as $key => $value){
-													if(isset($z_device_menu_menu_ids) && is_array($z_device_menu_menu_ids) && in_array($value->menu_id, $z_device_menu_menu_ids)){
-														$selected = ' selected="selected"';
-													}else{
-														$selected = "";
-													}
-													echo '<option value="'.$value->menu_id.'"'.$selected.'>'.$value->menu_name.'</option>';
-												}
-												?>
+												
 											</select>
 										</p>
 										<?php

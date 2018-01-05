@@ -225,6 +225,7 @@ public class UserController {
 				uTemp.put("id", device.getId());
 				uTemp.put("device_token", device.getDeviceToken());
 				uTemp.put("device_fcm_token", device.getDeviceFcmToken());
+				uTemp.put("device_name", ud.getDeviceName());
 				uTemp.put("create_date", device.getCreateDate().getTime());
 				uTemp.put("modify_date", device.getModifyDate().getTime());
 				temp.add(uTemp);
