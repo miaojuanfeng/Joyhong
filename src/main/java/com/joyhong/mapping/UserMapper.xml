@@ -20,21 +20,21 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from user
+    from jh_user
     where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </select>
   <select id="selectByUsername" parameterType="java.lang.String" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from user
+    from jh_user
     where deleted = 0 and username = #{username,jdbcType=VARCHAR}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from user
+    delete from jh_user
     where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.joyhong.model.User" useGeneratedKeys="true" keyProperty="id">
-    insert into user (id, username, password, 
+    insert into jh_user (id, username, password, 
       nickname, profile_image, platform, 
       accepted, create_date, modify_date, 
       deleted)
@@ -44,7 +44,7 @@
       #{deleted,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.joyhong.model.User">
-    insert into user
+    insert into jh_user
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
@@ -111,7 +111,7 @@
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.joyhong.model.User">
-    update user
+    update jh_user
     <set>
       <if test="username != null">
         username = #{username,jdbcType=VARCHAR},
@@ -144,7 +144,7 @@
     where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.joyhong.model.User">
-    update user
+    update jh_user
     set username = #{username,jdbcType=VARCHAR},
       password = #{password,jdbcType=VARCHAR},
       nickname = #{nickname,jdbcType=VARCHAR},

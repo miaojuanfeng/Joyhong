@@ -15,29 +15,29 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from device
+    from jh_device
     where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </select>
   <!-- Michael.Miao -->
   <select id="selectByDeviceToken" parameterType="java.lang.String" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from device
+    from jh_device
     where deleted = 0 and device_token = #{deviceToken,jdbcType=VARCHAR}
   </select>
   <select id="selectLikeDeviceToken" parameterType="java.lang.String" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from device
+    from jh_device
     where deleted = 0 and device_token like #{deviceToken,jdbcType=VARCHAR}
   </select>
   <!-- Michael.Miao -->
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from device
+    delete from jh_device
     where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.joyhong.model.Device">
-    insert into device (id, device_token, device_fcm_token, 
+    insert into jh_device (id, device_token, device_fcm_token, 
       create_date, modify_date, deleted
       )
     values (#{id,jdbcType=INTEGER}, #{deviceToken,jdbcType=VARCHAR}, #{deviceFcmToken,jdbcType=VARCHAR}, 
@@ -45,7 +45,7 @@
       )
   </insert>
   <insert id="insertSelective" parameterType="com.joyhong.model.Device">
-    insert into device
+    insert into jh_device
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
@@ -88,7 +88,7 @@
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.joyhong.model.Device">
-    update device
+    update jh_device
     <set>
       <if test="deviceToken != null">
         device_token = #{deviceToken,jdbcType=VARCHAR},
@@ -109,7 +109,7 @@
     where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.joyhong.model.Device">
-    update device
+    update jh_device
     set device_token = #{deviceToken,jdbcType=VARCHAR},
       device_fcm_token = #{deviceFcmToken,jdbcType=VARCHAR},
       create_date = #{createDate,jdbcType=TIMESTAMP},

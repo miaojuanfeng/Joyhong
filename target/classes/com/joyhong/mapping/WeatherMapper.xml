@@ -28,7 +28,7 @@
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
-    from weather
+    from jh_weather
     where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </select>
   <!-- Michael.Miao -->
@@ -37,7 +37,7 @@
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
-    from weather
+    from jh_weather
     where deleted = 0 and city_id = #{city_id,jdbcType=INTEGER}
   </select>
   <select id="selectByCityName" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
@@ -45,7 +45,7 @@
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
-    from weather
+    from jh_weather
     where deleted = 0 and city_name = #{city_name,jdbcType=VARCHAR}
   </select>
   <select id="selectByZipCode" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
@@ -53,16 +53,16 @@
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
-    from weather
+    from jh_weather
     where deleted = 0 and zip_code = #{zip_code,jdbcType=INTEGER}
   </select>
   <!-- Michael.Miao -->
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from weather
+    delete from jh_weather
     where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.joyhong.model.Weather">
-    insert into weather (id, time, country, city_id, 
+    insert into jh_weather (id, time, country, city_id, 
       city_name, lon, lat, zip_code, 
       create_date, modify_date, deleted, 
       data)
@@ -72,7 +72,7 @@
       #{data,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.joyhong.model.Weather">
-    insert into weather
+    insert into jh_weather
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
@@ -151,7 +151,7 @@
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.joyhong.model.Weather">
-    update weather
+    update jh_weather
     <set>
       <if test="time != null">
         time = #{time,jdbcType=TIMESTAMP},
@@ -190,7 +190,7 @@
     where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.joyhong.model.Weather">
-    update weather
+    update jh_weather
     set time = #{time,jdbcType=TIMESTAMP},
       country = #{country,jdbcType=VARCHAR},
       city_id = #{cityId,jdbcType=INTEGER},
@@ -205,7 +205,7 @@
     where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.joyhong.model.Weather">
-    update weather
+    update jh_weather
     set time = #{time,jdbcType=TIMESTAMP},
       country = #{country,jdbcType=VARCHAR},
       city_id = #{cityId,jdbcType=INTEGER},

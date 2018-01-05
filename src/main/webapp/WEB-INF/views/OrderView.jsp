@@ -4,16 +4,16 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>Device management</title>
+		<title>Order management</title>
 
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<meta name="viewport" content="width=order-width, initial-scale=1, maximum-scale=1">
 
 		<%@ include file="inc/headArea.jsp" %>
 
 		<script>
 		$(function(){
-			$('input[name="device_id"]').focus();
+			$('input[name="order_id"]').focus();
 
 			/* pagination */
 			$('.pagination-area>a, .pagination-area>strong').addClass('btn btn-sm btn-primary');
@@ -22,7 +22,7 @@
 
 		function check_delete(id){
 			if(confirm("Confirm?")){
-				$('input[name="device_id"]').val(id);
+				$('input[name="order_id"]').val(id);
 				$('form[name="list"]').submit();
 			}else{
 				return false;
@@ -97,35 +97,35 @@
 			<div class="container-fluid">
 				<div class="row">
 
-					<h2 class="col-sm-12"><a href="<c:url value="/cms/device/select"></c:url>">Device management</a> > ${router} device</h2>
+					<h2 class="col-sm-12"><a href="<c:url value="/cms/order/select"></c:url>">Order management</a> > ${router} order</h2>
 
 					<div class="col-sm-12">
 						<form method="post" enctype="multipart/form-data">
-							<input type="hidden" name="device_id" value="<?=$device->device_id?>" />
-							<input type="hidden" name="device_country" value="<?=$this->session->userdata('country_id')?>" />
+							<input type="hidden" name="order_id" value="<?=$order->order_id?>" />
+							<input type="hidden" name="order_country" value="<?=$this->session->userdata('country_id')?>" />
 							<input type="hidden" name="referrer" value="<?=$this->agent->referrer()?>" />
 							<div class="fieldset">
 								<div class="row">
 									<div class="col-sm-4 col-xs-12 pull-right">
 										<h4 class="corpcolor-font">Basic information</h4>
 										<p class="form-group">
-											<label for="device_menu">Menu <span class="highlight">*</span></label>
-											<select id="z_device_menu_menu_id" name="z_device_menu_menu_id[]" data-placeholder="Menu" class="chosen-select required" multiple="multiple">
+											<label for="order_menu">Menu <span class="highlight">*</span></label>
+											<select id="z_order_menu_menu_id" name="z_order_menu_menu_id[]" data-placeholder="Menu" class="chosen-select required" multiple="multiple">
 												
 											</select>
 										</p>
 										<?php
 										if($this->router->fetch_method() == 'update'){
-											$device_photo_link = '/assets/uploads/device/'.$device->device_photo;
-											$device_photo = $_SERVER['DOCUMENT_ROOT'].'/minedition'.$device_photo_link;
-											if(file_exists($device_photo)){
-												echo '<h4 class="corpcolor-font">Device photo</h4>';
-												echo '<img class="box-bg" src="'.base_url($device_photo_link).'?'.time().'" />';
+											$order_photo_link = '/assets/uploads/order/'.$order->order_photo;
+											$order_photo = $_SERVER['DOCUMENT_ROOT'].'/minedition'.$order_photo_link;
+											if(file_exists($order_photo)){
+												echo '<h4 class="corpcolor-font">Order photo</h4>';
+												echo '<img class="box-bg" src="'.base_url($order_photo_link).'?'.time().'" />';
 											}
-											// $device_photos_link = '/assets/images/device_photos/'.$device->device_id.'/';
-											// foreach($device_photos as $key => $value){
+											// $order_photos_link = '/assets/images/order_photos/'.$order->order_id.'/';
+											// foreach($order_photos as $key => $value){
 											// 	echo ($key == 0) ? '<h4 class="corpcolor-font">Photos</h4>' : '';
-											// 	echo '<div class="box-bg" id="box_'.$key.'" style="background-image:url('.$device_photos_link.$value.'?'.time().');">';
+											// 	echo '<div class="box-bg" id="box_'.$key.'" style="background-image:url('.$order_photos_link.$value.'?'.time().');">';
 											// 	echo '<div class="box-function-area">';
 											// 	echo '<div class="text-right">';
 											// 	echo '<input type="checkbox" id="'.$key.'" name="photos_remove[]" value="'.$value.'" />';
@@ -142,69 +142,69 @@
 									<div class="col-sm-4 col-xs-12">
 										<h4 class="corpcolor-font">Basic information</h4>
 										<p class="form-group">
-											<label for="device_name">Name <span class="highlight">*</span></label>
-											<input id="device_name" name="device_name" type="text" class="form-control input-sm required" placeholder="Name" value="<?=$device->device_name?>" />
+											<label for="order_name">Name <span class="highlight">*</span></label>
+											<input id="order_name" name="order_name" type="text" class="form-control input-sm required" placeholder="Name" value="<?=$order->order_name?>" />
 										</p>
 										<p class="form-group">
-											<label for="device_author">Author <span class="highlight">*</span></label>
-											<select id="device_author" name="device_author" data-placeholder="author" class="chosen-select">
+											<label for="order_author">Author <span class="highlight">*</span></label>
+											<select id="order_author" name="order_author" data-placeholder="author" class="chosen-select">
 												<?php
 												foreach($author as $key => $value){
-													$selected = ($value->ai_id == $device->device_author) ? ' selected="selected"' : "" ;
+													$selected = ($value->ai_id == $order->order_author) ? ' selected="selected"' : "" ;
 													echo '<option value="'.$value->ai_id.'"'.$selected.'>'.$value->ai_name.'</option>';
 												}
 												?>
 											</select>
 										</p>
 										<p class="form-group">
-											<label for="device_illustrator">Illustrator <span class="highlight">*</span></label>
-											<select id="device_illustrator" name="device_illustrator" data-placeholder="illustrator" class="chosen-select">
+											<label for="order_illustrator">Illustrator <span class="highlight">*</span></label>
+											<select id="order_illustrator" name="order_illustrator" data-placeholder="illustrator" class="chosen-select">
 												<?php
 												foreach($illustrator as $key => $value){
-													$selected = ($value->ai_id == $device->device_illustrator) ? ' selected="selected"' : "" ;
+													$selected = ($value->ai_id == $order->order_illustrator) ? ' selected="selected"' : "" ;
 													echo '<option value="'.$value->ai_id.'"'.$selected.'>'.$value->ai_name.'</option>';
 												}
 												?>
 											</select>
 										</p>
 										<p class="form-group">
-											<label for="device_isbn">ISBN <span class="highlight">*</span></label>
-											<input id="device_isbn" name="device_isbn" type="text" class="form-control input-sm required" placeholder="ISBN" value="<?=$device->device_isbn?>" />
+											<label for="order_isbn">ISBN <span class="highlight">*</span></label>
+											<input id="order_isbn" name="order_isbn" type="text" class="form-control input-sm required" placeholder="ISBN" value="<?=$order->order_isbn?>" />
 										</p>
 										<p class="form-group">
-											<label for="device_price">Price <span class="highlight">*</span></label>
-											<input id="device_price" name="device_price" type="text" class="form-control input-sm required" placeholder="Price" value="<?=$device->device_price?>" />
+											<label for="order_price">Price <span class="highlight">*</span></label>
+											<input id="order_price" name="order_price" type="text" class="form-control input-sm required" placeholder="Price" value="<?=$order->order_price?>" />
 										</p>
 										<p class="form-group">
-											<label for="device_pages">Pages <span class="highlight">*</span></label>
-											<input id="device_pages" name="device_pages" type="text" class="form-control input-sm required" placeholder="Pages" value="<?=$device->device_pages?>" />
+											<label for="order_pages">Pages <span class="highlight">*</span></label>
+											<input id="order_pages" name="order_pages" type="text" class="form-control input-sm required" placeholder="Pages" value="<?=$order->order_pages?>" />
 										</p>
 										<p class="form-group">
-											<label for="device_size">Size <span class="highlight">*</span></label>
-											<input id="device_size" name="device_size" type="text" class="form-control input-sm required" placeholder="Size" value="<?=$device->device_size?>" />
+											<label for="order_size">Size <span class="highlight">*</span></label>
+											<input id="order_size" name="order_size" type="text" class="form-control input-sm required" placeholder="Size" value="<?=$order->order_size?>" />
 										</p>
 										<p class="form-group">
-											<label for="device_shopping_cart">Shopping cart</label>
-											<input id="device_shopping_cart" name="device_shopping_cart" type="text" class="form-control input-sm" placeholder="Shopping cart" value="<?=$device->device_shopping_cart?>" />
+											<label for="order_shopping_cart">Shopping cart</label>
+											<input id="order_shopping_cart" name="order_shopping_cart" type="text" class="form-control input-sm" placeholder="Shopping cart" value="<?=$order->order_shopping_cart?>" />
 											<small>Please type the link with http://</small>
 										</p>
 										<p class="form-group">
-											<label for="device_sort">Sort</label>
-											<input id="device_sort" name="device_sort" type="text" class="form-control input-sm" placeholder="Size" value="<?=$device->device_sort?>" />
+											<label for="order_sort">Sort</label>
+											<input id="order_sort" name="order_sort" type="text" class="form-control input-sm" placeholder="Size" value="<?=$order->order_sort?>" />
 										</p>
 										<p class="form-group">
-											<label for="device_hide">Hide?</label>
-											<select id="device_hide" name="device_hide" data-placeholder="Hide" class="chosen-select">
-												<option value="1" <?php if($device->device_hide == 1) echo "selected='selected'"; ?>>Y</option>
-												<option value="0" <?php if($device->device_hide == 0) echo "selected='selected'"; ?>>N</option>
+											<label for="order_hide">Hide?</label>
+											<select id="order_hide" name="order_hide" data-placeholder="Hide" class="chosen-select">
+												<option value="1" <?php if($order->order_hide == 1) echo "selected='selected'"; ?>>Y</option>
+												<option value="0" <?php if($order->order_hide == 0) echo "selected='selected'"; ?>>N</option>
 											</select>
 										</p>
 										<?php
 										if( $this->session->userdata('country_id') == 2 ){
 										?>
 										<p class="form-group">
-											<label for="device_sodia_code">Sodia code <span class="highlight">*</span></label>
-											<input id="device_sodia_code" name="device_sodia_code" type="text" class="form-control input-sm required" placeholder="Sodia code" value="<?=$device->device_sodia_code?>" />
+											<label for="order_sodia_code">Sodia code <span class="highlight">*</span></label>
+											<input id="order_sodia_code" name="order_sodia_code" type="text" class="form-control input-sm required" placeholder="Sodia code" value="<?=$order->order_sodia_code?>" />
 										</p>
 										<?php
 										}
@@ -214,43 +214,43 @@
 										<h4 class="corpcolor-font">Related information</h4>
 										<p class="form-group">
 											<?php if($this->router->fetch_method() == 'update'){ ?>
-											<label for="device_photo">Device cover <span class="highlight">(360px * 360px)</span></label>
-											<input id="device_photo" name="device_photo" type="file" accept="image/*" />
+											<label for="order_photo">Order cover <span class="highlight">(360px * 360px)</span></label>
+											<input id="order_photo" name="order_photo" type="file" accept="image/*" />
 											<?php }else{ ?>
-											<label for="device_photo">Device cover <span class="highlight">* (360px * 360px)</span></label>
-											<input id="device_photo" name="device_photo" type="file" accept="image/*" class="required" />
+											<label for="order_photo">Order cover <span class="highlight">* (360px * 360px)</span></label>
+											<input id="order_photo" name="order_photo" type="file" accept="image/*" class="required" />
 											<?php } ?>
 										</p>
 										<p class="form-group">
 											<?php if($this->router->fetch_method() == 'update'){ ?>
-											<label for="device_cover">Device cover (High resolutions) <span class="highlight">!!!</span></label>
-											<input id="device_cover" name="device_cover" type="file" accept="image/*" />
+											<label for="order_cover">Order cover (High resolutions) <span class="highlight">!!!</span></label>
+											<input id="order_cover" name="order_cover" type="file" accept="image/*" />
 											<?php }else{ ?>
-											<label for="device_cover">Device cover (High resolutions) <span class="highlight">!!!</span></label>
-											<input id="device_cover" name="device_cover" type="file" accept="image/*" class="required" />
+											<label for="order_cover">Order cover (High resolutions) <span class="highlight">!!!</span></label>
+											<input id="order_cover" name="order_cover" type="file" accept="image/*" class="required" />
 											<?php } ?>
 										</p>
 										<p class="form-group">
 											<?php if($this->router->fetch_method() == 'update'){ ?>
-											<label for="device_file">Download file <span class="highlight">!!!</span></label>
-											<input id="device_file" name="device_file" type="file" accept="image/*" />
+											<label for="order_file">Download file <span class="highlight">!!!</span></label>
+											<input id="order_file" name="order_file" type="file" accept="image/*" />
 											<?php }else{ ?>
-											<label for="device_file">Download file <span class="highlight">!!!</span></label>
-											<input id="device_file" name="device_file" type="file" accept="image/*" class="required" />
+											<label for="order_file">Download file <span class="highlight">!!!</span></label>
+											<input id="order_file" name="order_file" type="file" accept="image/*" class="required" />
 											<?php } ?>
 										</p>
 										<p class="form-group">
-											<label>Flip device link <span class="highlight">!!!</span></label>
-											<input type="text" class="form-control input-sm" placeholder="Flip device link" />
+											<label>Flip order link <span class="highlight">!!!</span></label>
+											<input type="text" class="form-control input-sm" placeholder="Flip order link" />
 											<small>Please type the link with http://</small>
 										</p>
 										<p class="form-group">
-											<label for="device_info">Information</label>
-											<textarea id="device_info" name="device_info" class="form-control input-sm" placeholder="Information"><?=$device->device_info?></textarea>
+											<label for="order_info">Information</label>
+											<textarea id="order_info" name="order_info" class="form-control input-sm" placeholder="Information"><?=$order->order_info?></textarea>
 										</p>
 										<p class="form-group">
-											<label for="device_desc">Description</label>
-											<textarea id="device_desc" name="device_desc" class="form-control input-sm summernote" placeholder="Information"><?=$device->device_desc?></textarea>
+											<label for="order_desc">Description</label>
+											<textarea id="order_desc" name="order_desc" class="form-control input-sm summernote" placeholder="Information"><?=$order->order_desc?></textarea>
 										</p>
 									</div>
 								</div>
@@ -323,7 +323,7 @@
 			<div class="container-fluid">
 				<div class="row">
 
-					<h2 class="col-sm-12">Device management</h2>
+					<h2 class="col-sm-12">Order management</h2>
 
 					<div class="content-column-area col-md-12 col-sm-12">
 
@@ -331,14 +331,14 @@
 							<div class="search-area">
 
 								<form role="form" method="get">
-									<input type="hidden" name="device_id" />
+									<input type="hidden" name="order_id" />
 									<table>
 										<tbody>
 											<tr>
 												<td width="90%">
 													<div class="row">
 														<div class="col-sm-4">
-															<input type="text" name="device_id" class="form-control input-sm" placeholder="#" value="" />
+															<input type="text" name="order_id" class="form-control input-sm" placeholder="#" value="" />
 														</div>
 														<div class="col-sm-4"></div>
 														<div class="col-sm-4"></div>
@@ -359,53 +359,53 @@
 						<div class="fieldset full">
 
 							<div class="list-area">
-								<form name="list" action="<c:url value="/cms/device/delete"></c:url>" method="post">
-									<input type="hidden" name="device_id" />
-									<input type="hidden" name="device_delete_reason" />
-									<table class="list" id="device">
+								<form name="list" action="<c:url value="/cms/order/delete"></c:url>" method="post">
+									<input type="hidden" name="order_id" />
+									<input type="hidden" name="order_delete_reason" />
+									<table class="list" id="order">
 										<tbody>
 											<tr>
 												<th>#</th>
 												<th>
-													<%-- <a href="<?=get_order_link('device_isbn')?>">
-														Device Token <i class="glyphicon glyphicon-sort corpcolor-font"></i>
+													<%-- <a href="<?=get_order_link('order_isbn')?>">
+														Order Token <i class="glyphicon glyphicon-sort corpcolor-font"></i>
 													</a> --%>
-													Device Token
+													Order Token
 												</th>
 												<th>
-													<%-- <a href="<?=get_order_link('device_name')?>">
+													<%-- <a href="<?=get_order_link('order_name')?>">
 														FCM Token <i class="glyphicon glyphicon-sort corpcolor-font"></i>
 													</a> --%>
 													FCM Token
 												</th>
 												<th>
-													<%-- <a href="<?=get_order_link('device_modifydate')?>">
+													<%-- <a href="<?=get_order_link('order_modifydate')?>">
 														Create <i class="glyphicon glyphicon-sort corpcolor-font"></i>
 													</a> --%>
 													Create
 												</th>
 												<th>
-													<%-- <a href="<?=get_order_link('device_modifydate')?>">
+													<%-- <a href="<?=get_order_link('order_modifydate')?>">
 														Modify <i class="glyphicon glyphicon-sort corpcolor-font"></i>
 													</a> --%>
 													Modify
 												</th>
 												<th width="40"></th>
 												<th width="40" class="text-right">
-													<a href="<c:url value="/cms/device/insert"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Insert">
+													<a href="<c:url value="/cms/order/insert"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Insert">
 														<i class="glyphicon glyphicon-plus"></i>
 													</a>
 												</th>
 											</tr>
-											<c:forEach items="${device}" var="item">
-											<tr id="<?=$value->device_id?>" class="list-row" onclick=""> <!-- the onclick="" is for fixing the iphone problem -->
+											<c:forEach items="${order}" var="item">
+											<tr id="<?=$value->order_id?>" class="list-row" onclick=""> <!-- the onclick="" is for fixing the iphone problem -->
 												<td title="${item.id}">${item.id}</td>
-												<td class="expandable">${item.deviceToken}</td>
-												<td class="expandable">${item.deviceFcmToken}</td>
+												<td class="expandable">${item.orderToken}</td>
+												<td class="expandable">${item.orderFcmToken}</td>
 												<td class="expandable"><fmt:formatDate  value="${item.createDate}"  pattern="yyyy-MM-dd" /></td>
 												<td class="expandable"><fmt:formatDate  value="${item.modifyDate}"  pattern="yyyy-MM-dd" /></td>
 												<td class="text-right">
-													<a href="<c:url value="/cms/device/update/${item.id}"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Update">
+													<a href="<c:url value="/cms/order/update/${item.id}"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Update">
 														<i class="glyphicon glyphicon-pencil"></i>
 													</a>
 												</td>
@@ -417,7 +417,7 @@
 											</tr>
 											</c:forEach>
 
-											<?php if(!$devices){ ?>
+											<?php if(!$orders){ ?>
 											<tr class="list-row">
 												<td colspan="10"><a href="#" class="btn btn-sm btn-primary">No record found</a></td>
 											</tr>

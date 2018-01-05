@@ -5,12 +5,14 @@
         <typeAlias alias="Weather" type="com.joyhong.model.Weather"/>
         <typeAlias alias="Device" type="com.joyhong.model.Device"/>
         <typeAlias alias="User" type="com.joyhong.model.User"/>
+        <typeAlias alias="Order" type="com.joyhong.model.Order"/>
         <typeAlias alias="UserDevice" type="com.joyhong.model.UserDevice"/>
     </typeAliases>  
     <mappers>  
         <mapper resource="com/joyhong/mapping/WeatherMapper.xml" />
         <mapper resource="com/joyhong/mapping/DeviceMapper.xml" />
         <mapper resource="com/joyhong/mapping/UserMapper.xml" />
+        <mapper resource="com/joyhong/mapping/OrderMapper.xml" />
         <mapper resource="com/joyhong/mapping/UserDeviceMapper.xml" />
     </mappers>
 </configuration>
