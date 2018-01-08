@@ -1,5 +1,7 @@
 package com.joyhong.dao;
 
+import java.util.List;
+
 import com.joyhong.model.Order;
 
 public interface OrderMapper {
@@ -10,6 +12,10 @@ public interface OrderMapper {
     int insertSelective(Order record);
 
     Order selectByPrimaryKey(Integer id);
+    
+    int selectCount();
+    
+    List<Order> selectOffsetAndLimit(Integer offset, Integer limit);
 
     int updateByPrimaryKeySelective(Order record);
 

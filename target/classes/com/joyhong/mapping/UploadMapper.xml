@@ -17,11 +17,11 @@
     select 
     <include refid="Base_Column_List" />
     from jh_upload
-    where id = #{id,jdbcType=INTEGER}
+    where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from jh_upload
-    where id = #{id,jdbcType=INTEGER}
+    where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.joyhong.model.Upload">
     insert into jh_upload (id, user_id, description, 
@@ -102,7 +102,7 @@
         deleted = #{deleted,jdbcType=INTEGER},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
+    where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.joyhong.model.Upload">
     update jh_upload
@@ -112,6 +112,6 @@
       create_date = #{createDate,jdbcType=TIMESTAMP},
       modify_date = #{modifyDate,jdbcType=TIMESTAMP},
       deleted = #{deleted,jdbcType=INTEGER}
-    where id = #{id,jdbcType=INTEGER}
+    where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

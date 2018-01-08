@@ -20,11 +20,23 @@
     select 
     <include refid="Base_Column_List" />
     from jh_order
-    where id = #{id,jdbcType=INTEGER}
+    where deleted = 0 and id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectCount" resultType="java.lang.Integer">
+    select count(id)
+    from jh_order
+    where deleted = 0
+  </select>
+  <select id="selectOffsetAndLimit" resultType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+	<include refid="Base_Column_List" />
+    from jh_order
+    where deleted = 0 
+    limit #{0},#{1}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from jh_order
-    where id = #{id,jdbcType=INTEGER}
+    where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.joyhong.model.Order">
     insert into jh_order (id, order_code, machine_code, 
@@ -125,7 +137,7 @@
         deleted = #{deleted,jdbcType=INTEGER},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
+    where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.joyhong.model.Order">
     update jh_order
@@ -137,6 +149,6 @@
       create_date = #{createDate,jdbcType=TIMESTAMP},
       modify_date = #{modifyDate,jdbcType=TIMESTAMP},
       deleted = #{deleted,jdbcType=INTEGER}
-    where id = #{id,jdbcType=INTEGER}
+    where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

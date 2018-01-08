@@ -9,6 +9,8 @@ import javax.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,42 +27,92 @@ public class OrderCtrl {
 	private OrderService orderService;
 	
 	@RequestMapping(value="/select", method=RequestMethod.GET)
-	public String select(Model model, HttpSession httpSession){
+	public String select(){
+		return "redirect:/cms/order/select/1";
+	}
+	
+	@RequestMapping(value="/select/{page}", method=RequestMethod.GET)
+	public String select(Model model, HttpSession httpSession, @PathVariable(value="page") Integer page){
 		
-		if( !permission(model, httpSession, "select") ){
+		if( !isLogin(model, httpSession, "select") ){
 			return "redirect:/cms/user/login";
 		}
 		
-//		List<Order> order = orderService.selectLikeOrderToken("");
-//		model.addAttribute("order", order);
+		int pageSize = 1;
+		int totalRecord = orderService.selectCount();
+		int totalPage = (int)Math.ceil((double)totalRecord/pageSize);
+		
+		if( page < 1 || page > totalPage ){
+			page = 1;
+		}
+		
+		Integer offset = (page-1)*pageSize;
+		List<Order> order = orderService.selectOffsetAndLimit(offset, pageSize);
+		
+		model.addAttribute("page", page);
+		model.addAttribute("totalPage", totalPage);
+		model.addAttribute("totalRecord", totalRecord);
+		model.addAttribute("order", order);
 		
 		return "OrderView";
 	}
 	
-	@RequestMapping(value="/insert", method={RequestMethod.GET,RequestMethod.POST})
-	public String insert(Model model, HttpSession httpSession, Order order){
+	@RequestMapping(value="/insert", method=RequestMethod.GET)
+	public String insert(Model model, HttpSession httpSession){
 		
-		if( !permission(model, httpSession, "insert") ){
+		if( !isLogin(model, httpSession, "insert") ){
 			return "redirect:/cms/user/login";
 		}
 		
-//		List<Order> order = orderService.selectLikeOrderToken("");
-//		model.addAttribute("order", order);
+		model.addAttribute("order", new Order());
+
+		return "OrderView";
+	}
+	
+	@RequestMapping(value="/insert", method=RequestMethod.POST)
+	public String insert(Model model, HttpSession httpSession, @ModelAttribute("order") Order order){
 		
-		System.out.println(order.getOrderCode());
+		if( !isLogin(model, httpSession, "insert") ){
+			return "redirect:/cms/user/login";
+		}
+		
+		if( orderService.insert(order) == 1 ){
+			return "redirect:/cms/order/select";
+		}
 		
 		return "OrderView";
 	}
 	
-	@RequestMapping(value="/update/{order_id}", method={RequestMethod.GET,RequestMethod.POST})
-	public String update(@PathParam("order_id") Integer order_id, Model model, HttpSession httpSession){
+	@RequestMapping(value="/update/{order_id}", method=RequestMethod.GET)
+	public String update(Model model, HttpSession httpSession, @PathVariable("order_id") Integer order_id){
 		
-		if( !permission(model, httpSession, "update") ){
+		if( !isLogin(model, httpSession, "update") ){
 			return "redirect:/cms/user/login";
 		}
 		
-//		List<Order> order = orderService.selectLikeOrderToken("");
-//		model.addAttribute("order", order);
+		System.out.println(order_id);
+		
+		Order order = orderService.selectByPrimaryKey(order_id);
+		if( order != null ){
+			model.addAttribute("order", order);
+		
+			return "OrderView";
+		}
+		return "redirect:/cms/order/select";
+	}
+	
+	@RequestMapping(value="/update/{order_id}", method=RequestMethod.POST)
+	public String update(Model model, HttpSession httpSession, @PathVariable("order_id") Integer order_id, @ModelAttribute("order") Order order){
+		
+		if( !isLogin(model, httpSession, "insert") ){
+			return "redirect:/cms/user/login";
+		}
+		
+		order.setId(order_id);
+		order.setModifyDate(new Date());
+		if( orderService.updateByPrimaryKey(order) == 1 ){
+			return "redirect:/cms/order/select";
+		}
 		
 		return "OrderView";
 	}
@@ -68,7 +120,7 @@ public class OrderCtrl {
 	@RequestMapping(value="/delete", method=RequestMethod.POST)
 	public String delete(@RequestParam("order_id") Integer order_id, Model model, HttpSession httpSession){
 		
-		if( !permission(model, httpSession, "delete") ){
+		if( !isLogin(model, httpSession, "delete") ){
 			return "redirect:/cms/user/login";
 		}
 		
@@ -82,12 +134,12 @@ public class OrderCtrl {
 		return "redirect:/cms/order/select";
 	}
 	
-	private boolean permission(Model model, HttpSession httpSession, String router){
+	private boolean isLogin(Model model, HttpSession httpSession, String method){
 		User user = (User)httpSession.getAttribute("user");
 		if( user == null ){
 			return false;
 		}
-		model.addAttribute("router", router);
+		model.addAttribute("method", method);
 		model.addAttribute("user_nickname", user.getNickname());
 		return true;
 	}

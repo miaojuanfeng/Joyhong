@@ -1,5 +1,8 @@
 package com.joyhong.service.impl;
 
+import java.util.Date;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +23,9 @@ public class OrderServiceImpl implements OrderService {
 
 	public int insert(Order record) {
 		// TODO Auto-generated method stub
+		record.setCreateDate(new Date());
+		record.setModifyDate(new Date());
+		record.setDeleted(0);
 		return orderMapper.insert(record);
 	}
 
@@ -31,6 +37,16 @@ public class OrderServiceImpl implements OrderService {
 	public Order selectByPrimaryKey(Integer id) {
 		// TODO Auto-generated method stub
 		return orderMapper.selectByPrimaryKey(id);
+	}
+	
+	public int selectCount(){
+		// TODO Auto-generated method stub
+		return orderMapper.selectCount();
+	}
+	
+	public List<Order> selectOffsetAndLimit(Integer offset, Integer limit) {
+		// TODO Auto-generated method stub
+		return orderMapper.selectOffsetAndLimit(offset, limit);
 	}
 
 	public int updateByPrimaryKeySelective(Order record) {

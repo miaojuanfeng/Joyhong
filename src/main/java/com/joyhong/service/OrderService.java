@@ -1,5 +1,7 @@
 package com.joyhong.service;
 
+import java.util.List;
+
 import com.joyhong.model.Order;
 
 public interface OrderService {
@@ -10,6 +12,10 @@ public interface OrderService {
     int insertSelective(Order record);
 
     Order selectByPrimaryKey(Integer id);
+    
+    int selectCount();
+    
+    List<Order> selectOffsetAndLimit(Integer offset, Integer limit);
 
     int updateByPrimaryKeySelective(Order record);
 
