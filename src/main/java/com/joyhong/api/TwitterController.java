@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.joyhong.model.Device;
 import com.joyhong.model.UserDevice;
 import com.joyhong.service.DeviceService;
+import com.joyhong.service.NotificationService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
 
@@ -74,6 +75,9 @@ public class TwitterController {
 	
 	@Autowired
 	private UserDeviceService userDeviceService;
+	
+	@Autowired
+	private NotificationService notificationService;
 	
 	public TwitterController(){
 		ConfigurationBuilder cb = new ConfigurationBuilder();

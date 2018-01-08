@@ -3,6 +3,7 @@ package com.joyhong.api;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +30,7 @@ import net.sf.json.JSONObject;
 @RequestMapping("/user")
 public class UserController {
 	
-//	private Logger logger = Logger.getLogger(this.getClass());
+	private Logger logger = Logger.getLogger(this.getClass());
 	
 	@Autowired
 	private UserDeviceService userDeviceService;
@@ -243,4 +244,24 @@ public class UserController {
 		
 		return retval.toString();
 	}
+	
+	
+	
+//	@RequestMapping(value="/push", method=RequestMethod.GET)
+//	@ResponseBody
+//	public void push(){
+//		System.out.println(notificationService.push(
+//				12345, 
+//				"sender_name", 
+//				67890, 
+//				"receive_name", 
+//				"fmUSEMs6Bzc:APA91bHvuuezPri_rGkFYiR8TJK8jrBszsKAMltUT4PAWYeyxN3tWhxMEC-_gkz1b4EgOhkESi7s_OCDWgNiOR2kMfo_KBA7gdCQUR-JCZXWD0zn4Qf6JwNDFouB52uROxeWdLbQ_G0H", 
+//				"text", 
+//				"image_url", 
+//				"video_url", 
+//				"text", 
+//				"facebook", 
+//				"title", 
+//				"body"));
+//	}
 }

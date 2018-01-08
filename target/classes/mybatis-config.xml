@@ -7,6 +7,7 @@
         <typeAlias alias="User" type="com.joyhong.model.User"/>
         <typeAlias alias="Order" type="com.joyhong.model.Order"/>
         <typeAlias alias="Upload" type="com.joyhong.model.Upload"/>
+        <typeAlias alias="Notification" type="com.joyhong.model.Notification"/>
         <typeAlias alias="UserDevice" type="com.joyhong.model.UserDevice"/>
     </typeAliases>  
     <mappers>  
@@ -15,6 +16,7 @@
         <mapper resource="com/joyhong/mapping/UserMapper.xml" />
         <mapper resource="com/joyhong/mapping/OrderMapper.xml" />
         <mapper resource="com/joyhong/mapping/UploadMapper.xml" />
+        <mapper resource="com/joyhong/mapping/NotificationMapper.xml" />
         <mapper resource="com/joyhong/mapping/UserDeviceMapper.xml" />
     </mappers>
 </configuration>

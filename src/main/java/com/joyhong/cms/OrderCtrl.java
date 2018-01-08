@@ -38,7 +38,7 @@ public class OrderCtrl {
 	}
 	
 	@RequestMapping(value="/insert", method={RequestMethod.GET,RequestMethod.POST})
-	public String insert(Model model, HttpSession httpSession){
+	public String insert(Model model, HttpSession httpSession, Order order){
 		
 		if( !permission(model, httpSession, "insert") ){
 			return "redirect:/cms/user/login";
@@ -46,6 +46,8 @@ public class OrderCtrl {
 		
 //		List<Order> order = orderService.selectLikeOrderToken("");
 //		model.addAttribute("order", order);
+		
+		System.out.println(order.getOrderCode());
 		
 		return "OrderView";
 	}

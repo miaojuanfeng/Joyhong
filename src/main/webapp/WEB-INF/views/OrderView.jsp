@@ -100,7 +100,7 @@
 					<h2 class="col-sm-12"><a href="<c:url value="/cms/order/select"></c:url>">Order management</a> > ${router} order</h2>
 
 					<div class="col-sm-12">
-						<form method="post" enctype="multipart/form-data">
+						<form method="post">
 							<input type="hidden" name="order_id" value="<?=$order->order_id?>" />
 							<input type="hidden" name="order_country" value="<?=$this->session->userdata('country_id')?>" />
 							<input type="hidden" name="referrer" value="<?=$this->agent->referrer()?>" />

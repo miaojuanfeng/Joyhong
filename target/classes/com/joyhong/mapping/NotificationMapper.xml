@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.joyhong.dao.NotificationMapper">
+  <resultMap id="BaseResultMap" type="com.joyhong.model.Notification">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="sender_id" jdbcType="INTEGER" property="senderId" />
+    <result column="sender_name" jdbcType="VARCHAR" property="senderName" />
+    <result column="receive_id" jdbcType="INTEGER" property="receiveId" />
+    <result column="receive_name" jdbcType="VARCHAR" property="receiveName" />
+    <result column="to_fcm_token" jdbcType="VARCHAR" property="toFcmToken" />
+    <result column="image_url" jdbcType="VARCHAR" property="imageUrl" />
+    <result column="video_url" jdbcType="VARCHAR" property="videoUrl" />
+    <result column="type" jdbcType="CHAR" property="type" />
+    <result column="platform" jdbcType="CHAR" property="platform" />
+    <result column="received" jdbcType="CHAR" property="received" />
+    <result column="failed_reason" jdbcType="VARCHAR" property="failedReason" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="modify_date" jdbcType="TIMESTAMP" property="modifyDate" />
+    <result column="deleted" jdbcType="INTEGER" property="deleted" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.joyhong.model.Notification">
+    <result column="text" jdbcType="LONGVARCHAR" property="text" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, sender_id, sender_name, receive_id, receive_name, to_fcm_token, image_url, video_url, 
+    type, platform, received, failed_reason, create_date, modify_date, deleted
+  </sql>
+  <sql id="Blob_Column_List">
+    text
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from jh_notification
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from jh_notification
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.joyhong.model.Notification">
+    insert into jh_notification (id, sender_id, sender_name, 
+      receive_id, receive_name, to_fcm_token, 
+      image_url, video_url, type, 
+      platform, received, failed_reason, 
+      create_date, modify_date, deleted, 
+      text)
+    values (#{id,jdbcType=INTEGER}, #{senderId,jdbcType=INTEGER}, #{senderName,jdbcType=VARCHAR}, 
+      #{receiveId,jdbcType=INTEGER}, #{receiveName,jdbcType=VARCHAR}, #{toFcmToken,jdbcType=VARCHAR}, 
+      #{imageUrl,jdbcType=VARCHAR}, #{videoUrl,jdbcType=VARCHAR}, #{type,jdbcType=CHAR}, 
+      #{platform,jdbcType=CHAR}, #{received,jdbcType=CHAR}, #{failedReason,jdbcType=VARCHAR}, 
+      #{createDate,jdbcType=TIMESTAMP}, #{modifyDate,jdbcType=TIMESTAMP}, #{deleted,jdbcType=INTEGER}, 
+      #{text,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.joyhong.model.Notification">
+    insert into jh_notification
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="senderId != null">
+        sender_id,
+      </if>
+      <if test="senderName != null">
+        sender_name,
+      </if>
+      <if test="receiveId != null">
+        receive_id,
+      </if>
+      <if test="receiveName != null">
+        receive_name,
+      </if>
+      <if test="toFcmToken != null">
+        to_fcm_token,
+      </if>
+      <if test="imageUrl != null">
+        image_url,
+      </if>
+      <if test="videoUrl != null">
+        video_url,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="platform != null">
+        platform,
+      </if>
+      <if test="received != null">
+        received,
+      </if>
+      <if test="failedReason != null">
+        failed_reason,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+      <if test="modifyDate != null">
+        modify_date,
+      </if>
+      <if test="deleted != null">
+        deleted,
+      </if>
+      <if test="text != null">
+        text,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="senderId != null">
+        #{senderId,jdbcType=INTEGER},
+      </if>
+      <if test="senderName != null">
+        #{senderName,jdbcType=VARCHAR},
+      </if>
+      <if test="receiveId != null">
+        #{receiveId,jdbcType=INTEGER},
+      </if>
+      <if test="receiveName != null">
+        #{receiveName,jdbcType=VARCHAR},
+      </if>
+      <if test="toFcmToken != null">
+        #{toFcmToken,jdbcType=VARCHAR},
+      </if>
+      <if test="imageUrl != null">
+        #{imageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="videoUrl != null">
+        #{videoUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=CHAR},
+      </if>
+      <if test="platform != null">
+        #{platform,jdbcType=CHAR},
+      </if>
+      <if test="received != null">
+        #{received,jdbcType=CHAR},
+      </if>
+      <if test="failedReason != null">
+        #{failedReason,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyDate != null">
+        #{modifyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleted != null">
+        #{deleted,jdbcType=INTEGER},
+      </if>
+      <if test="text != null">
+        #{text,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.joyhong.model.Notification">
+    update jh_notification
+    <set>
+      <if test="senderId != null">
+        sender_id = #{senderId,jdbcType=INTEGER},
+      </if>
+      <if test="senderName != null">
+        sender_name = #{senderName,jdbcType=VARCHAR},
+      </if>
+      <if test="receiveId != null">
+        receive_id = #{receiveId,jdbcType=INTEGER},
+      </if>
+      <if test="receiveName != null">
+        receive_name = #{receiveName,jdbcType=VARCHAR},
+      </if>
+      <if test="toFcmToken != null">
+        to_fcm_token = #{toFcmToken,jdbcType=VARCHAR},
+      </if>
+      <if test="imageUrl != null">
+        image_url = #{imageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="videoUrl != null">
+        video_url = #{videoUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=CHAR},
+      </if>
+      <if test="platform != null">
+        platform = #{platform,jdbcType=CHAR},
+      </if>
+      <if test="received != null">
+        received = #{received,jdbcType=CHAR},
+      </if>
+      <if test="failedReason != null">
+        failed_reason = #{failedReason,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyDate != null">
+        modify_date = #{modifyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleted != null">
+        deleted = #{deleted,jdbcType=INTEGER},
+      </if>
+      <if test="text != null">
+        text = #{text,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.joyhong.model.Notification">
+    update jh_notification
+    set sender_id = #{senderId,jdbcType=INTEGER},
+      sender_name = #{senderName,jdbcType=VARCHAR},
+      receive_id = #{receiveId,jdbcType=INTEGER},
+      receive_name = #{receiveName,jdbcType=VARCHAR},
+      to_fcm_token = #{toFcmToken,jdbcType=VARCHAR},
+      image_url = #{imageUrl,jdbcType=VARCHAR},
+      video_url = #{videoUrl,jdbcType=VARCHAR},
+      type = #{type,jdbcType=CHAR},
+      platform = #{platform,jdbcType=CHAR},
+      received = #{received,jdbcType=CHAR},
+      failed_reason = #{failedReason,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      modify_date = #{modifyDate,jdbcType=TIMESTAMP},
+      deleted = #{deleted,jdbcType=INTEGER},
+      text = #{text,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.joyhong.model.Notification">
+    update jh_notification
+    set sender_id = #{senderId,jdbcType=INTEGER},
+      sender_name = #{senderName,jdbcType=VARCHAR},
+      receive_id = #{receiveId,jdbcType=INTEGER},
+      receive_name = #{receiveName,jdbcType=VARCHAR},
+      to_fcm_token = #{toFcmToken,jdbcType=VARCHAR},
+      image_url = #{imageUrl,jdbcType=VARCHAR},
+      video_url = #{videoUrl,jdbcType=VARCHAR},
+      type = #{type,jdbcType=CHAR},
+      platform = #{platform,jdbcType=CHAR},
+      received = #{received,jdbcType=CHAR},
+      failed_reason = #{failedReason,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      modify_date = #{modifyDate,jdbcType=TIMESTAMP},
+      deleted = #{deleted,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
