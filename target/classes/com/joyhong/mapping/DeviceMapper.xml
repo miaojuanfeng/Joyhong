@@ -3,6 +3,7 @@
 <mapper namespace="com.joyhong.dao.DeviceMapper">
   <resultMap id="BaseResultMap" type="com.joyhong.model.Device">
     <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="order_id" jdbcType="INTEGER" property="orderId" />
     <result column="device_token" jdbcType="VARCHAR" property="deviceToken" />
     <result column="device_fcm_token" jdbcType="VARCHAR" property="deviceFcmToken" />
     <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
@@ -10,7 +11,7 @@
     <result column="deleted" jdbcType="INTEGER" property="deleted" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, device_token, device_fcm_token, create_date, modify_date, deleted
+    id, order_id, device_token, device_fcm_token, create_date, modify_date, deleted
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -31,16 +32,27 @@
     from jh_device
     where deleted = 0 and device_token like #{deviceToken,jdbcType=VARCHAR}
   </select>
+  <select id="selectByOrderId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" /> 
+    from jh_device
+    where deleted = 0 and order_id = #{orderId,jdbcType=INTEGER}
+  </select>
+  <select id="selectByOrderIdReturnDeviceToken" parameterType="java.lang.Integer" resultType="java.lang.String">
+    select device_token 
+    from jh_device
+    where deleted = 0 and order_id = #{orderId,jdbcType=INTEGER}
+  </select>
   <!-- Michael.Miao -->
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from jh_device
     where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.joyhong.model.Device">
-    insert into jh_device (id, device_token, device_fcm_token, 
+    insert into jh_device (id, order_id, device_token, device_fcm_token, 
       create_date, modify_date, deleted
       )
-    values (#{id,jdbcType=INTEGER}, #{deviceToken,jdbcType=VARCHAR}, #{deviceFcmToken,jdbcType=VARCHAR}, 
+    values (#{id,jdbcType=INTEGER}, #{orderId,jdbcType=INTEGER}, #{deviceToken,jdbcType=VARCHAR}, #{deviceFcmToken,jdbcType=VARCHAR}, 
       #{createDate,jdbcType=TIMESTAMP}, #{modifyDate,jdbcType=TIMESTAMP}, #{deleted,jdbcType=INTEGER}
       )
   </insert>
@@ -49,6 +61,9 @@
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
+      </if>
+      <if test="orderId != null">
+        orderId,
       </if>
       <if test="deviceToken != null">
         device_token,
@@ -69,6 +84,9 @@
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
         #{id,jdbcType=INTEGER},
+      </if>
+      <if test="orderId != null">
+        #{orderId,jdbcType=INTEGER},
       </if>
       <if test="deviceToken != null">
         #{deviceToken,jdbcType=VARCHAR},

@@ -2,7 +2,9 @@ package com.joyhong.cms;
 
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.joyhong.model.Device;
 import com.joyhong.model.Order;
 import com.joyhong.model.User;
+import com.joyhong.service.DeviceService;
 import com.joyhong.service.OrderService;
 
 @Controller
@@ -25,16 +29,22 @@ public class OrderCtrl {
 	@Autowired
 	private OrderService orderService;
 	
+	@Autowired
+	private DeviceService deviceService;
+	
 	@RequestMapping(value="/select", method=RequestMethod.GET)
 	public String select(){
 		return "redirect:/cms/order/select/1";
 	}
 	
 	@RequestMapping(value="/select/{page}", method=RequestMethod.GET)
-	public String select(Model model, HttpSession httpSession, @PathVariable(value="page") Integer page){
-		
-		if( !isLogin(model, httpSession, "select") ){
-			return "redirect:/cms/user/login";
+	public String select(
+			Model model,  
+			@PathVariable(value="page") Integer page,
+			@ModelAttribute("redirect") String redirect
+	){
+		if( redirect != null ){
+			return redirect;
 		}
 		
 		int pageSize = 20;
@@ -57,10 +67,12 @@ public class OrderCtrl {
 	}
 	
 	@RequestMapping(value="/insert", method=RequestMethod.GET)
-	public String insert(Model model, HttpSession httpSession){
-		
-		if( !isLogin(model, httpSession, "insert") ){
-			return "redirect:/cms/user/login";
+	public String insert(
+			Model model,
+			@ModelAttribute("redirect") String redirect
+	){
+		if( redirect != null ){
+			return redirect;
 		}
 		
 		model.addAttribute("order", new Order());
@@ -69,53 +81,69 @@ public class OrderCtrl {
 	}
 	
 	@RequestMapping(value="/insert", method=RequestMethod.POST)
-	public String insert(Model model, HttpSession httpSession, @ModelAttribute("order") Order order){
-		
-		if( !isLogin(model, httpSession, "insert") ){
-			return "redirect:/cms/user/login";
+	public String insert(
+			Model model, 
+			@ModelAttribute("order") Order order, 
+			@RequestParam("referer") String referer,
+			@ModelAttribute("redirect") String redirect
+	){
+		if( redirect != null ){
+			return redirect;
 		}
 		
 		if( orderService.insert(order) == 1 ){
+			if( referer != "" ){
+				return "redirect:"+referer.substring(referer.lastIndexOf("/cms/"));
+			}
 			return "redirect:/cms/order/select";
 		}
 		
 		return "OrderView";
 	}
 	
-	@ModelAttribute
-	public void upload(@RequestParam(value="id", required=false) Integer id, Model model){
-		if( id != null ){
-			Order order = orderService.selectByPrimaryKey(id);
-			model.addAttribute("order", order);
-		}
-	}
-	
-	@RequestMapping(value="/update", method=RequestMethod.GET)
-	public String update(Model model, HttpSession httpSession, @RequestParam("id") Integer id){
-		
-		if( !isLogin(model, httpSession, "update") ){
-			return "redirect:/cms/user/login";
+	@RequestMapping(value="/update/{order_id}", method=RequestMethod.GET)
+	public String update(
+			Model model, 
+			@PathVariable("order_id") Integer order_id,
+			@ModelAttribute("redirect") String redirect
+	){
+		if( redirect != null ){
+			return redirect;
 		}
 		
-		Order order = orderService.selectByPrimaryKey(id);
+		Order order = orderService.selectByPrimaryKey(order_id);
 		if( order != null ){
 			model.addAttribute("order", order);
+			
+			List<Device> device = deviceService.selectByOrderId(order.getId());
+			model.addAttribute("device", device);
+			model.addAttribute("deviceTotal", device.size());
 		
 			return "OrderView";
 		}
 		return "redirect:/cms/order/select";
 	}
 	
-	@RequestMapping(value="/update", method=RequestMethod.POST)
-	public String update(Model model, HttpSession httpSession, @RequestParam("id") Integer id, @ModelAttribute("order") Order order){
-		
-		if( !isLogin(model, httpSession, "insert") ){
-			return "redirect:/cms/user/login";
+	@RequestMapping(value="/update/{order_id}", method=RequestMethod.POST)
+	public String update(
+			Model model, 
+			HttpSession httpSession, 
+			HttpServletRequest request, 
+			@PathVariable("order_id") Integer order_id, 
+			@ModelAttribute("order") Order order, 
+			@RequestParam("referer") String referer,
+			@ModelAttribute("redirect") String redirect
+	){
+		if( redirect != null ){
+			return redirect;
 		}
 		
-		order.setId(id);
+		order.setId(order_id);
 		order.setModifyDate(new Date());
 		if( orderService.updateByPrimaryKey(order) == 1 ){
+			if( referer != "" ){
+				return "redirect:"+referer.substring(referer.lastIndexOf("/cms/"));
+			}
 			return "redirect:/cms/order/select";
 		}
 		
@@ -123,10 +151,13 @@ public class OrderCtrl {
 	}
 	
 	@RequestMapping(value="/delete", method=RequestMethod.POST)
-	public String delete(@RequestParam("order_id") Integer order_id, Model model, HttpSession httpSession){
-		
-		if( !isLogin(model, httpSession, "delete") ){
-			return "redirect:/cms/user/login";
+	public String delete(
+			Model model, 
+			@RequestParam("order_id") Integer order_id,
+			@ModelAttribute("redirect") String redirect
+	){
+		if( redirect != null ){
+			return redirect;
 		}
 		
 		Order order = orderService.selectByPrimaryKey(order_id);
@@ -139,14 +170,82 @@ public class OrderCtrl {
 		return "redirect:/cms/order/select";
 	}
 	
-	private boolean isLogin(Model model, HttpSession httpSession, String method){
+	@RequestMapping(value="/generate", method=RequestMethod.POST)
+	public String generate(
+			Model model, 
+			@RequestParam("order_id") Integer order_id,
+			@ModelAttribute("redirect") String redirect
+	){
+		if( redirect != null ){
+			return redirect;
+		}
+		
+		Order order = orderService.selectByPrimaryKey(order_id);
+		if( order != null ){
+			String order_code = order.getOrderCode();
+			int order_qty = order.getOrderQty();
+			List<String> exist_device = deviceService.selectByOrderIdReturnDeviceToken(order_id);
+			int i = 0;
+			for(i=0; i<order_qty; i++){
+				int random_number = (int)((Math.random()*9+1)*100000);
+				String device_token = order_code + random_number;
+				//判断是否已经存在该device_token;
+				if( exist_device != null && exist_device.contains(device_token) ){
+					i--;
+					continue;
+				}
+				Device device = new Device();
+				device.setOrderId(order_id);
+				device.setDeviceToken(device_token);
+				device.setDeviceFcmToken("");
+				device.setCreateDate(new Date());
+				device.setModifyDate(new Date());
+				device.setDeleted(0);
+			
+				deviceService.insert(device);
+			}
+		}
+		
+		return "redirect:/cms/order/update/"+order_id;
+	}
+	
+	@ModelAttribute
+	public void startup(Model model, HttpSession httpSession, HttpServletRequest request){
+		//判断是否登录
 		User user = (User)httpSession.getAttribute("user");
 		if( user == null ){
-			return false;
+			model.addAttribute("redirect", "redirect:/cms/user/login");
+			return;
+		}else{
+			model.addAttribute("redirect", null);
+		}
+		
+		//解析出方法名称
+		String urlStr = request.getRequestURL().toString();
+		String method = urlStr.substring(urlStr.lastIndexOf("/")+1);
+		if( isNumeric(method) ){
+			Integer number = Integer.valueOf(method);
+			urlStr = urlStr.substring(0, urlStr.lastIndexOf("/"));
+			method = urlStr.substring(urlStr.lastIndexOf("/")+1);
+			if( method.equals("select") ){
+				 
+			}else if( method.equals("update") ){
+				Order order = orderService.selectByPrimaryKey(number);
+				model.addAttribute("order", order);
+			}
 		}
 		model.addAttribute("method", method);
+		
+		//当前登录用户名
 		model.addAttribute("user_nickname", user.getNickname());
-		return true;
+		
+		//返回的url地址
+		model.addAttribute("referer", request.getHeader("referer"));
+	}
+	
+	private static boolean isNumeric(String str){
+	    Pattern pattern = Pattern.compile("[0-9]*");
+	    return pattern.matcher(str).matches();   
 	}
 	
 }

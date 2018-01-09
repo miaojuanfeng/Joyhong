@@ -13,18 +13,20 @@
 		<%@ include file="inc/headArea.jsp" %>
 
 		<script>
-		$(function(){
-			$('input[name="order_id"]').focus();
-
-			/* pagination */
-			$('.pagination-area>a, .pagination-area>strong').addClass('btn btn-sm btn-primary');
-			$('.pagination-area>strong').addClass('disabled');
-		});
-
 		function check_delete(id){
 			if(confirm("Confirm?")){
 				$('input[name="order_id"]').val(id);
 				$('form[name="list"]').submit();
+			}else{
+				return false;
+			}
+		}
+		
+		function check_generate(id){
+			if(confirm("Confirm?")){
+				$('input[name="order_id"]').val(id);
+				$('form[name="update"]').attr("action", "<c:url value="/cms/order/generate"></c:url>");
+				$('form[name="update"]').submit();
 			}else{
 				return false;
 			}
@@ -35,24 +37,6 @@
 	<body>
 
 		<%@ include file="inc/headerArea.jsp" %>
-
-		<script>
-		$(function(){
-			$('.summernote').summernote({
-				toolbar: [
-					['style', ['style']],
-					['font', ['bold', 'italic', 'underline', 'clear']],
-					['color', ['color']],
-					['para', ['ul', 'ol', 'paragraph']]
-				],
-				minHeight: 77
-			});
-
-			/* pagination */
-			$('.pagination-area>a, .pagination-area>strong').addClass('btn btn-sm btn-primary');
-			$('.pagination-area>strong').addClass('disabled');
-		});
-		</script>
 
 
 
@@ -101,15 +85,11 @@
 					<h2 class="col-sm-12"><a href="<c:url value="/cms/order/select"></c:url>">Order management</a> > ${method} order</h2>
 
 					<div class="col-sm-12">
-						<form:form method="post" modelAttribute="order">
-							<input type="hidden" name="order_id" value="<?=$order->order_id?>" />
-							<input type="hidden" name="order_country" value="<?=$this->session->userdata('country_id')?>" />
-							<input type="hidden" name="referrer" value="<?=$this->agent->referrer()?>" />
+						<form:form name="update" method="post" modelAttribute="order">
+							<input type="hidden" name="order_id" value="${order.id}" />
+							<input type="hidden" name="referer" value="${referer}" />
 							<div class="fieldset">
-								<div class="row">
-									<div class="col-sm-4 col-xs-12 pull-right">
-										
-									</div>
+								<div class="row form-group">
 									<div class="col-sm-4 col-xs-12">
 										<h4 class="corpcolor-font">Basic information</h4>
 										<p class="form-group">
@@ -141,14 +121,58 @@
 											<form:input id="download_link" path="downloadLink" type="text" class="form-control input-sm" placeholder="Download link" value="" />
 										</p>
 									</div>
-									<div class="col-sm-4 col-xs-12">
-										
+									<div class="col-sm-8 col-xs-12 pull-right">
+										<c:if test="${method == 'update'}">
+										<h4 class="corpcolor-font">Related information</h4>
+										<div class="list-area">
+											<table class="list" id="device">
+												<tbody>
+													<tr>
+														<th>#</th>
+														<th>
+															Device token
+														</th>
+														<th>
+															FCM token
+														</th>
+														<th>
+															Create
+														</th>
+														<th>
+															Modify
+														</th>
+													</tr>
+													<c:forEach items="${device}" var="item">
+													<tr id="<?=$value->device_id?>" class="list-row" onclick=""> <!-- the onclick="" is for fixing the iphone problem -->
+														<td title="${item.id}">${item.id}</td>
+														<td class="expandable">${item.deviceToken}</td>
+														<td class="expandable">${item.deviceFcmToken}</td>
+														<td class="expandable"><fmt:formatDate  value="${item.createDate}"  pattern="yyyy-MM-dd" /></td>
+														<td class="expandable"><fmt:formatDate  value="${item.modifyDate}"  pattern="yyyy-MM-dd" /></td>
+													</tr>
+													</c:forEach>
+		
+													<c:if test="${deviceTotal==0}">
+													<tr class="list-row">
+														<td colspan="10"><a href="#" class="btn btn-sm btn-primary">No record found</a></td>
+													</tr>
+													</c:if>
+		
+												</tbody>
+											</table>
+										</div>
+										</c:if>
 									</div>
 								</div>
 
 								<div class="row">
-									<div class="col-xs-12">
+									<div class="col-xs-4">
 										<button type="submit" class="btn btn-sm btn-primary"><i class="glyphicon glyphicon-floppy-disk"></i> Save</button>
+									</div>
+									<div class="col-xs-8">
+										<c:if test="${method == 'update'}">
+										<button type="button" class="btn btn-sm btn-warning" onclick="check_generate(${order.id});"><i class="glyphicon glyphicon-list"></i> Generate device token</button>
+										</c:if>
 									</div>
 								</div>
 
@@ -252,51 +276,29 @@
 							<div class="list-area">
 								<form name="list" action="<c:url value="/cms/order/delete"></c:url>" method="post">
 									<input type="hidden" name="order_id" />
-									<input type="hidden" name="order_delete_reason" />
 									<table class="list" id="order">
 										<tbody>
 											<tr>
 												<th>#</th>
 												<th>
-													<%-- <a href="<?=get_order_link('order_isbn')?>">
-														Order Token <i class="glyphicon glyphicon-sort corpcolor-font"></i>
-													</a> --%>
 													Order code
 												</th>
 												<th>
-													<%-- <a href="<?=get_order_link('order_name')?>">
-														FCM Token <i class="glyphicon glyphicon-sort corpcolor-font"></i>
-													</a> --%>
 													Machine code
 												</th>
 												<th>
-													<%-- <a href="<?=get_order_link('order_name')?>">
-														FCM Token <i class="glyphicon glyphicon-sort corpcolor-font"></i>
-													</a> --%>
 													Dealer code
 												</th>
 												<th>
-													<%-- <a href="<?=get_order_link('order_name')?>">
-														FCM Token <i class="glyphicon glyphicon-sort corpcolor-font"></i>
-													</a> --%>
 													Hardware code
 												</th>
 												<th>
-													<%-- <a href="<?=get_order_link('order_name')?>">
-														FCM Token <i class="glyphicon glyphicon-sort corpcolor-font"></i>
-													</a> --%>
 													Order qty
 												</th>
 												<th>
-													<%-- <a href="<?=get_order_link('order_modifydate')?>">
-														Create <i class="glyphicon glyphicon-sort corpcolor-font"></i>
-													</a> --%>
 													Create
 												</th>
 												<th>
-													<%-- <a href="<?=get_order_link('order_modifydate')?>">
-														Modify <i class="glyphicon glyphicon-sort corpcolor-font"></i>
-													</a> --%>
 													Modify
 												</th>
 												<th width="40"></th>
@@ -317,7 +319,7 @@
 												<td class="expandable"><fmt:formatDate  value="${item.createDate}"  pattern="yyyy-MM-dd" /></td>
 												<td class="expandable"><fmt:formatDate  value="${item.modifyDate}"  pattern="yyyy-MM-dd" /></td>
 												<td class="text-right">
-													<a href="<c:url value="/cms/order/update?id=${item.id}"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Update">
+													<a href="<c:url value="/cms/order/update/${item.id}"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Update">
 														<i class="glyphicon glyphicon-pencil"></i>
 													</a>
 												</td>
@@ -365,24 +367,6 @@
 							</div> <!-- list-area -->                           
 						</div>
 					</div>
-					<!-- <div class="content-column-area col-md-3 col-sm-12">
-						<div class="fieldset right">
-							<div class="list-area">
-								<table>
-									<tbody>
-										<tr>
-											<th>#</th>
-											<th>Name</th>
-										</tr>
-										<tr class="list-row"> the onclick="" is for fixing the iphone problem
-											<td>test</td>
-											<td>test</td>
-										</tr>
-									</tbody>
-								</table>
-							</div> list-area
-						</div>
-					</div> -->
 				</div>
 			</div>
 

@@ -17,6 +17,10 @@ public interface DeviceService {
     Device selectByDeviceToken(String device_token);
     
     List<Device> selectLikeDeviceToken(String device_token);
+    
+    List<Device> selectByOrderId(Integer order_id);
+    
+    List<String> selectByOrderIdReturnDeviceToken(Integer order_id);
 
     int updateByPrimaryKeySelective(Device record);
 

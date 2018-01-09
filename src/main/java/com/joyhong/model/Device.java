@@ -4,6 +4,8 @@ import java.util.Date;
 
 public class Device {
     private Integer id;
+    
+    private Integer orderId;
 
     private String deviceToken;
 
@@ -23,7 +25,15 @@ public class Device {
         this.id = id;
     }
 
-    public String getDeviceToken() {
+    public Integer getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(Integer orderId) {
+		this.orderId = orderId;
+	}
+
+	public String getDeviceToken() {
         return deviceToken;
     }
 

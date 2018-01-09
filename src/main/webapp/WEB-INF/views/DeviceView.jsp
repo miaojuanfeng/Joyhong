@@ -361,41 +361,24 @@
 							<div class="list-area">
 								<form name="list" action="<c:url value="/cms/device/delete"></c:url>" method="post">
 									<input type="hidden" name="device_id" />
-									<input type="hidden" name="device_delete_reason" />
 									<table class="list" id="device">
 										<tbody>
 											<tr>
 												<th>#</th>
 												<th>
-													<%-- <a href="<?=get_order_link('device_isbn')?>">
-														Device Token <i class="glyphicon glyphicon-sort corpcolor-font"></i>
-													</a> --%>
 													Device Token
 												</th>
 												<th>
-													<%-- <a href="<?=get_order_link('device_name')?>">
-														FCM Token <i class="glyphicon glyphicon-sort corpcolor-font"></i>
-													</a> --%>
 													FCM Token
 												</th>
 												<th>
-													<%-- <a href="<?=get_order_link('device_modifydate')?>">
-														Create <i class="glyphicon glyphicon-sort corpcolor-font"></i>
-													</a> --%>
 													Create
 												</th>
 												<th>
-													<%-- <a href="<?=get_order_link('device_modifydate')?>">
-														Modify <i class="glyphicon glyphicon-sort corpcolor-font"></i>
-													</a> --%>
 													Modify
 												</th>
 												<th width="40"></th>
-												<th width="40" class="text-right">
-													<a href="<c:url value="/cms/device/insert"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Insert">
-														<i class="glyphicon glyphicon-plus"></i>
-													</a>
-												</th>
+												<th width="40" class="text-right"></th>
 											</tr>
 											<c:forEach items="${device}" var="item">
 											<tr id="<?=$value->device_id?>" class="list-row" onclick=""> <!-- the onclick="" is for fixing the iphone problem -->
