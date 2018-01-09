@@ -14,8 +14,12 @@ public class Order {
     private String hardwareCode;
 
     private Integer orderQty;
+    
+    private String lastVersion;
+    
+    private String downloadLink;
 
-    private Date createDate;
+	private Date createDate;
 
     private Date modifyDate;
 
@@ -68,6 +72,22 @@ public class Order {
     public void setOrderQty(Integer orderQty) {
         this.orderQty = orderQty;
     }
+    
+    public String getLastVersion() {
+		return lastVersion;
+	}
+
+	public void setLastVersion(String lastVersion) {
+		this.lastVersion = lastVersion;
+	}
+
+	public String getDownloadLink() {
+		return downloadLink;
+	}
+
+	public void setDownloadLink(String downloadLink) {
+		this.downloadLink = downloadLink;
+	}
 
     public Date getCreateDate() {
         return createDate;

@@ -8,12 +8,14 @@
     <result column="dealer_code" jdbcType="CHAR" property="dealerCode" />
     <result column="hardware_code" jdbcType="CHAR" property="hardwareCode" />
     <result column="order_qty" jdbcType="INTEGER" property="orderQty" />
+    <result column="last_version" jdbcType="VARCHAR" property="lastVersion" />
+    <result column="download_link" jdbcType="VARCHAR" property="downloadLink" />
     <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
     <result column="modify_date" jdbcType="TIMESTAMP" property="modifyDate" />
     <result column="deleted" jdbcType="INTEGER" property="deleted" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, order_code, machine_code, dealer_code, hardware_code, order_qty, create_date, 
+    id, order_code, machine_code, dealer_code, hardware_code, order_qty, last_version, download_link, create_date, 
     modify_date, deleted
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -40,11 +42,12 @@
   </delete>
   <insert id="insert" parameterType="com.joyhong.model.Order">
     insert into jh_order (id, order_code, machine_code, 
-      dealer_code, hardware_code, order_qty, 
+      dealer_code, hardware_code, order_qty, last_version, download_link, 
       create_date, modify_date, deleted
       )
     values (#{id,jdbcType=INTEGER}, #{orderCode,jdbcType=CHAR}, #{machineCode,jdbcType=CHAR}, 
       #{dealerCode,jdbcType=CHAR}, #{hardwareCode,jdbcType=CHAR}, #{orderQty,jdbcType=INTEGER}, 
+      #{lastVersion,jdbcType=VARCHAR}, #{downloadLink,jdbcType=VARCHAR},
       #{createDate,jdbcType=TIMESTAMP}, #{modifyDate,jdbcType=TIMESTAMP}, #{deleted,jdbcType=INTEGER}
       )
   </insert>
@@ -68,6 +71,12 @@
       </if>
       <if test="orderQty != null">
         order_qty,
+      </if>
+      <if test="lastVersion != null">
+        last_version,
+      </if>
+      <if test="downloadLink != null">
+        download_link,
       </if>
       <if test="createDate != null">
         create_date,
@@ -98,6 +107,12 @@
       <if test="orderQty != null">
         #{orderQty,jdbcType=INTEGER},
       </if>
+      <if test="lastVersion != null">
+        #{lastVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="downloadLink != null">
+        #{downloadLink,jdbcType=VARCHAR},
+      </if>
       <if test="createDate != null">
         #{createDate,jdbcType=TIMESTAMP},
       </if>
@@ -127,6 +142,12 @@
       <if test="orderQty != null">
         order_qty = #{orderQty,jdbcType=INTEGER},
       </if>
+      <if test="lastVersion != null">
+        order_qty = #{lastVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="downloadLink != null">
+        order_qty = #{downloadLink,jdbcType=VARCHAR},
+      </if>
       <if test="createDate != null">
         create_date = #{createDate,jdbcType=TIMESTAMP},
       </if>
@@ -146,6 +167,8 @@
       dealer_code = #{dealerCode,jdbcType=CHAR},
       hardware_code = #{hardwareCode,jdbcType=CHAR},
       order_qty = #{orderQty,jdbcType=INTEGER},
+      last_version = #{lastVersion,jdbcType=VARCHAR},
+      download_link = #{downloadLink,jdbcType=VARCHAR},
       create_date = #{createDate,jdbcType=TIMESTAMP},
       modify_date = #{modifyDate,jdbcType=TIMESTAMP},
       deleted = #{deleted,jdbcType=INTEGER}

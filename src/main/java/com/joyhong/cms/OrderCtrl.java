@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
-import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -38,7 +37,7 @@ public class OrderCtrl {
 			return "redirect:/cms/user/login";
 		}
 		
-		int pageSize = 1;
+		int pageSize = 20;
 		int totalRecord = orderService.selectCount();
 		int totalPage = (int)Math.ceil((double)totalRecord/pageSize);
 		
@@ -83,16 +82,22 @@ public class OrderCtrl {
 		return "OrderView";
 	}
 	
-	@RequestMapping(value="/update/{order_id}", method=RequestMethod.GET)
-	public String update(Model model, HttpSession httpSession, @PathVariable("order_id") Integer order_id){
+	@ModelAttribute
+	public void upload(@RequestParam(value="id", required=false) Integer id, Model model){
+		if( id != null ){
+			Order order = orderService.selectByPrimaryKey(id);
+			model.addAttribute("order", order);
+		}
+	}
+	
+	@RequestMapping(value="/update", method=RequestMethod.GET)
+	public String update(Model model, HttpSession httpSession, @RequestParam("id") Integer id){
 		
 		if( !isLogin(model, httpSession, "update") ){
 			return "redirect:/cms/user/login";
 		}
 		
-		System.out.println(order_id);
-		
-		Order order = orderService.selectByPrimaryKey(order_id);
+		Order order = orderService.selectByPrimaryKey(id);
 		if( order != null ){
 			model.addAttribute("order", order);
 		
@@ -101,14 +106,14 @@ public class OrderCtrl {
 		return "redirect:/cms/order/select";
 	}
 	
-	@RequestMapping(value="/update/{order_id}", method=RequestMethod.POST)
-	public String update(Model model, HttpSession httpSession, @PathVariable("order_id") Integer order_id, @ModelAttribute("order") Order order){
+	@RequestMapping(value="/update", method=RequestMethod.POST)
+	public String update(Model model, HttpSession httpSession, @RequestParam("id") Integer id, @ModelAttribute("order") Order order){
 		
 		if( !isLogin(model, httpSession, "insert") ){
 			return "redirect:/cms/user/login";
 		}
 		
-		order.setId(order_id);
+		order.setId(id);
 		order.setModifyDate(new Date());
 		if( orderService.updateByPrimaryKey(order) == 1 ){
 			return "redirect:/cms/order/select";

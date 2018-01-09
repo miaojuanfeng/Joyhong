@@ -132,6 +132,14 @@
 											<label for="order_qty">Order qty <span class="highlight">*</span></label>
 											<form:input id="order_qty" path="orderQty" type="number" min="0" class="form-control input-sm required" placeholder="Order qty" value="" />
 										</p>
+										<p class="form-group">
+											<label for="last_version">Last version <span class="highlight"></span></label>
+											<form:input id="last_version" path="lastVersion" type="text" class="form-control input-sm" placeholder="Last version" value="" />
+										</p>
+										<p class="form-group">
+											<label for="download_link">Download link <span class="highlight"></span></label>
+											<form:input id="download_link" path="downloadLink" type="text" class="form-control input-sm" placeholder="Download link" value="" />
+										</p>
 									</div>
 									<div class="col-sm-4 col-xs-12">
 										
@@ -253,31 +261,31 @@
 													<%-- <a href="<?=get_order_link('order_isbn')?>">
 														Order Token <i class="glyphicon glyphicon-sort corpcolor-font"></i>
 													</a> --%>
-													Order Code
+													Order code
 												</th>
 												<th>
 													<%-- <a href="<?=get_order_link('order_name')?>">
 														FCM Token <i class="glyphicon glyphicon-sort corpcolor-font"></i>
 													</a> --%>
-													Machine Code
+													Machine code
 												</th>
 												<th>
 													<%-- <a href="<?=get_order_link('order_name')?>">
 														FCM Token <i class="glyphicon glyphicon-sort corpcolor-font"></i>
 													</a> --%>
-													Dealer Code
+													Dealer code
 												</th>
 												<th>
 													<%-- <a href="<?=get_order_link('order_name')?>">
 														FCM Token <i class="glyphicon glyphicon-sort corpcolor-font"></i>
 													</a> --%>
-													Hardware Code
+													Hardware code
 												</th>
 												<th>
 													<%-- <a href="<?=get_order_link('order_name')?>">
 														FCM Token <i class="glyphicon glyphicon-sort corpcolor-font"></i>
 													</a> --%>
-													Order Qty
+													Order qty
 												</th>
 												<th>
 													<%-- <a href="<?=get_order_link('order_modifydate')?>">
@@ -309,7 +317,7 @@
 												<td class="expandable"><fmt:formatDate  value="${item.createDate}"  pattern="yyyy-MM-dd" /></td>
 												<td class="expandable"><fmt:formatDate  value="${item.modifyDate}"  pattern="yyyy-MM-dd" /></td>
 												<td class="text-right">
-													<a href="<c:url value="/cms/order/update/${item.id}"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Update">
+													<a href="<c:url value="/cms/order/update?id=${item.id}"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Update">
 														<i class="glyphicon glyphicon-pencil"></i>
 													</a>
 												</td>
