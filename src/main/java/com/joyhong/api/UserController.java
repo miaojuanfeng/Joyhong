@@ -104,7 +104,7 @@ public class UserController {
 		if( user == null ){
 			user = new User();
 			user.setUsername(user_imei);
-			user.setNickname(user_imei);
+			user.setNickname("");
 			user.setProfileImage("");
 			user.setPlatform("app");
 			user.setAccepted("1");
@@ -113,6 +113,7 @@ public class UserController {
 			user.setDeleted(0);
 			if( userService.insert(user) == 1 ){
 				uJson.put("user_id", user.getId());
+				uJson.put("user_nickname", user.getNickname());
 				
 				retval.put("status", true);
 				retval.put("data", uJson);
@@ -122,6 +123,7 @@ public class UserController {
 			}
 		}else{
 			uJson.put("user_id", user.getId());
+			uJson.put("user_nickname", user.getNickname());
 			
 			retval.put("status", true);
 			retval.put("data", uJson);
