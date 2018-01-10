@@ -29,7 +29,7 @@
     from jh_order
     where deleted = 0
   </select>
-  <select id="selectOffsetAndLimit" resultType="java.lang.Integer" resultMap="BaseResultMap">
+  <select id="selectOffsetAndLimit" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
 	<include refid="Base_Column_List" />
     from jh_order

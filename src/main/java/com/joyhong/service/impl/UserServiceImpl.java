@@ -1,5 +1,7 @@
 package com.joyhong.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,12 +49,30 @@ public class UserServiceImpl implements UserService {
 		// TODO Auto-generated method stub
 		return userMapper.updateByPrimaryKeySelective(record);
 	}
+	
+	public int selectCount() {
+		// TODO Auto-generated method stub
+		return userMapper.selectCount();
+	}
+	
+	public int selectPlatformCount(String platform) {
+		// TODO Auto-generated method stub
+		return userMapper.selectPlatformCount(platform);
+	}
+	
+	public List<User> selectOffsetAndLimit(Integer offset, Integer limit) {
+		// TODO Auto-generated method stub
+		return userMapper.selectOffsetAndLimit(offset, limit);
+	}
+	
+	public List<User> selectPlatformOffsetAndLimit(String platform, Integer offset, Integer limit) {
+		// TODO Auto-generated method stub
+		return userMapper.selectPlatformOffsetAndLimit(platform, offset, limit);
+	}
 
 	public int updateByPrimaryKey(User record) {
 		// TODO Auto-generated method stub
 		return userMapper.updateByPrimaryKey(record);
 	}
-
-
 
 }

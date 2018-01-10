@@ -5,7 +5,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>Order management</title>
+		<title>User management</title>
 
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=order-width, initial-scale=1, maximum-scale=1">
@@ -15,21 +15,16 @@
 		<script>
 		function check_delete(id){
 			if(confirm("Confirm?")){
-				$('input[name="order_id"]').val(id);
+				$('input[name="user_id"]').val(id);
 				$('form[name="list"]').submit();
 			}else{
 				return false;
 			}
 		}
 		
-		function check_generate(id){
-			if(confirm("Confirm?")){
-				$('input[name="order_id"]').val(id);
-				$('form[name="update"]').attr("action", "<c:url value="/cms/order/generate"></c:url>");
-				$('form[name="update"]').submit();
-			}else{
-				return false;
-			}
+		function check_back(){
+			var referer = $('input[name="referer"]').val();
+			window.location.href = referer;
 		}
 		</script>
 	</head>
@@ -82,43 +77,39 @@
 			<div class="container-fluid">
 				<div class="row">
 
-					<h2 class="col-sm-12"><a href="<c:url value="/cms/order/select"></c:url>">Order management</a> > ${method} order</h2>
+					<h2 class="col-sm-12"><a href="<c:url value="/cms/user/select"></c:url>">User management</a> > ${method} user</h2>
 
 					<div class="col-sm-12">
-						<form:form name="update" method="post" modelAttribute="order">
-							<input type="hidden" name="order_id" value="${order.id}" />
+						<form:form name="update" method="post" modelAttribute="user">
+							<input type="hidden" name="user_id" value="${user.id}" />
 							<input type="hidden" name="referer" value="${referer}" />
 							<div class="fieldset">
 								<div class="row form-group">
 									<div class="col-sm-4 col-xs-12">
 										<h4 class="corpcolor-font">Basic information</h4>
 										<p class="form-group">
-											<label for="order_code">Order code <span class="highlight">*</span></label>
-											<form:input id="order_code" path="orderCode" type="text" class="form-control input-sm required" placeholder="Order code" minlength="4" maxlength="4" />
+											<label for="username">Username <span class="highlight">*</span></label>
+											<form:input id="username" path="username" type="text" class="form-control input-sm required" placeholder="Username" />
 										</p>
 										<p class="form-group">
-											<label for="machine_code">Machine code <span class="highlight">*</span></label>
-											<form:input id="machine_code" path="machineCode" type="text" class="form-control input-sm required" placeholder="Machine code" minlength="2" maxlength="2" />
+											<label for="number">Number <span class="highlight">*</span></label>
+											<form:input id="number" path="number" type="text" class="form-control input-sm required" placeholder="Number" />
 										</p>
 										<p class="form-group">
-											<label for="dealer_code">Dealer code <span class="highlight">*</span></label>
-											<form:input id="dealer_code" path="dealerCode" type="text" class="form-control input-sm required" placeholder="Dealer code" minlength="2" maxlength="2" />
+											<label for="nickname">Nickname <span class="highlight">*</span></label>
+											<form:input id="nickname" path="nickname" type="text" class="form-control input-sm required" placeholder="Nickname" />
 										</p>
 										<p class="form-group">
-											<label for="hardware_code">Hardware code <span class="highlight">*</span></label>
-											<form:input id="hardware_code" path="hardwareCode" type="text" class="form-control input-sm required" placeholder="Hardware code" minlength="2" maxlength="2" />
+											<label for="profile_image">Profile image <span class="highlight"></span></label>
+											<form:input id="profile_image" path="profileImage" type="text" class="form-control input-sm" placeholder="Profile image" />
 										</p>
 										<p class="form-group">
-											<label for="order_qty">Order qty <span class="highlight">*</span></label>
-											<form:input id="order_qty" path="orderQty" type="number" min="0" class="form-control input-sm required" placeholder="Order qty" />
+											<label for="platform">Platform <span class="highlight">*</span></label>
+											<form:input id="platform" path="platform" type="text" class="form-control input-sm required" placeholder="Platform" />
 										</p>
 										<p class="form-group">
-											<label for="last_version">Last version <span class="highlight"></span></label>
-											<form:input id="last_version" path="lastVersion" type="text" class="form-control input-sm" placeholder="Last version" />
-										</p>
-										<p class="form-group">
-											<label for="download_link">Download link <span class="highlight"></span></label>
-											<form:input id="download_link" path="downloadLink" type="text" class="form-control input-sm" placeholder="Download link" />
+											<label for="accepted">Accepted <span class="highlight">*</span></label>
+											<form:input id="accepted" path="accepted" type="text" class="form-control input-sm" placeholder="Accepted" />
 										</p>
 									</div>
 									<div class="col-sm-8 col-xs-12 pull-right">
@@ -129,24 +120,16 @@
 												<tbody>
 													<tr>
 														<th>#</th>
-														<th>
-															Device token
-														</th>
-														<th>
-															FCM token
-														</th>
-														<th>
-															Create
-														</th>
-														<th>
-															Modify
-														</th>
+														<th>Device token</th>
+														<th>Device name</th>
+														<th>Create</th>
+														<th>Modify</th>
 													</tr>
 													<c:forEach items="${device}" var="item">
 													<tr id="<?=$value->device_id?>" class="list-row" onclick=""> <!-- the onclick="" is for fixing the iphone problem -->
 														<td title="${item.id}">${item.id}</td>
 														<td class="expandable">${item.deviceToken}</td>
-														<td class="expandable">${item.deviceFcmToken}</td>
+														<td class="expandable">${item.deviceName}</td>
 														<td class="expandable"><fmt:formatDate  value="${item.createDate}"  pattern="yyyy-MM-dd" /></td>
 														<td class="expandable"><fmt:formatDate  value="${item.modifyDate}"  pattern="yyyy-MM-dd" /></td>
 													</tr>
@@ -167,12 +150,12 @@
 
 								<div class="row">
 									<div class="col-xs-4">
-										<button type="submit" class="btn btn-sm btn-primary"><i class="glyphicon glyphicon-floppy-disk"></i> Save</button>
+										<button type="button" class="btn btn-sm btn-primary" onclick="check_back();"><i class="glyphicon glyphicon-chevron-left"></i> Back</button>
 									</div>
 									<div class="col-xs-8">
-										<c:if test="${method == 'update'}">
-										<button type="button" class="btn btn-sm btn-warning" onclick="check_generate(${order.id});"><i class="glyphicon glyphicon-list"></i> Generate device token</button>
-										</c:if>
+										<%-- <c:if test="${method == 'update'}">
+										<button type="button" class="btn btn-sm btn-warning" onclick="check_generate(${user.id});"><i class="glyphicon glyphicon-list"></i> Generate device token</button>
+										</c:if> --%>
 									</div>
 								</div>
 
@@ -238,7 +221,7 @@
 			<div class="container-fluid">
 				<div class="row">
 
-					<h2 class="col-sm-12">Order management</h2>
+					<h2 class="col-sm-12">User management</h2>
 
 					<div class="content-column-area col-md-12 col-sm-12">
 
@@ -246,14 +229,14 @@
 							<div class="search-area">
 
 								<form role="form" method="get">
-									<input type="hidden" name="order_id" />
+									<input type="hidden" name="user_id" />
 									<table>
 										<tbody>
 											<tr>
 												<td width="90%">
 													<div class="row">
 														<div class="col-sm-4">
-															<input type="text" name="order_id" class="form-control input-sm" placeholder="#" value="" />
+															<input type="text" name="user_id" class="form-control input-sm" placeholder="#" value="" />
 														</div>
 														<div class="col-sm-4"></div>
 														<div class="col-sm-4"></div>
@@ -274,46 +257,48 @@
 						<div class="fieldset full">
 
 							<div class="list-area">
-								<form name="list" action="<c:url value="/cms/order/delete"></c:url>" method="post">
-									<input type="hidden" name="order_id" />
-									<table class="list" id="order">
+								<form name="list" action="<c:url value="/cms/user/delete"></c:url>" method="post">
+									<input type="hidden" name="user_id" />
+									<table class="list" id="user">
 										<tbody>
 											<tr>
 												<th>#</th>
-												<th>Order code</th>
-												<th>Machine code</th>
-												<th>Dealer code</th>
-												<th>Hardware code</th>
-												<th>Order qty</th>
+												<th>Username</th>
+												<th>Number</th>
+												<th>Nickname</th>
+												<th>Profile image</th>
+												<th>Platform</th>
+												<th>Accepted</th>
 												<th>Create</th>
 												<th>Modify</th>
 												<th width="40"></th>
-												<th width="40" class="text-right">
-													<a href="<c:url value="/cms/order/insert"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Insert">
+												<%-- <th width="40" class="text-right">
+													<a href="<c:url value="/cms/user/insert"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Insert">
 														<i class="glyphicon glyphicon-plus"></i>
 													</a>
-												</th>
+												</th> --%>
 											</tr>
-											<c:forEach items="${order}" var="item">
-											<tr id="<?=$value->order_id?>" class="list-row" onclick=""> <!-- the onclick="" is for fixing the iphone problem -->
+											<c:forEach items="${user}" var="item">
+											<tr id="<?=$value->user_id?>" class="list-row" onclick=""> <!-- the onclick="" is for fixing the iphone problem -->
 												<td title="${item.id}">${item.id}</td>
-												<td class="expandable">${item.orderCode}</td>
-												<td class="expandable">${item.machineCode}</td>
-												<td class="expandable">${item.dealerCode}</td>
-												<td class="expandable">${item.hardwareCode}</td>
-												<td class="expandable">${item.orderQty}</td>
+												<td class="expandable">${item.username}</td>
+												<td class="expandable">${item.number}</td>
+												<td class="expandable">${item.nickname}</td>
+												<td class="expandable"><c:if test="${item.profileImage != ''}"><a href="${item.profileImage}" target="_blank">[Show]</a></c:if></td>
+												<td class="expandable">${item.platform}</td>
+												<td class="expandable">${item.accepted}</td>
 												<td class="expandable"><fmt:formatDate  value="${item.createDate}"  pattern="yyyy-MM-dd" /></td>
 												<td class="expandable"><fmt:formatDate  value="${item.modifyDate}"  pattern="yyyy-MM-dd" /></td>
 												<td class="text-right">
-													<a href="<c:url value="/cms/order/update/${item.id}"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Update">
-														<i class="glyphicon glyphicon-pencil"></i>
+													<a href="<c:url value="/cms/user/update/${item.id}"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Update">
+														<i class="glyphicon glyphicon-user"></i>
 													</a>
 												</td>
-												<td class="text-right">
+												<%-- <td class="text-right">
 													<a onclick="check_delete(${item.id});" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Delete">
 														<i class="glyphicon glyphicon-remove"></i>
 													</a>
-												</td>
+												</td> --%>
 											</tr>
 											</c:forEach>
 
@@ -330,23 +315,23 @@
 										<c:if test="${totalRecord > 0}">
 										<span class="pagination-area">
 											<c:if test="${page-1 > 1}">
-												<a href="<c:url value="/cms/order/select/1"></c:url>" class="btn btn-sm btn-primary">&lt;&lt;</a>
+												<a href="<c:url value="/cms/user/select/1"></c:url>" class="btn btn-sm btn-primary">&lt;&lt;</a>
 											</c:if>
 											<c:if test="${page != 1}">
-												<a href="<c:url value="/cms/order/select/${page-1}"></c:url>" class="btn btn-sm btn-primary">&lt;</a>
+												<a href="<c:url value="/cms/user/select/${page-1}"></c:url>" class="btn btn-sm btn-primary">&lt;</a>
 											</c:if>
 											<c:if test="${page-1 > 0}">
-												<a href="<c:url value="/cms/order/select/${page-1}"></c:url>" class="btn btn-sm btn-primary">${page-1}</a>
+												<a href="<c:url value="/cms/user/select/${page-1}"></c:url>" class="btn btn-sm btn-primary">${page-1}</a>
 											</c:if>
-											<a href="<c:url value="/cms/order/select/${page}"></c:url>" class="btn btn-sm btn-primary disabled">${page}</a>
+											<a href="<c:url value="/cms/user/select/${page}"></c:url>" class="btn btn-sm btn-primary disabled">${page}</a>
 											<c:if test="${page+1 <= totalPage}">
-												<a href="<c:url value="/cms/order/select/${page+1}"></c:url>" class="btn btn-sm btn-primary">${page+1}</a>
+												<a href="<c:url value="/cms/user/select/${page+1}"></c:url>" class="btn btn-sm btn-primary">${page+1}</a>
 											</c:if>
 											<c:if test="${page != totalPage}">
-												<a href="<c:url value="/cms/order/select/${page+1}"></c:url>" class="btn btn-sm btn-primary">&gt;</a>
+												<a href="<c:url value="/cms/user/select/${page+1}"></c:url>" class="btn btn-sm btn-primary">&gt;</a>
 											</c:if>
 											<c:if test="${page+1 < totalPage}">
-												<a href="<c:url value="/cms/order/select/${totalPage}"></c:url>" class="btn btn-sm btn-primary">&gt;&gt;</a>
+												<a href="<c:url value="/cms/user/select/${totalPage}"></c:url>" class="btn btn-sm btn-primary">&gt;&gt;</a>
 											</c:if>
 										</span>
 										</c:if>

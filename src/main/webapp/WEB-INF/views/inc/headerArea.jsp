@@ -18,7 +18,16 @@
 						<div class="menu-column-area col-lg-3 col-md-3 col-sm-6 col-xs-6 col-ms-6">
 							<h3 class="corpcolor-font">User</h3>
 							<ul>
-								<li><a href="<c:url value="/cms/user/select"></c:url>">User</a></li>
+								<li><a href="<c:url value="/cms/user/all/select"></c:url>">All</a></li>
+								<li><a href="<c:url value="/cms/user/app/select"></c:url>">App</a></li>
+							</ul>
+						</div>
+						
+						<div class="menu-column-area col-lg-3 col-md-3 col-sm-6 col-xs-6 col-ms-6">
+							<h3 class="corpcolor-font">User</h3>
+							<ul>
+								<li><a href="<c:url value="/cms/user/facebook/select"></c:url>">Facebook</a></li>
+								<li><a href="<c:url value="/cms/user/twitter/select"></c:url>">Twitter</a></li>
 							</ul>
 						</div>
 

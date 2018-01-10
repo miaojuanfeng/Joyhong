@@ -35,6 +35,30 @@
     from jh_user
     where deleted = 0 and number = #{number,jdbcType=INTEGER}
   </select>
+  <select id="selectCount" resultType="java.lang.Integer">
+    select count(id)
+    from jh_user 
+    where deleted = 0
+  </select>
+  <select id="selectPlatformCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+    select count(id)
+    from jh_user 
+    where deleted = 0 and platform = #{0}
+  </select>
+  <select id="selectOffsetAndLimit" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+	<include refid="Base_Column_List" />
+    from jh_user
+    where deleted = 0 
+    limit #{0},#{1}
+  </select>
+  <select id="selectPlatformOffsetAndLimit" resultMap="BaseResultMap">
+    select 
+	<include refid="Base_Column_List" />
+    from jh_user
+    where deleted = 0 and platform = #{0} 
+    limit #{1},#{2}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from jh_user
     where deleted = 0 and id = #{id,jdbcType=INTEGER}

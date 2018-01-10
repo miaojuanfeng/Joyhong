@@ -243,7 +243,7 @@ public class UserController {
 			Device device = deviceService.selectByPrimaryKey(ud.getDeviceId());
 			if( device != null){
 				JSONObject uTemp = new JSONObject();
-				uTemp.put("id", device.getId());
+				uTemp.put("device_id", device.getId());
 				uTemp.put("device_token", device.getDeviceToken());
 				uTemp.put("device_fcm_token", device.getDeviceFcmToken());
 				uTemp.put("device_name", ud.getDeviceName());

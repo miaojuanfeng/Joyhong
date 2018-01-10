@@ -227,11 +227,8 @@ public class OrderCtrl {
 			Integer number = Integer.valueOf(method);
 			urlStr = urlStr.substring(0, urlStr.lastIndexOf("/"));
 			method = urlStr.substring(urlStr.lastIndexOf("/")+1);
-			if( method.equals("select") ){
-				 
-			}else if( method.equals("update") ){
-				Order order = orderService.selectByPrimaryKey(number);
-				model.addAttribute("order", order);
+			if( method.equals("update") ){
+				model.addAttribute("order", orderService.selectByPrimaryKey(number));
 			}
 		}
 		model.addAttribute("method", method);
