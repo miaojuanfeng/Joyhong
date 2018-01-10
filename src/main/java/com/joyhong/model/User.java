@@ -6,6 +6,8 @@ public class User {
     private Integer id;
 
     private String username;
+    
+    private Integer number;
 
     private String nickname;
     
@@ -37,7 +39,15 @@ public class User {
         this.username = username == null ? null : username.trim();
     }
 
-    public String getNickname() {
+    public Integer getNumber() {
+		return number;
+	}
+
+	public void setNumber(Integer number) {
+		this.number = number;
+	}
+
+	public String getNickname() {
         return nickname;
     }
 

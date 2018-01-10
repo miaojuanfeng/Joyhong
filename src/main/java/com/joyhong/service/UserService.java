@@ -12,6 +12,8 @@ public interface UserService {
 
     User selectByPrimaryKey(Integer id);
     
+    User selectByNumber(Integer number);
+    
     User selectByUsername(String username);
 
     int updateByPrimaryKeySelective(User record);

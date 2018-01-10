@@ -32,6 +32,11 @@ public class UserServiceImpl implements UserService {
 		// TODO Auto-generated method stub
 		return userMapper.selectByPrimaryKey(id);
 	}
+	
+	public User selectByNumber(Integer number) {
+		// TODO Auto-generated method stub
+		return userMapper.selectByNumber(number);
+	}
 
 	public User selectByUsername(String username) {
 		// TODO Auto-generated method stub

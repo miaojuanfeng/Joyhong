@@ -104,6 +104,15 @@ public class UserController {
 		if( user == null ){
 			user = new User();
 			user.setUsername(user_imei);
+			int user_number = 0;
+			while(true){
+				user_number = (int)((Math.random()*9+1)*1000000000);
+				User exist_user = userService.selectByNumber(user_number);
+				if( exist_user == null ){
+					break;
+				}
+			}
+			user.setNumber(user_number);
 			user.setNickname("");
 			user.setProfileImage("");
 			user.setPlatform("app");
@@ -113,6 +122,7 @@ public class UserController {
 			user.setDeleted(0);
 			if( userService.insert(user) == 1 ){
 				uJson.put("user_id", user.getId());
+				uJson.put("user_number", user.getNumber());
 				uJson.put("user_nickname", user.getNickname());
 				
 				retval.put("status", true);
@@ -123,6 +133,7 @@ public class UserController {
 			}
 		}else{
 			uJson.put("user_id", user.getId());
+			uJson.put("user_number", user.getNumber());
 			uJson.put("user_nickname", user.getNickname());
 			
 			retval.put("status", true);
