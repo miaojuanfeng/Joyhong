@@ -216,8 +216,7 @@ public class UserCtrl {
 	public String update(
 			Model model, 
 			@PathVariable("user_id") Integer user_id,
-			@ModelAttribute("redirect") String redirect,
-			@ModelAttribute("referer") String referer
+			@ModelAttribute("redirect") String redirect
 	){
 		if( redirect != null ){
 			return redirect;
@@ -241,17 +240,12 @@ public class UserCtrl {
 					device.add(dMap);
 				}
 			}
-//			List<Device> device = deviceService.selectByOrderId(order.getId());
 			model.addAttribute("device", device);
 			model.addAttribute("deviceTotal", device.size());
 		
 			return "UserView";
 		}
-		if( referer != "" ){
-			return "redirect:"+referer.substring(referer.lastIndexOf("/cms/"));
-		}else{
-			return "redirect:/cms/user/all/select";
-		}
+		return "redirect:/cms/user/all/select";
 	}
 	
 	@ModelAttribute

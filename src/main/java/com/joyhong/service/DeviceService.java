@@ -21,6 +21,10 @@ public interface DeviceService {
     List<Device> selectByOrderId(Integer order_id);
     
     List<String> selectByOrderIdReturnDeviceToken(Integer order_id);
+    
+    int selectCount();
+    
+    List<Device> selectOffsetAndLimit(Integer offset, Integer limit);
 
     int updateByPrimaryKeySelective(Device record);
 

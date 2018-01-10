@@ -43,6 +43,18 @@
     from jh_device
     where deleted = 0 and order_id = #{orderId,jdbcType=INTEGER}
   </select>
+  <select id="selectCount" resultType="java.lang.Integer">
+    select count(id)
+    from jh_device 
+    where deleted = 0
+  </select>
+  <select id="selectOffsetAndLimit" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+	<include refid="Base_Column_List" />
+    from jh_device
+    where deleted = 0 
+    limit #{0},#{1}
+  </select>
   <!-- Michael.Miao -->
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from jh_device

@@ -93,7 +93,7 @@
 										</p>
 										<p class="form-group">
 											<label for="number">Number <span class="highlight">*</span></label>
-											<form:input id="number" path="number" type="text" class="form-control input-sm required" placeholder="Number" />
+											<form:input id="number" path="number" type="number" class="form-control input-sm required" placeholder="Number" />
 										</p>
 										<p class="form-group">
 											<label for="nickname">Nickname <span class="highlight">*</span></label>
@@ -290,7 +290,7 @@
 												<td class="expandable"><fmt:formatDate  value="${item.createDate}"  pattern="yyyy-MM-dd" /></td>
 												<td class="expandable"><fmt:formatDate  value="${item.modifyDate}"  pattern="yyyy-MM-dd" /></td>
 												<td class="text-right">
-													<a href="<c:url value="/cms/user/update/${item.id}"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Update">
+													<a href="<c:url value="/cms/user/update/${item.id}"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Detail">
 														<i class="glyphicon glyphicon-user"></i>
 													</a>
 												</td>

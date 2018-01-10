@@ -55,6 +55,16 @@ public class DeviceServiceImpl implements DeviceService {
 		return deviceMapper.selectLikeDeviceToken("%"+device_token+"%"); 
 	}
 	
+	public int selectCount() {
+		// TODO Auto-generated method stub
+		return deviceMapper.selectCount();
+	}
+
+	public List<Device> selectOffsetAndLimit(Integer offset, Integer limit) {
+		// TODO Auto-generated method stub
+		return deviceMapper.selectOffsetAndLimit(offset, limit);
+	}
+	
 	public List<Device> selectByOrderId(Integer order_id) {
 		// TODO Auto-generated method stub
 		return deviceMapper.selectByOrderId(order_id);

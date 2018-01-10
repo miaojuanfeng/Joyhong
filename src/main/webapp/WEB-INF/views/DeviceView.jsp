@@ -1,25 +1,18 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
 		<title>Device management</title>
 
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<meta name="viewport" content="width=order-width, initial-scale=1, maximum-scale=1">
 
 		<%@ include file="inc/headArea.jsp" %>
 
 		<script>
-		$(function(){
-			$('input[name="device_id"]').focus();
-
-			/* pagination */
-			$('.pagination-area>a, .pagination-area>strong').addClass('btn btn-sm btn-primary');
-			$('.pagination-area>strong').addClass('disabled');
-		});
-
 		function check_delete(id){
 			if(confirm("Confirm?")){
 				$('input[name="device_id"]').val(id);
@@ -28,6 +21,11 @@
 				return false;
 			}
 		}
+		
+		function check_back(){
+			var referer = $('input[name="referer"]').val();
+			window.location.href = referer;
+		}
 		</script>
 	</head>
 
@@ -35,23 +33,6 @@
 
 		<%@ include file="inc/headerArea.jsp" %>
 
-		<script>
-		$(function(){
-			$('.summernote').summernote({
-				toolbar: [
-					['style', ['style']],
-					['font', ['bold', 'italic', 'underline', 'clear']],
-					['color', ['color']],
-					['para', ['ul', 'ol', 'paragraph']]
-				],
-				minHeight: 77
-			});
-
-			/* pagination */
-			$('.pagination-area>a, .pagination-area>strong').addClass('btn btn-sm btn-primary');
-			$('.pagination-area>strong').addClass('disabled');
-		});
-		</script>
 
 
 
@@ -90,179 +71,84 @@
 
 
 
-
-	<c:if test="${router == 'insert' || router == 'update'}">
+	<c:if test="${method == 'insert' || method == 'update'}">
 		<div class="content-area">
 
 			<div class="container-fluid">
 				<div class="row">
 
-					<h2 class="col-sm-12"><a href="<c:url value="/cms/device/select"></c:url>">Device management</a> > ${router} device</h2>
+					<h2 class="col-sm-12"><a href="<c:url value="/cms/device/select"></c:url>">Device management</a> > ${method} device</h2>
 
 					<div class="col-sm-12">
-						<form method="post" enctype="multipart/form-data">
-							<input type="hidden" name="device_id" value="<?=$device->device_id?>" />
-							<input type="hidden" name="device_country" value="<?=$this->session->userdata('country_id')?>" />
-							<input type="hidden" name="referrer" value="<?=$this->agent->referrer()?>" />
+						<form:form name="update" method="post" modelAttribute="device">
+							<input type="hidden" name="device_id" value="${device.id}" />
+							<input type="hidden" name="referer" value="${referer}" />
 							<div class="fieldset">
-								<div class="row">
-									<div class="col-sm-4 col-xs-12 pull-right">
-										<h4 class="corpcolor-font">Basic information</h4>
-										<p class="form-group">
-											<label for="device_menu">Menu <span class="highlight">*</span></label>
-											<select id="z_device_menu_menu_id" name="z_device_menu_menu_id[]" data-placeholder="Menu" class="chosen-select required" multiple="multiple">
-												
-											</select>
-										</p>
-										<?php
-										if($this->router->fetch_method() == 'update'){
-											$device_photo_link = '/assets/uploads/device/'.$device->device_photo;
-											$device_photo = $_SERVER['DOCUMENT_ROOT'].'/minedition'.$device_photo_link;
-											if(file_exists($device_photo)){
-												echo '<h4 class="corpcolor-font">Device photo</h4>';
-												echo '<img class="box-bg" src="'.base_url($device_photo_link).'?'.time().'" />';
-											}
-											// $device_photos_link = '/assets/images/device_photos/'.$device->device_id.'/';
-											// foreach($device_photos as $key => $value){
-											// 	echo ($key == 0) ? '<h4 class="corpcolor-font">Photos</h4>' : '';
-											// 	echo '<div class="box-bg" id="box_'.$key.'" style="background-image:url('.$device_photos_link.$value.'?'.time().');">';
-											// 	echo '<div class="box-function-area">';
-											// 	echo '<div class="text-right">';
-											// 	echo '<input type="checkbox" id="'.$key.'" name="photos_remove[]" value="'.$value.'" />';
-											// 	echo '<a id="a_'.$key.'" onclick="check_photos_delete('.$key.');" class="btn btn-sm btn-primary" data-toggle="tooltip" title="åªé¤">';
-											// 	echo '<i class="glyphicon glyphicon-remove"></i>';
-											// 	echo '</a>';
-											// 	echo '</div>';
-											// 	echo '</div>';
-											// 	echo '</div>';
-											// }
-										}
-										?>
-									</div>
+								<div class="row form-group">
 									<div class="col-sm-4 col-xs-12">
 										<h4 class="corpcolor-font">Basic information</h4>
 										<p class="form-group">
-											<label for="device_name">Name <span class="highlight">*</span></label>
-											<input id="device_name" name="device_name" type="text" class="form-control input-sm required" placeholder="Name" value="<?=$device->device_name?>" />
+											<label for="device_token">Device token <span class="highlight">*</span></label>
+											<form:input id="device_token" path="deviceToken" type="text" class="form-control input-sm required" placeholder="Device token" />
 										</p>
 										<p class="form-group">
-											<label for="device_author">Author <span class="highlight">*</span></label>
-											<select id="device_author" name="device_author" data-placeholder="author" class="chosen-select">
-												<?php
-												foreach($author as $key => $value){
-													$selected = ($value->ai_id == $device->device_author) ? ' selected="selected"' : "" ;
-													echo '<option value="'.$value->ai_id.'"'.$selected.'>'.$value->ai_name.'</option>';
-												}
-												?>
-											</select>
+											<label for="device_fcm_token">Device fcm token <span class="highlight">*</span></label>
+											<form:input id="device_fcm_token" path="deviceFcmToken" type="text" class="form-control input-sm required" placeholder="Device fcm token" />
 										</p>
-										<p class="form-group">
-											<label for="device_illustrator">Illustrator <span class="highlight">*</span></label>
-											<select id="device_illustrator" name="device_illustrator" data-placeholder="illustrator" class="chosen-select">
-												<?php
-												foreach($illustrator as $key => $value){
-													$selected = ($value->ai_id == $device->device_illustrator) ? ' selected="selected"' : "" ;
-													echo '<option value="'.$value->ai_id.'"'.$selected.'>'.$value->ai_name.'</option>';
-												}
-												?>
-											</select>
-										</p>
-										<p class="form-group">
-											<label for="device_isbn">ISBN <span class="highlight">*</span></label>
-											<input id="device_isbn" name="device_isbn" type="text" class="form-control input-sm required" placeholder="ISBN" value="<?=$device->device_isbn?>" />
-										</p>
-										<p class="form-group">
-											<label for="device_price">Price <span class="highlight">*</span></label>
-											<input id="device_price" name="device_price" type="text" class="form-control input-sm required" placeholder="Price" value="<?=$device->device_price?>" />
-										</p>
-										<p class="form-group">
-											<label for="device_pages">Pages <span class="highlight">*</span></label>
-											<input id="device_pages" name="device_pages" type="text" class="form-control input-sm required" placeholder="Pages" value="<?=$device->device_pages?>" />
-										</p>
-										<p class="form-group">
-											<label for="device_size">Size <span class="highlight">*</span></label>
-											<input id="device_size" name="device_size" type="text" class="form-control input-sm required" placeholder="Size" value="<?=$device->device_size?>" />
-										</p>
-										<p class="form-group">
-											<label for="device_shopping_cart">Shopping cart</label>
-											<input id="device_shopping_cart" name="device_shopping_cart" type="text" class="form-control input-sm" placeholder="Shopping cart" value="<?=$device->device_shopping_cart?>" />
-											<small>Please type the link with http://</small>
-										</p>
-										<p class="form-group">
-											<label for="device_sort">Sort</label>
-											<input id="device_sort" name="device_sort" type="text" class="form-control input-sm" placeholder="Size" value="<?=$device->device_sort?>" />
-										</p>
-										<p class="form-group">
-											<label for="device_hide">Hide?</label>
-											<select id="device_hide" name="device_hide" data-placeholder="Hide" class="chosen-select">
-												<option value="1" <?php if($device->device_hide == 1) echo "selected='selected'"; ?>>Y</option>
-												<option value="0" <?php if($device->device_hide == 0) echo "selected='selected'"; ?>>N</option>
-											</select>
-										</p>
-										<?php
-										if( $this->session->userdata('country_id') == 2 ){
-										?>
-										<p class="form-group">
-											<label for="device_sodia_code">Sodia code <span class="highlight">*</span></label>
-											<input id="device_sodia_code" name="device_sodia_code" type="text" class="form-control input-sm required" placeholder="Sodia code" value="<?=$device->device_sodia_code?>" />
-										</p>
-										<?php
-										}
-										?>
 									</div>
-									<div class="col-sm-4 col-xs-12">
+									<div class="col-sm-8 col-xs-12 pull-right">
+										<c:if test="${method == 'update'}">
 										<h4 class="corpcolor-font">Related information</h4>
-										<p class="form-group">
-											<?php if($this->router->fetch_method() == 'update'){ ?>
-											<label for="device_photo">Device cover <span class="highlight">(360px * 360px)</span></label>
-											<input id="device_photo" name="device_photo" type="file" accept="image/*" />
-											<?php }else{ ?>
-											<label for="device_photo">Device cover <span class="highlight">* (360px * 360px)</span></label>
-											<input id="device_photo" name="device_photo" type="file" accept="image/*" class="required" />
-											<?php } ?>
-										</p>
-										<p class="form-group">
-											<?php if($this->router->fetch_method() == 'update'){ ?>
-											<label for="device_cover">Device cover (High resolutions) <span class="highlight">!!!</span></label>
-											<input id="device_cover" name="device_cover" type="file" accept="image/*" />
-											<?php }else{ ?>
-											<label for="device_cover">Device cover (High resolutions) <span class="highlight">!!!</span></label>
-											<input id="device_cover" name="device_cover" type="file" accept="image/*" class="required" />
-											<?php } ?>
-										</p>
-										<p class="form-group">
-											<?php if($this->router->fetch_method() == 'update'){ ?>
-											<label for="device_file">Download file <span class="highlight">!!!</span></label>
-											<input id="device_file" name="device_file" type="file" accept="image/*" />
-											<?php }else{ ?>
-											<label for="device_file">Download file <span class="highlight">!!!</span></label>
-											<input id="device_file" name="device_file" type="file" accept="image/*" class="required" />
-											<?php } ?>
-										</p>
-										<p class="form-group">
-											<label>Flip device link <span class="highlight">!!!</span></label>
-											<input type="text" class="form-control input-sm" placeholder="Flip device link" />
-											<small>Please type the link with http://</small>
-										</p>
-										<p class="form-group">
-											<label for="device_info">Information</label>
-											<textarea id="device_info" name="device_info" class="form-control input-sm" placeholder="Information"><?=$device->device_info?></textarea>
-										</p>
-										<p class="form-group">
-											<label for="device_desc">Description</label>
-											<textarea id="device_desc" name="device_desc" class="form-control input-sm summernote" placeholder="Information"><?=$device->device_desc?></textarea>
-										</p>
+										<div class="list-area">
+											<table class="list" id="device">
+												<tbody>
+													<tr>
+														<th>#</th>
+														<th>Username</th>
+														<th>Number</th>
+														<th>Nickname</th>
+														<th>Platform</th>
+														<th>Create</th>
+														<th>Modify</th>
+													</tr>
+													<c:forEach items="${user}" var="item">
+													<tr id="<?=$value->device_id?>" class="list-row" onclick=""> <!-- the onclick="" is for fixing the iphone problem -->
+														<td title="${item.id}">${item.id}</td>
+														<td class="expandable">${item.username}</td>
+														<td class="expandable">${item.number}</td>
+														<td class="expandable">${item.nickname}</td>
+														<td class="expandable">${item.platform}</td>
+														<td class="expandable"><fmt:formatDate  value="${item.createDate}"  pattern="yyyy-MM-dd" /></td>
+														<td class="expandable"><fmt:formatDate  value="${item.modifyDate}"  pattern="yyyy-MM-dd" /></td>
+													</tr>
+													</c:forEach>
+		
+													<c:if test="${userTotal==0}">
+													<tr class="list-row">
+														<td colspan="10"><a href="#" class="btn btn-sm btn-primary">No record found</a></td>
+													</tr>
+													</c:if>
+		
+												</tbody>
+											</table>
+										</div>
+										</c:if>
 									</div>
 								</div>
 
 								<div class="row">
-									<div class="col-xs-12">
-										<button type="submit" class="btn btn-sm btn-primary"><i class="glyphicon glyphicon-floppy-disk"></i> Save</button>
+									<div class="col-xs-4">
+										<button type="button" class="btn btn-sm btn-primary" onclick="check_back();"><i class="glyphicon glyphicon-chevron-left"></i> Back</button>
+									</div>
+									<div class="col-xs-8">
+										<%-- <c:if test="${method == 'update'}">
+										<button type="button" class="btn btn-sm btn-warning" onclick="check_generate(${device.id});"><i class="glyphicon glyphicon-list"></i> Generate device token</button>
+										</c:if> --%>
 									</div>
 								</div>
 
 							</div>
-						</form>
+						</form:form>
 					</div>
 
 				</div>
@@ -317,7 +203,7 @@
 
 
 
-	<c:if test="${router == 'select'}">
+	<c:if test="${method == 'select'}">
 		<div class="content-area">
 
 			<div class="container-fluid">
@@ -365,20 +251,16 @@
 										<tbody>
 											<tr>
 												<th>#</th>
-												<th>
-													Device Token
-												</th>
-												<th>
-													FCM Token
-												</th>
-												<th>
-													Create
-												</th>
-												<th>
-													Modify
-												</th>
+												<th>Device token</th>
+												<th>Device Fcm token</th>
+												<th>Create</th>
+												<th>Modify</th>
 												<th width="40"></th>
-												<th width="40" class="text-right"></th>
+												<%-- <th width="40" class="text-right">
+													<a href="<c:url value="/cms/device/insert"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Insert">
+														<i class="glyphicon glyphicon-plus"></i>
+													</a>
+												</th> --%>
 											</tr>
 											<c:forEach items="${device}" var="item">
 											<tr id="<?=$value->device_id?>" class="list-row" onclick=""> <!-- the onclick="" is for fixing the iphone problem -->
@@ -388,52 +270,56 @@
 												<td class="expandable"><fmt:formatDate  value="${item.createDate}"  pattern="yyyy-MM-dd" /></td>
 												<td class="expandable"><fmt:formatDate  value="${item.modifyDate}"  pattern="yyyy-MM-dd" /></td>
 												<td class="text-right">
-													<a href="<c:url value="/cms/device/update/${item.id}"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Update">
-														<i class="glyphicon glyphicon-pencil"></i>
+													<a href="<c:url value="/cms/device/update/${item.id}"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Detail">
+														<i class="glyphicon glyphicon glyphicon-hdd"></i>
 													</a>
 												</td>
-												<td class="text-right">
+												<%-- <td class="text-right">
 													<a onclick="check_delete(${item.id});" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Delete">
 														<i class="glyphicon glyphicon-remove"></i>
 													</a>
-												</td>
+												</td> --%>
 											</tr>
 											</c:forEach>
 
-											<?php if(!$devices){ ?>
+											<c:if test="${totalRecord == 0}">
 											<tr class="list-row">
 												<td colspan="10"><a href="#" class="btn btn-sm btn-primary">No record found</a></td>
 											</tr>
-											<?php } ?>
+											</c:if>
 
 										</tbody>
 									</table>
-									<%-- <div class="page-area">
-										<span class="btn btn-sm btn-default"><?php print_r($num_rows); ?></span>
-										<?=$this->pagination->create_links()?>
-									</div> --%>
+									<div class="page-area">
+										<span class="btn btn-sm btn-default">${totalRecord}</span>
+										<c:if test="${totalRecord > 0}">
+										<span class="pagination-area">
+											<c:if test="${page-1 > 1}">
+												<a href="<c:url value="/cms/device/select/1"></c:url>" class="btn btn-sm btn-primary">&lt;&lt;</a>
+											</c:if>
+											<c:if test="${page != 1}">
+												<a href="<c:url value="/cms/device/select/${page-1}"></c:url>" class="btn btn-sm btn-primary">&lt;</a>
+											</c:if>
+											<c:if test="${page-1 > 0}">
+												<a href="<c:url value="/cms/device/select/${page-1}"></c:url>" class="btn btn-sm btn-primary">${page-1}</a>
+											</c:if>
+											<a href="<c:url value="/cms/device/select/${page}"></c:url>" class="btn btn-sm btn-primary disabled">${page}</a>
+											<c:if test="${page+1 <= totalPage}">
+												<a href="<c:url value="/cms/device/select/${page+1}"></c:url>" class="btn btn-sm btn-primary">${page+1}</a>
+											</c:if>
+											<c:if test="${page != totalPage}">
+												<a href="<c:url value="/cms/device/select/${page+1}"></c:url>" class="btn btn-sm btn-primary">&gt;</a>
+											</c:if>
+											<c:if test="${page+1 < totalPage}">
+												<a href="<c:url value="/cms/device/select/${totalPage}"></c:url>" class="btn btn-sm btn-primary">&gt;&gt;</a>
+											</c:if>
+										</span>
+										</c:if>
+									</div>
 								</form>
 							</div> <!-- list-area -->                           
 						</div>
 					</div>
-					<!-- <div class="content-column-area col-md-3 col-sm-12">
-						<div class="fieldset right">
-							<div class="list-area">
-								<table>
-									<tbody>
-										<tr>
-											<th>#</th>
-											<th>Name</th>
-										</tr>
-										<tr class="list-row"> the onclick="" is for fixing the iphone problem
-											<td>test</td>
-											<td>test</td>
-										</tr>
-									</tbody>
-								</table>
-							</div> list-area
-						</div>
-					</div> -->
 				</div>
 			</div>
 
