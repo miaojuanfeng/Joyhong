@@ -30,6 +30,13 @@
 								<li><a href="<c:url value="/cms/user/twitter/select"></c:url>">Twitter</a></li>
 							</ul>
 						</div>
+						
+						<div class="menu-column-area col-lg-3 col-md-3 col-sm-6 col-xs-6 col-ms-6">
+							<h3 class="corpcolor-font">System</h3>
+							<ul>
+								<li><a href="<c:url value="/cms/config/update"></c:url>">Config</a></li>
+							</ul>
+						</div>
 
 					</div>
 				</div>

@@ -79,6 +79,11 @@
 	    <property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
 	
+	<bean id="configMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">  
+	    <property name="mapperInterface" value="com.joyhong.dao.ConfigMapper" />  
+	    <property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+	
 	<bean id="userDeviceMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">  
 	    <property name="mapperInterface" value="com.joyhong.dao.UserDeviceMapper" />  
 	    <property name="sqlSessionFactory" ref="sqlSessionFactory" />
