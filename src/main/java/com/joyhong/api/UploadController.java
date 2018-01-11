@@ -1,8 +1,13 @@
 package com.joyhong.api;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
+import java.net.HttpURLConnection;
+import java.net.URLDecoder;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +36,8 @@ public class UploadController {
 	
 	private String tempPath = "/home/wwwroot/default/upload/";
 	private String filePath = "/home/wwwroot/default/upload/";
+//	private String tempPath = "/Users/user/Desktop/";
+//	private String filePath = "/Users/user/Desktop/";
 	private String fileUrl = "http://47.89.32.89/upload/";
 	
 	/**
@@ -43,10 +50,11 @@ public class UploadController {
 	@ResponseBody
 	public String upload(HttpServletRequest request) throws Exception {
 		JSONObject retval = new JSONObject();
+		
 		/*
 		 * 获取文件大小
 		 */
-		String fileSize = request.getHeader("File-Size");
+		String fileSize = URLDecoder.decode(request.getHeader("File-Size"), "UTF-8");
 		int endPoint = 0;
 		if( null != fileSize ){
 			try{
@@ -64,7 +72,7 @@ public class UploadController {
 		/*
 		 * 获取字节范围
 		 */
-		String range = request.getHeader("File-Range");
+		String range = URLDecoder.decode(request.getHeader("File-Range"), "UTF-8");
         int start = 0;
         int end = 0;
         if( null != range && range.startsWith("bytes=") ){
@@ -110,7 +118,7 @@ public class UploadController {
         /*
          * 获取文件名
          */
-        String fileName = request.getHeader("Content-Disposition");
+        String fileName = URLDecoder.decode(request.getHeader("Content-Disposition"), "UTF-8");
         if( null != fileName ){
 	        fileName = new String(fileName.getBytes("ISO8859-1"), "UTF-8");
 	        int index = fileName.lastIndexOf("filename=");
@@ -124,6 +132,14 @@ public class UploadController {
         }else{
         	retval.put("status", false);
 			retval.put("msg", "Content-Disposition property is not set");
+			return retval.toString();
+        }
+        /*
+         * 检查Body二进制数据长度是否等于File-Range长度
+         */
+        if(request.getContentLength()!=requestSize){
+        	retval.put("status", false);
+			retval.put("msg", "The size of the Body is not equal to the size of the File-Range");
 			return retval.toString();
         }
         /*
@@ -141,24 +157,13 @@ public class UploadController {
         RandomAccessFile oSavedFile = new RandomAccessFile(tempPath + fileName + ".temp", "rw"); 
         long nPos = start-1;
         
-        byte[] buffer = new byte[4096];
-        
-        int needSize = requestSize; 
-        
-	    oSavedFile.seek(nPos); 
+	    oSavedFile.seek(nPos);
 	    
-	    while(needSize > 0){
-	    	int len = is.read(buffer);
-	    	if(needSize < buffer.length){  
-	    		oSavedFile.write(buffer, 0, needSize);  
-            } else {  
-            	oSavedFile.write(buffer, 0, len);  
-                if(len < buffer.length){  
-                    break;  
-                }
-            }
-            needSize -= buffer.length;
-	    }
+	    byte[] dataOrigin = new byte[requestSize];
+	    DataInputStream in = new DataInputStream(is);
+	    in.readFully(dataOrigin);
+	    oSavedFile.write(dataOrigin, 0, dataOrigin.length);
+	    in.close();
 		
 		oSavedFile.close();
         
@@ -167,7 +172,7 @@ public class UploadController {
 			/*
     		 * 获取用户id
     		 */
-    		String userId = request.getHeader("User-Id");
+    		String userId = URLDecoder.decode(request.getHeader("User-Id"), "UTF-8");
     		int user_id = 0;
     		if( null != userId ){
     			try{
@@ -185,7 +190,7 @@ public class UploadController {
     		/*
     		 * 获取文件描述
     		 */
-    		String fileDesc = request.getHeader("File-Desc");
+    		String fileDesc = URLDecoder.decode(request.getHeader("File-Desc"), "UTF-8");
     		String file_desc = "";
     		if( null != fileDesc ){
     			file_desc = fileDesc;
@@ -206,6 +211,7 @@ public class UploadController {
 					retval.put("status", true);
 					temp.put("complete", true);
 					temp.put("file", fileUrl + fileName);
+					retval.put("data", temp);
 				}else{
 					retval.put("status", false);
 					retval.put("msg", "Save file url to database failed, please try again later");
@@ -220,8 +226,9 @@ public class UploadController {
 			temp.put("start", start);
 			temp.put("end", end);
 			temp.put("next", end+1);
+			retval.put("data", temp);
 		}
-		retval.put("data", temp);
+		
         
         return retval.toString();
 	}

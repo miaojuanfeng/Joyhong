@@ -308,6 +308,7 @@ public class FacebookController {
 			
 			user = new com.joyhong.model.User();
 			user.setUsername(sender_id);
+			user.setNumber(0);
 			user.setNickname(username);
 			if( uJson.has("profile_pic") ){
 				user.setProfileImage(uJson.getString("profile_pic"));
