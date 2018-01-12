@@ -61,29 +61,24 @@ public class DeviceController {
 		Device device = new Device();
 		device.setDeviceToken(device_token);
 		device.setDeviceFcmToken(device_fcm_token);
-		device.setCreateDate(new Date());
-		device.setModifyDate(new Date());
-		device.setDeleted(0);
 		
 		Device exist_device = this.deviceService.selectByDeviceToken(device_token);
-		if( exist_device == null ){
-			if( this.deviceService.insert(device) == 1 ){
-				retval.put("status", true);
-				retval.put("msg", "Success");
-			}else{
-				retval.put("status", false);
-				logger.info("Save device to database failed: " + device_token + " - " + device_fcm_token);
-			}
-		}else{
+		if( exist_device != null ){
+			Date now = new Date();
 			device.setId(exist_device.getId());
-			device.setCreateDate(exist_device.getCreateDate());
-			if( this.deviceService.updateByPrimaryKey(device) == 1 ){
+			device.setLoginTime(now);
+			device.setHeartbeatTime(now);
+			if( this.deviceService.updateByPrimaryKeySelective(device) == 1 ){
 				retval.put("status", true);
 				retval.put("msg", "Success");
 			}else{
 				retval.put("status", false);
+				retval.put("msg", "Update device failed, please try again later");
 				logger.info("Update device to database failed: " + device_token + " - " + device_fcm_token);
 			}
+		}else{
+			retval.put("status", false);
+			retval.put("msg", "Unable to find the device");
 		}
 		
 		return retval.toString();
@@ -377,6 +372,39 @@ public class DeviceController {
 				temp.put("download_link", "");
 			}
 			retval.put("data", temp);
+		}else{
+			retval.put("status", false);
+			retval.put("msg", "Unable to find the device");
+		}
+		
+		return retval.toString();
+	}
+	
+	/**
+	 * 心跳
+	 * @url {base_url}/device/beat
+	 * @method POST
+	 * @param device_id
+	 * @return json
+	 */
+	@RequestMapping(value="/beat", method=RequestMethod.POST)
+	@ResponseBody
+	public String beat(@RequestParam("device_id") Integer device_id){
+		JSONObject retval = new JSONObject();
+		
+		Device exist_device = this.deviceService.selectByPrimaryKey(device_id);
+		if( exist_device != null ){
+			
+			Device device = new Device();
+			device.setId(exist_device.getId());
+			device.setHeartbeatTime(new Date());
+			if( deviceService.updateByPrimaryKeySelective(device) == 1 ){
+				retval.put("status", true);
+				retval.put("msg", "Success");
+			}else{
+				retval.put("status", false);
+				retval.put("msg", "Update device status failed, please try again later");
+			}
 		}else{
 			retval.put("status", false);
 			retval.put("msg", "Unable to find the device");

@@ -6,12 +6,14 @@
     <result column="order_id" jdbcType="INTEGER" property="orderId" />
     <result column="device_token" jdbcType="VARCHAR" property="deviceToken" />
     <result column="device_fcm_token" jdbcType="VARCHAR" property="deviceFcmToken" />
+    <result column="login_time" jdbcType="TIMESTAMP" property="loginTime" />
+    <result column="heartbeat_time" jdbcType="TIMESTAMP" property="heartbeatTime" />
     <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
     <result column="modify_date" jdbcType="TIMESTAMP" property="modifyDate" />
     <result column="deleted" jdbcType="INTEGER" property="deleted" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, order_id, device_token, device_fcm_token, create_date, modify_date, deleted
+    id, order_id, device_token, device_fcm_token, login_time, heartbeat_time, create_date, modify_date, deleted
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -61,11 +63,11 @@
     where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.joyhong.model.Device">
-    insert into jh_device (id, order_id, device_token, device_fcm_token, 
+    insert into jh_device (id, order_id, device_token, device_fcm_token, login_time, heartbeat_time, 
       create_date, modify_date, deleted
       )
     values (#{id,jdbcType=INTEGER}, #{orderId,jdbcType=INTEGER}, #{deviceToken,jdbcType=VARCHAR}, #{deviceFcmToken,jdbcType=VARCHAR}, 
-      #{createDate,jdbcType=TIMESTAMP}, #{modifyDate,jdbcType=TIMESTAMP}, #{deleted,jdbcType=INTEGER}
+       #{loginTime,jdbcType=TIMESTAMP}, #{heartbeatTime,jdbcType=TIMESTAMP}, #{createDate,jdbcType=TIMESTAMP}, #{modifyDate,jdbcType=TIMESTAMP}, #{deleted,jdbcType=INTEGER}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.joyhong.model.Device">
@@ -82,6 +84,12 @@
       </if>
       <if test="deviceFcmToken != null">
         device_fcm_token,
+      </if>
+      <if test="loginTime != null">
+        login_time,
+      </if>
+      <if test="heartbeatTime != null">
+        heartbeat_time,
       </if>
       <if test="createDate != null">
         create_date,
@@ -106,6 +114,12 @@
       <if test="deviceFcmToken != null">
         #{deviceFcmToken,jdbcType=VARCHAR},
       </if>
+      <if test="loginTime != null">
+        #{loginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="heartbeatTime != null">
+        #{heartbeatTime,jdbcType=TIMESTAMP},
+      </if>
       <if test="createDate != null">
         #{createDate,jdbcType=TIMESTAMP},
       </if>
@@ -126,6 +140,12 @@
       <if test="deviceFcmToken != null">
         device_fcm_token = #{deviceFcmToken,jdbcType=VARCHAR},
       </if>
+      <if test="loginTime != null">
+        login_time = #{loginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="heartbeatTime != null">
+        heartbeat_time = #{heartbeatTime,jdbcType=TIMESTAMP},
+      </if>
       <if test="createDate != null">
         create_date = #{createDate,jdbcType=TIMESTAMP},
       </if>
@@ -142,9 +162,7 @@
     update jh_device
     set device_token = #{deviceToken,jdbcType=VARCHAR},
       device_fcm_token = #{deviceFcmToken,jdbcType=VARCHAR},
-      create_date = #{createDate,jdbcType=TIMESTAMP},
-      modify_date = #{modifyDate,jdbcType=TIMESTAMP},
-      deleted = #{deleted,jdbcType=INTEGER}
+      modify_date = #{modifyDate,jdbcType=TIMESTAMP} 
     where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

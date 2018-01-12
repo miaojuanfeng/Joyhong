@@ -11,6 +11,10 @@ public class Device {
 
     private String deviceFcmToken;
 
+    private Date loginTime;
+    
+    private Date heartbeatTime;
+    
     private Date createDate;
 
     private Date modifyDate;
@@ -49,7 +53,23 @@ public class Device {
         this.deviceFcmToken = deviceFcmToken == null ? null : deviceFcmToken.trim();
     }
 
-    public Date getCreateDate() {
+    public Date getLoginTime() {
+		return loginTime;
+	}
+
+	public void setLoginTime(Date loginTime) {
+		this.loginTime = loginTime;
+	}
+
+	public Date getHeartbeatTime() {
+		return heartbeatTime;
+	}
+
+	public void setHeartbeatTime(Date heartbeatTime) {
+		this.heartbeatTime = heartbeatTime;
+	}
+
+	public Date getCreateDate() {
         return createDate;
     }
 

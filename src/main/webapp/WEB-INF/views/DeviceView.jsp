@@ -95,6 +95,14 @@
 											<label for="device_fcm_token">Device fcm token <span class="highlight"></span></label>
 											<form:input id="device_fcm_token" path="deviceFcmToken" type="text" class="form-control input-sm" placeholder="Device fcm token" />
 										</p>
+										<p class="form-group">
+											<label for="login_time">Login time <span class="highlight"></span></label>
+											<input id="login_time" name="loginTime" type="text" class="form-control input-sm" placeholder="Login time" value="<fmt:formatDate  value="${device.loginTime}"  pattern="yyyy-MM-dd HH:mm:ss" />" />
+										</p>
+										<p class="form-group">
+											<label for="heartbeat_time">Heartbeat time <span class="highlight"></span></label>
+											<input id="heartbeat_time" name="heartbeatTime" type="text" class="form-control input-sm" placeholder="Heartbeat time" value="<fmt:formatDate  value="${device.heartbeatTime}"  pattern="yyyy-MM-dd HH:mm:ss" />" />
+										</p>
 									</div>
 									<div class="col-sm-8 col-xs-12 pull-right">
 										<c:if test="${method == 'update'}">
@@ -253,6 +261,7 @@
 												<th>#</th>
 												<th>Device token</th>
 												<th>Device Fcm token</th>
+												<th>Alive time / s</th>
 												<th>Create</th>
 												<th>Modify</th>
 												<th width="40"></th>
@@ -267,6 +276,8 @@
 												<td title="${item.id}">${item.id}</td>
 												<td class="expandable">${item.deviceToken}</td>
 												<td class="expandable">${item.deviceFcmToken}</td>
+												<c:set var="aliveTime" value="${item.heartbeatTime.time - item.loginTime.time}"/>
+												<td class="expandable"><fmt:formatNumber value="${aliveTime/1000}" pattern="#0"/></td>
 												<td class="expandable"><fmt:formatDate  value="${item.createDate}"  pattern="yyyy-MM-dd" /></td>
 												<td class="expandable"><fmt:formatDate  value="${item.modifyDate}"  pattern="yyyy-MM-dd" /></td>
 												<td class="text-right">

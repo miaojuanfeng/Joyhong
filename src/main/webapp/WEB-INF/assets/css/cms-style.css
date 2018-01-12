@@ -24,11 +24,18 @@ table tr th a {
 	color: #000;
 }
 a {
-	color: #333;
+	color: #5897fb;
 }
 a:hover {
-	color: #fff;
+	transition: color .8s;
+	color: #73bbde;
 	text-decoration: underline;
+}
+.dashboard-box-bottom a{
+	color: #333;
+}
+.dashboard-box-bottom a:hover{
+	color: #fff !important;
 }
 h1 {
 	font-size: 20px;

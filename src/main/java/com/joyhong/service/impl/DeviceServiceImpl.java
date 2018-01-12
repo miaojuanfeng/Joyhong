@@ -1,5 +1,6 @@
 package com.joyhong.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,12 @@ public class DeviceServiceImpl implements DeviceService {
 
 	public int insert(Device record) {
 		// TODO Auto-generated method stub
+		Date now = new Date();
+		record.setLoginTime(null);
+		record.setHeartbeatTime(null);
+		record.setCreateDate(now);
+		record.setModifyDate(now);
+		record.setDeleted(0);
 		return deviceMapper.insert(record);
 	}
 
@@ -37,11 +44,13 @@ public class DeviceServiceImpl implements DeviceService {
 
 	public int updateByPrimaryKeySelective(Device record) {
 		// TODO Auto-generated method stub
+		record.setModifyDate(new Date());
 		return deviceMapper.updateByPrimaryKeySelective(record);
 	}
 
 	public int updateByPrimaryKey(Device record) {
 		// TODO Auto-generated method stub
+		record.setModifyDate(new Date());
 		return deviceMapper.updateByPrimaryKey(record);
 	}
 
