@@ -1,7 +1,5 @@
 package com.joyhong.service;
 
-import java.util.List;
-
 import com.joyhong.model.Config;
 
 public interface ConfigService {
@@ -13,11 +11,13 @@ public interface ConfigService {
 
     Config selectByPrimaryKey(Integer id);
     
-    List<Config> selectAllRecord();
+    Config selectByTitle(String title);
 
     int updateByPrimaryKeySelective(Config record);
 
     int updateByPrimaryKeyWithBLOBs(Config record);
 
     int updateByPrimaryKey(Config record);
+    
+    int updateByTitleWithBLOBs(Config config);
 }

@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,13 +19,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.joyhong.model.Config;
 import com.joyhong.model.Device;
 import com.joyhong.model.Order;
 import com.joyhong.model.User;
 import com.joyhong.model.UserDevice;
+import com.joyhong.service.ConfigService;
 import com.joyhong.service.DeviceService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
+
+import net.sf.json.JSONObject;
 
 @Controller
 @RequestMapping("cms/user")
@@ -38,6 +43,9 @@ public class UserCtrl {
 	
 	@Autowired
 	private UserDeviceService userDeviceService;
+	
+	@Autowired
+	private ConfigService configService;
 	
 	/**
 	 * 用户登录
@@ -74,18 +82,23 @@ public class UserCtrl {
 		
 		String error = null;
 		
-		if( user_username != null && user_username.equals("joyhong") ){
-			if( user_password != null && user_password.equals("joyhong") ){
+		Config administrator = configService.selectByTitle("Administrator");
+		JSONObject administratorObj = JSONObject.fromObject(administrator.getValue());
+		String configUsername = administratorObj.getString("username");
+		String configPassword = administratorObj.getString("password");
+		
+		if( user_username != null && configUsername.equals(user_username) ){
+			if( user_password != null && configPassword.equals(DigestUtils.md5Hex(user_password)) ){
 				User user = new User();
 				user.setNickname(user_username);
 				httpSession.setAttribute("user", user);
 				
 				return "redirect:/cms/device/select";
 			}else{
-				error = "Incorrect password";
+				error = "Incorrect Password";
 			}
 		}else if( user_username != null ){
-			error = "The username does not exist";
+			error = "The Username does not exist";
 		}
 		
 		if( error != null ){

@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.joyhong.model.Device;
+import com.joyhong.model.Order;
 import com.joyhong.model.User;
 import com.joyhong.model.UserDevice;
 import com.joyhong.service.DeviceService;
+import com.joyhong.service.OrderService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
 
@@ -37,6 +39,9 @@ public class DeviceController {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private OrderService orderService;
 	
 	@Autowired
 	private UserDeviceService userDeviceService;
@@ -340,6 +345,41 @@ public class DeviceController {
 		}else{
 			retval.put("status", false);
 			retval.put("msg", "The device_id count should be equal to the device_name count.");
+		}
+		
+		return retval.toString();
+	}
+	
+	/**
+	 * 获取设备版本更新信息
+	 * @url {base_url}/device/version
+	 * @method POST
+	 * @param device_id 设备数据库主键
+	 * @return json
+	 */
+	@RequestMapping(value="/version", method=RequestMethod.POST)
+	@ResponseBody
+	public String version(@RequestParam("device_id") Integer device_id){
+		JSONObject retval = new JSONObject();
+		JSONObject temp = new JSONObject();
+		
+		Device device = deviceService.selectByPrimaryKey(device_id);
+		if( device != null ){
+			retval.put("status", true);
+			
+			Integer order_id = device.getOrderId();
+			Order order = orderService.selectByPrimaryKey(order_id);
+			if( order != null ){
+				temp.put("last_version", order.getLastVersion());
+				temp.put("download_link", order.getDownloadLink());
+			}else{
+				temp.put("last_version", "");
+				temp.put("download_link", "");
+			}
+			retval.put("data", temp);
+		}else{
+			retval.put("status", false);
+			retval.put("msg", "Unable to find the device");
 		}
 		
 		return retval.toString();

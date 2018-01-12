@@ -1,7 +1,5 @@
 package com.joyhong.dao;
 
-import java.util.List;
-
 import com.joyhong.model.Config;
 
 public interface ConfigMapper {
@@ -13,11 +11,13 @@ public interface ConfigMapper {
 
     Config selectByPrimaryKey(Integer id);
     
-    List<Config> selectAllRecord();
+    Config selectByTitle(String title);
 
     int updateByPrimaryKeySelective(Config record);
 
     int updateByPrimaryKeyWithBLOBs(Config record);
 
     int updateByPrimaryKey(Config record);
+    
+    int updateByTitleWithBLOBs(Config config);
 }

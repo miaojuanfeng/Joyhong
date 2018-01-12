@@ -1,6 +1,6 @@
 package com.joyhong.service.impl;
 
-import java.util.List;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,9 +35,9 @@ public class ConfigServiceImpl implements ConfigService {
 		return configMapper.selectByPrimaryKey(id);
 	}
 	
-	public List<Config> selectAllRecord() {
+	public Config selectByTitle(String title) {
 		// TODO Auto-generated method stub
-		return configMapper.selectAllRecord();
+		return configMapper.selectByTitle(title);
 	}
 
 	public int updateByPrimaryKeySelective(Config record) {
@@ -53,6 +53,12 @@ public class ConfigServiceImpl implements ConfigService {
 	public int updateByPrimaryKey(Config record) {
 		// TODO Auto-generated method stub
 		return configMapper.updateByPrimaryKey(record);
+	}
+
+	public int updateByTitleWithBLOBs(Config config) {
+		// TODO Auto-generated method stub
+		config.setModifyDate(new Date());
+		return configMapper.updateByTitleWithBLOBs(config);
 	}
 	
 }

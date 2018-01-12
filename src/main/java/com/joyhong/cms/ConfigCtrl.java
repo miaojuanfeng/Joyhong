@@ -1,19 +1,18 @@
 package com.joyhong.cms;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.joyhong.model.Config;
 import com.joyhong.model.User;
@@ -38,21 +37,56 @@ public class ConfigCtrl {
 			return redirect;
 		}
 		
-		Map<String, Object> map = new HashMap<String, Object>();
-		List<Config> config = configService.selectAllRecord();
-		if( config != null ){
-			for(Config c : config){
-				String value = c.getValue();
-				if( value != "" ){
-					JSONObject valueObj = JSONObject.fromObject(value);
-					map.put(valueObj.getString("name"), valueObj.getString("value"));
-				}
-			}
-			model.addAttribute("config", config);
-					
-			return "PageView";
+		Config administrator = configService.selectByTitle("Administrator");
+		JSONObject administratorObj = JSONObject.fromObject(administrator.getValue());
+		model.addAttribute("username", administratorObj.getString("username"));
+		Config version = configService.selectByTitle("Version");
+		JSONObject versionObj = JSONObject.fromObject(version.getValue());
+		model.addAttribute("last_version", versionObj.getString("last_version"));
+		model.addAttribute("download_link", versionObj.getString("download_link"));
+		
+		return "ConfigView";
+	}
+	
+	@RequestMapping(value="/update", method=RequestMethod.POST)
+	public String update(
+			@ModelAttribute("redirect") String redirect,
+			@RequestParam("username") String username,
+			@RequestParam("password") String password,
+			@RequestParam("last_version") String last_version,
+			@RequestParam("download_link") String download_link
+	){
+		if( redirect != null ){
+			return redirect;
 		}
-		return "redirect:/cms/device/select";
+		
+		Config config = new Config();
+		/*
+		 * update administrator
+		 */
+		JSONObject administratorObj = new JSONObject();
+		administratorObj.put("username", username);
+		if( password == "" ){
+			Config administrator = configService.selectByTitle("Administrator");
+			JSONObject temp = JSONObject.fromObject(administrator.getValue());
+			administratorObj.put("password", temp.getString("password"));
+		}else{
+			administratorObj.put("password", DigestUtils.md5Hex(password));
+		}
+		config.setTitle("Administrator");
+		config.setValue(administratorObj.toString());
+		configService.updateByTitleWithBLOBs(config);
+		/*
+		 * update version
+		 */
+		JSONObject versionObj = new JSONObject();
+		versionObj.put("last_version", last_version);
+		versionObj.put("download_link", download_link);
+		config.setTitle("Version");
+		config.setValue(versionObj.toString());
+		configService.updateByTitleWithBLOBs(config);
+		
+		return "redirect:/cms/config/update";
 	}
 	
 	@ModelAttribute

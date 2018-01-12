@@ -92,8 +92,8 @@
 											<form:input id="device_token" path="deviceToken" type="text" class="form-control input-sm required" placeholder="Device token" />
 										</p>
 										<p class="form-group">
-											<label for="device_fcm_token">Device fcm token <span class="highlight">*</span></label>
-											<form:input id="device_fcm_token" path="deviceFcmToken" type="text" class="form-control input-sm required" placeholder="Device fcm token" />
+											<label for="device_fcm_token">Device fcm token <span class="highlight"></span></label>
+											<form:input id="device_fcm_token" path="deviceFcmToken" type="text" class="form-control input-sm" placeholder="Device fcm token" />
 										</p>
 									</div>
 									<div class="col-sm-8 col-xs-12 pull-right">

@@ -38,8 +38,11 @@
 	margin-bottom: 15px;
 	text-align: center;
 }
-.login-area .error{
+.login-area div.error{
 	margin-bottom:20px;padding:0 15px;text-align:center;background: whitesmoke;font-size: 14px;
+}
+.login-area label.error{
+	display:none !important;
 }
 
 @media (max-width: 991px) {

@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.joyhong.model.Config;
 import com.joyhong.model.Device;
 import com.joyhong.model.User;
 import com.joyhong.model.UserDevice;
+import com.joyhong.service.ConfigService;
 import com.joyhong.service.DeviceService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
@@ -40,6 +42,9 @@ public class UserController {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private ConfigService configService;
 	
 	/**
 	 * App用户注册
@@ -277,4 +282,22 @@ public class UserController {
 //				"title", 
 //				"body"));
 //	}
+	
+	/**
+	 * 获取app版本更新信息
+	 * @url {base_url}/user/version
+	 * @method POST
+	 * @return json
+	 */
+	@RequestMapping(value="/version", method=RequestMethod.POST)
+	@ResponseBody
+	public String version(){
+		JSONObject retval = new JSONObject();
+		
+		Config version = configService.selectByTitle("Version");
+		retval.put("status", true);
+		retval.put("data", version.getValue());
+		
+		return retval.toString();
+	}
 }
