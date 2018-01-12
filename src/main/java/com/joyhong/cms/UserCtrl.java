@@ -61,7 +61,7 @@ public class UserCtrl {
 	){
 		
 		if( redirect == null ){
-			return "redirect:/cms/device/select";
+			return "redirect:/cms/dashboard/select";
 		}
 		
 		return "LoginView";
@@ -77,7 +77,7 @@ public class UserCtrl {
 	){
 		
 		if( redirect == null ){
-			return "redirect:/cms/device/select";
+			return "redirect:/cms/dashboard/select";
 		}
 		
 		String error = null;
@@ -93,7 +93,7 @@ public class UserCtrl {
 				user.setNickname(user_username);
 				httpSession.setAttribute("user", user);
 				
-				return "redirect:/cms/device/select";
+				return "redirect:/cms/dashboard/select";
 			}else{
 				error = "Incorrect Password";
 			}
