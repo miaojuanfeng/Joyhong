@@ -87,15 +87,15 @@ public class DeviceController {
 	/**
 	 * 查询device token绑定的所有用户信息
 	 * @url {base_url}/device/device_user
-	 * @param device_token
+	 * @param device_id
 	 * @return json
 	 */
 	@RequestMapping(value="/device_user", method=RequestMethod.POST)
 	@ResponseBody
-	public String device_user(@RequestParam("device_id") String device_id){
+	public String device_user(@RequestParam("device_id") Integer device_id){
 		JSONObject retval = new JSONObject();
 		
-		Device device = deviceService.selectByDeviceToken(device_id);
+		Device device = deviceService.selectByPrimaryKey(device_id);
 		if( device != null ){
 			List<UserDevice> userDevice = userDeviceService.selectByDeviceId(device.getId());
 			JSONArray temp = new JSONArray();
@@ -123,38 +123,8 @@ public class DeviceController {
 			retval.put("data", dTemp);
 		}else{
 			retval.put("status", false);
-			retval.put("msg", "The device id is not yet registered");
+			retval.put("msg", "Unable to find the device");
 		}
-		
-		return retval.toString();
-	}
-	
-	/**
-	 * 根据设备号搜索设备
-	 * @url {base_url}/device/search
-	 * @param device_token
-	 * @return json
-	 */
-	@RequestMapping(value="/search", method=RequestMethod.POST)
-	@ResponseBody
-	public String search(@RequestParam("device_token") String device_token){
-		JSONObject retval = new JSONObject();
-		
-		List<Device> device = deviceService.selectLikeDeviceToken(device_token);
-		
-		JSONArray array = new JSONArray();
-		for( Device d : device ){
-			JSONObject temp = new JSONObject();
-			temp.put("id", d.getId());
-			temp.put("device_token", d.getDeviceToken());
-			temp.put("device_fcm_token", d.getDeviceFcmToken());
-			temp.put("create_date", d.getCreateDate().getTime());
-			temp.put("modify_date", d.getModifyDate().getTime());
-			array.add(temp);
-		}
-		
-		retval.put("status", true);
-		retval.put("data", array);
 		
 		return retval.toString();
 	}
@@ -244,53 +214,45 @@ public class DeviceController {
 	}
 	
 	/**
-	 * 绑定多个设备
+	 * 绑定单个设备
 	 * @url {base_url}/device/bind
 	 * @method POST
-	 * @param user_id
-	 * @param List<String> device_token
+	 * @param Integer user_id
+	 * @param String device_token
 	 * @return
 	 */
 	@RequestMapping(value="/bind", method=RequestMethod.POST)
 	@ResponseBody
-	public String bind(@RequestParam("user_id") Integer user_id, @RequestParam("device_token") List<String> device_token){
+	public String bind(@RequestParam("user_id") Integer user_id, @RequestParam("device_token") String device_token){
 		JSONObject retval = new JSONObject();
 		
 		User user = userService.selectByPrimaryKey(user_id);
 		if( user != null ){
-			JSONObject temp = new JSONObject();
-			JSONArray successful = new JSONArray();
-			JSONArray failed = new JSONArray();
-			JSONArray existent = new JSONArray();
-			for(String dt : device_token){
-				Device device = deviceService.selectByDeviceToken(dt);
-				if( device != null ){
-					if( userDeviceService.selectByUserIdAndDeviceId(user_id, device.getId()) == null ){
-						UserDevice ud = new UserDevice();
-						ud.setUserId(user_id);
-						ud.setDeviceId(device.getId());
-						ud.setDeviceName("");
-						ud.setCreateDate(new Date());
-						ud.setModifyDate(new Date());
-						ud.setDeleted(0);
-						if( userDeviceService.insert(ud) == 1 ){
-							successful.add(dt);
-						}else{
-							failed.add(dt);
-						}
+			Device device = deviceService.selectByDeviceToken(device_token);
+			if( device != null ){
+				if( userDeviceService.selectByUserIdAndDeviceId(user_id, device.getId()) == null ){
+					UserDevice ud = new UserDevice();
+					ud.setUserId(user_id);
+					ud.setDeviceId(device.getId());
+					ud.setDeviceName("");
+					ud.setCreateDate(new Date());
+					ud.setModifyDate(new Date());
+					ud.setDeleted(0);
+					if( userDeviceService.insert(ud) == 1 ){
+						retval.put("status", true);
+						retval.put("msg", "Success");
 					}else{
-						existent.add(dt);
+						retval.put("status", false);
+						retval.put("msg", "Update user device relationship failed, please try again later");
 					}
 				}else{
-					failed.add(dt);
+					retval.put("status", false);
+					retval.put("msg", "The device already been bound");
 				}
+			}else{
+				retval.put("status", false);
+				retval.put("msg", "Unable to find the device");
 			}
-			temp.put("existent", existent);
-			temp.put("successful", successful);
-			temp.put("failed", failed);
-			
-			retval.put("status", true);
-			retval.put("data", temp);
 		}else{
 			retval.put("status", false);
 			retval.put("msg", "Unable to find the user");
@@ -300,48 +262,34 @@ public class DeviceController {
 	}
 	
 	/**
-	 * 重命名多个设备名称
+	 * 重命名单个设备
 	 * @url {base_url}/device/rename
 	 * @method POST
 	 * @param Integer user_id
-	 * @param List<Integer> device_id
-	 * @param List<String> device_name
+	 * @param Integer device_id
+	 * @param String device_name
 	 * @return
 	 */
 	@RequestMapping(value="/rename", method=RequestMethod.POST)
 	@ResponseBody
-	public String rename(@RequestParam("user_id") Integer user_id, @RequestParam("device_id") List<Integer> device_id, @RequestParam("device_name") List<String> device_name){
+	public String rename(@RequestParam("user_id") Integer user_id, @RequestParam("device_id") Integer device_id, @RequestParam("device_name") String device_name){
 		JSONObject retval = new JSONObject();
-		
-		if( device_id.size() == device_name.size() ){
-			JSONObject temp = new JSONObject();
-			JSONArray successful = new JSONArray();
-			JSONArray failed = new JSONArray();
 			
-			Integer i = 0;
-			for( i = 0; i < device_id.size(); i++ ){
-				UserDevice ud = userDeviceService.selectByUserIdAndDeviceId(user_id, device_id.get(i));
-				if( ud != null ){
-					ud.setDeviceName(device_name.get(i));
-					if( userDeviceService.updateByPrimaryKey(ud) == 1 ){
-						successful.add(device_name.get(i));
-					}else{
-						failed.add(device_name.get(i));
-					}
-				}else{
-					failed.add(device_name.get(i));
-				}
+		UserDevice userDevice = userDeviceService.selectByUserIdAndDeviceId(user_id, device_id);
+		if( userDevice != null ){
+			userDevice.setDeviceName(device_name);
+			if( userDeviceService.updateByPrimaryKey(userDevice) == 1 ){
+				retval.put("status", true);
+				retval.put("msg", "Success");
+			}else{
+				retval.put("status", false);
+				retval.put("msg", "Update device name failed, please try again later");
 			}
-			temp.put("successful", successful);
-			temp.put("failed", failed);
-			
-			retval.put("status", true);
-			retval.put("data", temp);
 		}else{
 			retval.put("status", false);
-			retval.put("msg", "The device_id count should be equal to the device_name count.");
+			retval.put("msg", "Unable to find the relationship between user and device");
 		}
-		
+
 		return retval.toString();
 	}
 	
