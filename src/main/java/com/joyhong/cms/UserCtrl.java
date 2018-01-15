@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.joyhong.model.Config;
 import com.joyhong.model.Device;
-import com.joyhong.model.Order;
 import com.joyhong.model.User;
 import com.joyhong.model.UserDevice;
 import com.joyhong.service.ConfigService;

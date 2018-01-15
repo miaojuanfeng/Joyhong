@@ -221,7 +221,7 @@ public class WeatherController {
 			}
 		}
 		
-		Iterator iterator = retObj.keys();
+		Iterator<?> iterator = retObj.keys();
 		String key;
 		String value;
 		JSONObject retval = new JSONObject();

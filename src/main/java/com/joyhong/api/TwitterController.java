@@ -1,7 +1,6 @@
 package com.joyhong.api;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -18,9 +17,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.joyhong.model.Device;
 import com.joyhong.model.UserDevice;
 import com.joyhong.service.DeviceService;
-import com.joyhong.service.NotificationService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
+import com.joyhong.service.common.FileService;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -40,15 +39,7 @@ import twitter4j.DirectMessage;
 import twitter4j.MediaEntity;
 import twitter4j.StallWarning;
 
-import java.io.PrintWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Date;
-import java.io.FileWriter;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 
 /**
  * Twitter消息控制器
@@ -77,7 +68,7 @@ public class TwitterController {
 	private UserDeviceService userDeviceService;
 	
 	@Autowired
-	private NotificationService notificationService;
+	private FileService fileService;
 	
 	public TwitterController(){
 		ConfigurationBuilder cb = new ConfigurationBuilder();
@@ -167,7 +158,7 @@ public class TwitterController {
 		         * Cache origin image
 		         */
 		        fileName = user.getOriginalProfileImageURL().substring(user.getOriginalProfileImageURL().lastIndexOf("/")+1);
-		        this.saveUrlAs(user.getOriginalProfileImageURL(), filePath, fileName);
+		        fileService.saveUrlAs(user.getOriginalProfileImageURL(), filePath, fileName);
 		        retval = fileUrl + fileName;
 //		        if( user.getURL() != null ){
 //		        	retval.put("url", user.getURL());
@@ -253,51 +244,7 @@ public class TwitterController {
 			return userDeviceService.insert(userDevice);
 		}
 		
-		/**
-		 * 同步图片视频到本地服务器
-		 * @param url
-		 * @param filePath
-		 */
-		private void saveUrlAs(String url, String filePath, String fileName){   
-		     FileOutputStream fileOut = null;  
-		     HttpURLConnection conn = null;  
-		     InputStream inputStream = null;  
-		     try {
-		    	 if (!filePath.endsWith("/")) {  
-		             filePath += "/";
-		         }
-		    	 File file = new File(filePath);
-		    	 if(!file.exists()){
-		    		 file .mkdir();
-		    	 }
-
-		         URL httpUrl=new URL(url);  
-		         conn=(HttpURLConnection) httpUrl.openConnection();  
-		         conn.setRequestMethod("GET");  
-		         conn.setDoInput(true);    
-		         conn.setDoOutput(true);   
-		         conn.setUseCaches(false);  
-		         conn.connect();  
-		         inputStream=conn.getInputStream();  
-		         BufferedInputStream bis = new BufferedInputStream(inputStream);  
-		         
-		         fileOut = new FileOutputStream(filePath+fileName);
-		         BufferedOutputStream bos = new BufferedOutputStream(fileOut);
-		         
-		         byte[] buf = new byte[4096];
-		         int length = bis.read(buf);
-		         while(length != -1)
-		         {
-		             bos.write(buf, 0, length);
-		             length = bis.read(buf);
-		         }
-		         bos.close();
-		         bis.close();
-		         conn.disconnect();
-		    } catch (Exception e)  {
-		         logger.info(e.getMessage());
-		    }
-		}
+		
 		
 		/**
 		 * 监听到消息事件
@@ -387,26 +334,7 @@ public class TwitterController {
 		    }
 		    retval.put("image", img);
            
-			FileWriter fw = null;
-			try {
-				/**
-				 * 如果文件存在，则追加内容；如果文件不存在，则创建文件
-				 */
-				File f=new File("/usr/local/tomcat/apache-tomcat-8.5.23/webapps/files/twitter.txt");
-				fw = new FileWriter(f, true);
-			} catch (IOException e) {
-				logger.info(e.getMessage());
-			}
-			PrintWriter pw = new PrintWriter(fw);
-			pw.println(retval.toString());
-			pw.flush();
-			try {
-				fw.flush();
-				pw.close();
-				fw.close();
-			} catch (IOException e) {
-				logger.info(e.getMessage());
-			}
+			fileService.savePostData("/usr/local/tomcat/apache-tomcat-8.5.23/webapps/files/twitter.txt", retval.toString());
         }
 
         public void onDeletionNotice(long arg0, long arg1) {

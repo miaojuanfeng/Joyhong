@@ -1,15 +1,8 @@
 package com.joyhong.api;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
@@ -32,9 +25,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.joyhong.model.Device;
 import com.joyhong.model.UserDevice;
 import com.joyhong.service.DeviceService;
-import com.joyhong.service.NotificationService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
+import com.joyhong.service.common.FileService;
 
 import net.sf.json.JSONObject;
 
@@ -59,7 +52,7 @@ public class FacebookController {
 	private UserDeviceService userDeviceService;
 	
 	@Autowired
-	private NotificationService notificationService;
+	private FileService fileService;
 	
 	/**
 	 * 监听facebook发来的消息
@@ -85,7 +78,7 @@ public class FacebookController {
 					try{
 						response.getOutputStream().write(challenge.getBytes());
 					}catch(IOException e){
-						System.out.println(e.getMessage());
+						logger.info(e.getMessage());
 					}
 				} else {
 				  	// Responds with '403 Forbidden' if verify tokens do not match
@@ -94,7 +87,7 @@ public class FacebookController {
 					try{
 						response.getOutputStream().write("error".getBytes());
 					}catch(IOException e){
-						System.out.println(e.getMessage());
+						logger.info(e.getMessage());
 					}
 				}
 	      	}else{
@@ -103,7 +96,7 @@ public class FacebookController {
 				try{
 					response.getOutputStream().write("error".getBytes());
 				}catch(IOException e){
-					System.out.println(e.getMessage());
+					logger.info(e.getMessage());
 				}
 	      	}
 	      	
@@ -133,7 +126,7 @@ public class FacebookController {
 			        fileName = fileName.substring(0, fileName.lastIndexOf("?"));
   
 			        String filePath = "/home/wwwroot/default/facebook/attachments/" + type + "/";   
-			        this.saveUrlAs(fileUrl, filePath, fileName);
+			        fileService.saveUrlAs(fileUrl, filePath, fileName);
 			        
 			        postdata = postdata.replace(oldUrl, "http://47.89.32.89/facebook/attachments/" + type + fileName);
 				}
@@ -166,6 +159,8 @@ public class FacebookController {
 				HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 								 
 				// Setting basic post request
+				con.setConnectTimeout(20*1000);
+				con.setReadTimeout(20*1000);
 				con.setRequestMethod("POST");
 				con.setRequestProperty("Content-Type","application/json");
 								 
@@ -180,30 +175,16 @@ public class FacebookController {
 				 * not work comment this line
 				 */
 				int responseCode = con.getResponseCode();
+				if( responseCode != 200 ){
+					logger.info("Response Code : " + responseCode);
+				}
 //				System.out.println("nSending 'POST' request to URL : " + url);
 //				System.out.println("Post Data : " + con.getResponseMessage());
 //				System.out.println("Response Code : " + responseCode);
 				
-				FileWriter fw = null;
-			    try {
-			    	//如果文件存在，则追加内容；如果文件不存在，则创建文件
-			    	File f=new File("/usr/local/tomcat/apache-tomcat-8.5.23/webapps/files/facebook.txt");
-			      	fw = new FileWriter(f, true);
-			    } catch (IOException e) {
-			    	e.printStackTrace();
-			    }
-			    PrintWriter pw = new PrintWriter(fw);
-			    pw.println(postdata);
-			    pw.flush();
-			    try {
-					fw.flush();
-					pw.close();
-					fw.close();
-			    } catch (IOException e) {
-			    	e.printStackTrace();
-			    }
+				fileService.savePostData("/usr/local/tomcat/apache-tomcat-8.5.23/webapps/files/facebook.txt", postdata);
 			}catch(IOException e){
-				System.out.println(e.getMessage());
+				logger.info(e.getMessage());
 			}
 		}
 	}
@@ -268,7 +249,7 @@ public class FacebookController {
                 if( json_obj.has("profile_pic") ){
 	    	        fileName = json_obj.getString("profile_pic").substring(json_obj.getString("profile_pic").lastIndexOf("/")+1);
 	    	        fileName = fileName.substring(0, fileName.lastIndexOf("?"));
-	    	        this.saveUrlAs(json_obj.getString("profile_pic"), filePath, fileName);
+	    	        fileService.saveUrlAs(json_obj.getString("profile_pic"), filePath, fileName);
 	    	        retval.put("profile_pic", fileUrl + fileName);
                 }
 //                if( json_obj.has("locale") ){
@@ -327,50 +308,5 @@ public class FacebookController {
 		}
 	}
 	
-	/**
-	 * 同步图片视频到本地服务器
-	 * @param url
-	 * @param filePath
-	 * @param method
-	 */
-	private void saveUrlAs(String url, String filePath, String fileName){   
-	     FileOutputStream fileOut = null;  
-	     HttpURLConnection conn = null;  
-	     InputStream inputStream = null;  
-	     try {
-	    	 if (!filePath.endsWith("/")) {  
-	             filePath += "/";
-	         }
-	    	 File file = new File(filePath);
-	    	 if(!file.exists()){
-	    		 file .mkdir();
-	    	 }
-	    	 
-	         URL httpUrl=new URL(url);  
-	         conn=(HttpURLConnection) httpUrl.openConnection();  
-	         conn.setRequestMethod("GET");  
-	         conn.setDoInput(true);    
-	         conn.setDoOutput(true);   
-	         conn.setUseCaches(false);  
-	         conn.connect();  
-	         inputStream=conn.getInputStream();  
-	         BufferedInputStream bis = new BufferedInputStream(inputStream);
-	         
-	         fileOut = new FileOutputStream(filePath+fileName);  
-	         BufferedOutputStream bos = new BufferedOutputStream(fileOut);  
-	           
-	         byte[] buf = new byte[4096];
-	         int length = bis.read(buf);
-	         while(length != -1)  
-	         {  
-	             bos.write(buf, 0, length);  
-	             length = bis.read(buf);  
-	         }
-	         bos.close();
-	         bis.close();
-	         conn.disconnect();
-	    } catch (Exception e)  {
-	    	logger.info(e.getMessage());
-	    }
-	 }
+	
 }

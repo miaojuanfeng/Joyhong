@@ -1,5 +1,7 @@
 package com.joyhong.service.impl;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,10 @@ public class UploadServiceImpl implements UploadService {
 
 	public int insert(Upload record) {
 		// TODO Auto-generated method stub
+		Date now = new Date();
+		record.setCreateDate(now);
+		record.setModifyDate(now);
+		record.setDeleted(0);
 		return uploadMapper.insert(record);
 	}
 

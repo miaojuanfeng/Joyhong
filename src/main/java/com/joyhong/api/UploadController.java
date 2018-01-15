@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.URLDecoder;
-import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,12 +15,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.joyhong.model.Upload;
 import com.joyhong.service.UploadService;
+import com.joyhong.service.common.FileService;
 import com.joyhong.service.common.MD5Service;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
@@ -36,12 +36,15 @@ public class UploadController {
 	private UploadService uploadService;
 	
 	@Autowired
+	private FileService fileService;
+	
+	@Autowired
 	private MD5Service md5Service;
 	
-//	private String tempPath = "/home/wwwroot/default/upload/";
-//	private String filePath = "/home/wwwroot/default/upload/";
-	private String tempPath = "/Users/user/Desktop/";
-	private String filePath = "/Users/user/Desktop/";
+	private String tempPath = "/home/wwwroot/default/upload/";
+	private String filePath = "/home/wwwroot/default/upload/";
+//	private String tempPath = "/Users/user/Desktop/";
+//	private String filePath = "/Users/user/Desktop/test/";
 	private String fileUrl = "http://47.89.32.89/upload/";
 	
 	/**
@@ -258,15 +261,12 @@ public class UploadController {
     		/*
     		 * 写入完成，重命名文件
     		 */
-			String error = renameFile(tempPath, filePath, fileName+".temp", fileName);
+			String error = fileService.renameFile(tempPath, filePath, fileName+".temp", fileName);
 			if( error == null ){
 				Upload upload = new Upload();
 				upload.setUserId(user_id);
 				upload.setDescription(file_desc);
 				upload.setUrl(fileUrl+fileName);
-				upload.setCreateDate(new Date());
-				upload.setModifyDate(new Date());
-				upload.setDeleted(0);
 				if( uploadService.insert(upload) == 1 ){
 					/*
 	        		 * 推送在此
@@ -295,43 +295,57 @@ public class UploadController {
         return retval.toString();
 	}
 	
+	/**
+	 * 上传图片
+	 * @param user_id
+	 * @param device_id
+	 * @param file_desc
+	 * @param files
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(value="/image", method = RequestMethod.POST)
 	@ResponseBody
-	public String image(@RequestParam("file") MultipartFile[] files, HttpServletRequest request) throws Exception {
+	public String image(
+			@RequestParam("user_id") Integer user_id,
+			@RequestParam("device_id") Integer[] device_id,
+			@RequestParam("file_desc") String[] file_desc,
+			@RequestParam("file") MultipartFile[] files
+	) throws Exception {
 		JSONObject retval = new JSONObject();
+		JSONArray temp = new JSONArray();
 		
-//		String aa = md5Service.getMD5OfFile(filePath + "20160725134606_LG5FH.jpg");  
-//      System.out.println(aa);
+		int fileLength = files.length;
+		if( file_desc.length != fileLength ){
+			retval.put("status", false);
+			retval.put("msg", "The length of the file_desc is not equal to the length of the file");
+			return retval.toString();
+		}
 		
-		for(int i = 0 ; i < files.length; i++){
+		for(int i = 0 ; i < fileLength; i++){
 			if( !files[i].isEmpty() ){
-				files[i].transferTo(new File(filePath + "test/" + files[i].getOriginalFilename()));
+				String fileName = files[i].getOriginalFilename();
+				files[i].transferTo(new File(filePath + fileName));
+				Upload upload = new Upload();
+				upload.setUserId(user_id);
+				upload.setDescription(file_desc[i]);
+				upload.setUrl(fileUrl+fileName);
+				if( uploadService.insert(upload) == 1 ){
+					temp.add(fileUrl + fileName);
+				}else{
+					retval.put("status", false);
+					retval.put("msg", "Save file url to database failed, please try again later");
+					return retval.toString();
+				}
             }
 		}
-		System.out.println(files.length);
+		
+		/*
+		 * 推送在此
+		 */
+		retval.put("status", true);
+		retval.put("data", temp);
 		
 		return retval.toString();
 	}
-	
-	/**
-	 * 重命名文件
-	 * @param path
-	 * @param oldname
-	 * @param newname
-	 * @return
-	 */
-	private String renameFile(String oldPath, String newPath, String oldname, String newname){
-		
-        File oldfile = new File(oldPath + "/" + oldname); 
-        File newfile = new File(newPath + "/" + newname); 
-        if( !oldfile.exists() ){
-            return oldname + " not exists";//重命名文件不存在
-        }
-        if( newfile.exists() ){//若在该目录下已经有一个文件和新文件名相同，则不允许重命名 
-            return newname + " already exists"; 
-        }else{ 
-            oldfile.renameTo(newfile); 
-        } 
-        return null;
-    }
 }
