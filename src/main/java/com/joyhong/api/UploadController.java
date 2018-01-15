@@ -13,7 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.joyhong.model.Upload;
 import com.joyhong.service.UploadService;
@@ -294,11 +297,18 @@ public class UploadController {
 	
 	@RequestMapping(value="/image", method = RequestMethod.POST)
 	@ResponseBody
-	public String image(HttpServletRequest request) throws Exception {
+	public String image(@RequestParam("file") MultipartFile[] files, HttpServletRequest request) throws Exception {
 		JSONObject retval = new JSONObject();
 		
-		String aa = md5Service.getMD5OfFile(filePath + "20160725134606_LG5FH.jpg");  
-        System.out.println(aa);
+//		String aa = md5Service.getMD5OfFile(filePath + "20160725134606_LG5FH.jpg");  
+//      System.out.println(aa);
+		
+		for(int i = 0 ; i < files.length; i++){
+			if( !files[i].isEmpty() ){
+				files[i].transferTo(new File(filePath + "test/" + files[i].getOriginalFilename()));
+            }
+		}
+		System.out.println(files.length);
 		
 		return retval.toString();
 	}
