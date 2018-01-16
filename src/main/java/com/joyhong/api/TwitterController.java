@@ -49,8 +49,8 @@ import twitter4j.StallWarning;
 public class TwitterController {
 	
 	private Logger logger = Logger.getLogger(this.getClass());
-	private static String consumerKey = "zp88Ky9CBkfPsP3wzrSAngfHG";
-	private static String consumerSecret = "L5o0YYgLH4uCmRa9M1Dh9cNbAKCqnUhwfLt5yuuBeQNzivABaW";
+	private static String consumerKey = "h9aTHTrVQJgRfutGNIvTrv5wm";
+	private static String consumerSecret = "jRGOLVnT1oQP6YjFtE0jBh7SEcujeZDwd3HPxV5IQiTwhKOoaW";
 	private static String accessToken = "2881432034-7TZQHuwUSvCKwsniZCQZEmE1RFStxN0G1krG8pl";
 	private static String accessTokenSecret = "1FqyuKAPEZNcRU2AANVqwnGWwpIaba9Sj9lDaldD9agSG";
 	
