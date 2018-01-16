@@ -235,9 +235,6 @@ public class DeviceController {
 					ud.setUserId(user_id);
 					ud.setDeviceId(device.getId());
 					ud.setDeviceName("");
-					ud.setCreateDate(new Date());
-					ud.setModifyDate(new Date());
-					ud.setDeleted(0);
 					if( userDeviceService.insert(ud) == 1 ){
 						retval.put("status", true);
 						retval.put("msg", "Success");

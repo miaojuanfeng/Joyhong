@@ -5,7 +5,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -202,9 +201,6 @@ public class FacebookController {
 		userDevice.setUserId(userId);
 		userDevice.setDeviceId(deviceId);
 		userDevice.setDeviceName("");
-		userDevice.setCreateDate(new Date());
-		userDevice.setModifyDate(new Date());
-		userDevice.setDeleted(0);
 		
 		return userDeviceService.insert(userDevice);
 	}
@@ -298,9 +294,6 @@ public class FacebookController {
 			}
 			user.setPlatform("facebook");
 			user.setAccepted("1");
-			user.setCreateDate(new Date());
-			user.setModifyDate(new Date());
-			user.setDeleted(0);
 			userService.insert(user);
 			return user.getId();
 		}else{

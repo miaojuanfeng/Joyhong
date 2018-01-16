@@ -1,5 +1,6 @@
 package com.joyhong.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,10 @@ public class UserDeviceServiceImpl implements UserDeviceService{
 
 	public int insert(UserDevice record) {
 		// TODO Auto-generated method stub
+		Date now = new Date();
+		record.setCreateDate(now);
+		record.setModifyDate(now);
+		record.setDeleted(0);
 		return userDeviceMapper.insert(record);
 	}
 

@@ -39,8 +39,6 @@ import twitter4j.DirectMessage;
 import twitter4j.MediaEntity;
 import twitter4j.StallWarning;
 
-import java.util.Date;
-
 /**
  * Twitter消息控制器
  * @url {base_url}/twitter/{method}
@@ -214,9 +212,6 @@ public class TwitterController {
 				user.setProfileImage(this.getUserProfile(message.getSenderId()));
 				user.setPlatform("twitter");
 				user.setAccepted("1");
-				user.setCreateDate(new Date());
-				user.setModifyDate(new Date());
-				user.setDeleted(0);
 				userService.insert(user);
 				return user.getId();
 			}else{
@@ -237,9 +232,6 @@ public class TwitterController {
 			userDevice.setUserId(userId);
 			userDevice.setDeviceId(deviceId);
 			userDevice.setDeviceName("");
-			userDevice.setCreateDate(new Date());
-			userDevice.setModifyDate(new Date());
-			userDevice.setDeleted(0);
 			
 			return userDeviceService.insert(userDevice);
 		}
