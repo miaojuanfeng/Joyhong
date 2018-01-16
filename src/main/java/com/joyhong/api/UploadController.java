@@ -165,33 +165,38 @@ public class UploadController {
 			return retval.toString();
         }
         /*
-         * 检查文件是否存在
-         * 根据文件MD5值检查，相同MD5值则不写文件直接推送
+         * 文件从开头处上传时
          */
-        File existsFile = new File(filePath + fileName);
-        if( existsFile.exists() ){
-        	if( fileMD5.equals(md5Service.getMD5OfFile(filePath + fileName)) ){
-        		/*
-        		 * 推送在下
-        		 */
-        		
-        		/*
-        		 * 推送在上
-        		 */
-        		retval.put("status", true);
-				temp.put("complete", true);
-				temp.put("file", fileUrl + fileName);
-				retval.put("data", temp);
-				return retval.toString();
+        if( start == 1 ){
+        	/*
+             * 检查文件是否存在
+             * 根据文件MD5值检查，相同MD5值则不写文件直接推送
+             */
+	        File existsFile = new File(filePath + fileName);
+	        if( existsFile.exists() ){
+	        	if( fileMD5.equals(md5Service.getMD5OfFile(filePath + fileName)) ){
+	        		/*
+	        		 * 推送在下
+	        		 */
+	        		
+	        		/*
+	        		 * 推送在上
+	        		 */
+	        		retval.put("status", true);
+					temp.put("complete", true);
+					temp.put("file", fileUrl + fileName);
+					retval.put("data", temp);
+					return retval.toString();
+	        	}
+	        }
+	        /*
+	         * 检查临时文件是否存在
+	         * 如果start为1表示需要重写文件，将已上传的数据块删除
+	         */
+        	File existsTempFile = new File(tempPath + fileName + ".temp");
+        	if( existsTempFile.exists() ){
+        		existsTempFile.delete();
         	}
-        }
-        /*
-         * 检查临时文件是否存在
-         * 如果start为1表示需要重写文件，将已上传的数据块删除
-         */
-        File existsTempFile = new File(tempPath + fileName + ".temp");
-        if( start == 1 && existsTempFile.exists() ){
-        	existsTempFile.delete();
         }
         /*
          * 追加文件
