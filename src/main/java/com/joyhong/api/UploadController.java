@@ -172,7 +172,11 @@ public class UploadController {
         if( existsFile.exists() ){
         	if( fileMD5.equals(md5Service.getMD5OfFile(filePath + fileName)) ){
         		/*
-        		 * 推送在此
+        		 * 推送在下
+        		 */
+        		
+        		/*
+        		 * 推送在上
         		 */
         		retval.put("status", true);
 				temp.put("complete", true);
@@ -269,8 +273,12 @@ public class UploadController {
 				upload.setUrl(fileUrl+fileName);
 				if( uploadService.insert(upload) == 1 ){
 					/*
-	        		 * 推送在此
-	        		 */
+					 * 推送在下
+					 */
+					
+					/*
+					 * 推送在上
+					 */
 					retval.put("status", true);
 					temp.put("complete", true);
 					temp.put("file", fileUrl + fileName);
@@ -341,7 +349,11 @@ public class UploadController {
 		}
 		
 		/*
-		 * 推送在此
+		 * 推送在下
+		 */
+		
+		/*
+		 * 推送在上
 		 */
 		retval.put("status", true);
 		retval.put("data", temp);

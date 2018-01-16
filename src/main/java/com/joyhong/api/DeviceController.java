@@ -230,6 +230,13 @@ public class DeviceController {
 		if( user != null ){
 			Device device = deviceService.selectByDeviceToken(device_token);
 			if( device != null ){
+				/*
+				 * 检查绑定的设备数量，不能超过20个
+				 */
+				
+				/*
+				 * 检查绑定的设备数量，不能超过20个
+				 */
 				if( userDeviceService.selectByUserIdAndDeviceId(user_id, device.getId()) == null ){
 					UserDevice ud = new UserDevice();
 					ud.setUserId(user_id);
