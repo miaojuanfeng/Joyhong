@@ -69,12 +69,14 @@ public class DeviceController {
 			device.setLoginTime(now);
 			device.setHeartbeatTime(now);
 			if( this.deviceService.updateByPrimaryKeySelective(device) == 1 ){
+				JSONObject temp = new JSONObject();
+				temp.put("device_id", exist_device.getId());
 				retval.put("status", true);
-				retval.put("msg", "Success");
+				retval.put("data", temp);
 			}else{
 				retval.put("status", false);
 				retval.put("msg", "Update device failed, please try again later");
-				logger.info("Update device to database failed: " + device_token + " - " + device_fcm_token);
+//				logger.info("Update device to database failed: " + device_token + " - " + device_fcm_token);
 			}
 		}else{
 			retval.put("status", false);
