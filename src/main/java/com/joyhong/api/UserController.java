@@ -18,6 +18,7 @@ import com.joyhong.service.ConfigService;
 import com.joyhong.service.DeviceService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
+import com.joyhong.service.common.FuncService;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -45,51 +46,8 @@ public class UserController {
 	@Autowired
 	private ConfigService configService;
 	
-	/**
-	 * App用户注册
-	 * @url {base_url}/user/signup
-	 * @method POST
-	 * @param username
-	 * @param password
-	 * @return json
-	 */
-//	@RequestMapping(value="/signup", method=RequestMethod.POST)
-//	@ResponseBody
-//	public String signup(@RequestParam("username") String username, @RequestParam("password") String password){
-//		JSONObject retval = new JSONObject();
-//		
-//		User user = userService.selectByUsername(username);
-//		if( user == null ){
-//			password = DigestUtils.md5Hex(password);
-//	        
-//			user = new User();
-//			user.setUsername(username);
-//			user.setPassword(password);
-//			user.setNickname(username);
-//			user.setProfileImage("");
-//			user.setPlatform("app");
-//			user.setAccepted("1");
-//			user.setCreateDate(new Date());
-//			user.setModifyDate(new Date());
-//			user.setDeleted(0);
-//			if( userService.insert(user) == 1 ){
-//				JSONObject uJson = new JSONObject();
-//				uJson.put("user_id", user.getId());
-//				uJson.put("user_token", get_user_token(user));
-//				
-//				retval.put("status", true);
-//				retval.put("data", uJson);
-//			}else{
-//				retval.put("status", false);
-//				retval.put("msg", "User registration failed, please try again later");
-//			}
-//		}else{
-//			retval.put("status", false);
-//			retval.put("msg", "The username has been registered");
-//		}
-//		
-//		return retval.toString();
-//	}
+	@Autowired
+	private FuncService funcService;
 	
 	/**
 	 * App用户登录
@@ -103,6 +61,18 @@ public class UserController {
 	public String signin(@RequestParam("user_imei") String user_imei){
 		JSONObject retval = new JSONObject();
 		JSONObject uJson = new JSONObject();
+		
+		if( !funcService.isNumeric(user_imei) ){
+			retval.put("status", false);
+			retval.put("msg", "The parameter user_imei should be a number");
+			return retval.toString();
+		}
+		
+		if( user_imei.length() != 15 ){
+			retval.put("status", false);
+			retval.put("msg", "The parameter user_imei should be 15 digits");
+			return retval.toString();
+		}
 		
 		User user = userService.selectByUsername(user_imei);
 		if( user == null ){
@@ -148,40 +118,6 @@ public class UserController {
 	}
 	
 	/**
-	 * App自动登录
-	 * @url {base_url}/user/auto_signin
-	 * @method POST
-	 * @param user_id
-	 * @param user_token
-	 * @return json
-	 */
-//	@RequestMapping(value="/auto_signin", method=RequestMethod.POST)
-//	@ResponseBody
-//	public String auto_signin(@RequestParam("user_id") Integer user_id, @RequestParam("user_token") String user_token){
-//		JSONObject retval = new JSONObject();
-//		
-//		User user = userService.selectByPrimaryKey(user_id);
-//		if( user != null ){
-//			if( get_user_token(user).equals(user_token) ){
-//				JSONObject uJson = new JSONObject();
-//				uJson.put("user_id", user.getId());
-//				uJson.put("user_token", get_user_token(user));
-//				
-//				retval.put("status", true);
-//				retval.put("data", uJson);
-//			}else{
-//				retval.put("status", false);
-//				retval.put("msg", "Incorrect user token");
-//			}
-//		}else{
-//			retval.put("status", false);
-//			retval.put("msg", "Unable to find the user");
-//		}
-//		
-//		return retval.toString();
-//	}
-	
-	/**
 	 * 更新账号信息
 	 * @url {base_url}/user/update_profile
 	 * @method POST
@@ -214,22 +150,6 @@ public class UserController {
 	}
 	
 	/**
-	 * 计算user token
-	 * @param user
-	 * @return String
-	 */
-//	private String get_user_token(User user){
-//		String user_id = String.valueOf(user.getId());
-//		String user_name = user.getUsername();
-//		String user_platform = user.getPlatform();
-//		String random_key = "#N5$8cA&a*X";
-//		
-//		String user_token = user_platform + user_id + user_name + random_key;
-//		
-//		return DigestUtils.md5Hex(user_token);
-//	}
-	
-	/**
 	 * 获取用户绑定的设备列表
 	 * @url {base_url}/user/user_device
 	 * @method POST
@@ -251,8 +171,6 @@ public class UserController {
 				uTemp.put("device_token", device.getDeviceToken());
 				uTemp.put("device_fcm_token", device.getDeviceFcmToken());
 				uTemp.put("device_name", ud.getDeviceName());
-//				uTemp.put("create_date", device.getCreateDate().getTime());
-//				uTemp.put("modify_date", device.getModifyDate().getTime());
 				temp.add(uTemp);
 			}
 		}

@@ -3,7 +3,6 @@ package com.joyhong.api;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,7 +31,7 @@ import net.sf.json.JSONObject;
 @RequestMapping("/device")
 public class DeviceController {
 	
-	private Logger logger = Logger.getLogger(this.getClass());
+//	private Logger logger = Logger.getLogger(this.getClass());
 	
 	@Autowired
 	private DeviceService deviceService;

@@ -2,7 +2,6 @@ package com.joyhong.cms;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -21,6 +20,7 @@ import com.joyhong.model.UserDevice;
 import com.joyhong.service.DeviceService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
+import com.joyhong.service.common.FuncService;
 
 @Controller
 @RequestMapping("cms/device")
@@ -34,6 +34,9 @@ public class DeviceCtrl {
 	
 	@Autowired
 	private UserDeviceService userDeviceService;
+	
+	@Autowired
+	private FuncService funcService;
 	
 	@RequestMapping(value="/select", method=RequestMethod.GET)
 	public String select(){
@@ -114,7 +117,7 @@ public class DeviceCtrl {
 		//解析出方法名称
 		String urlStr = request.getRequestURL().toString();
 		String method = urlStr.substring(urlStr.lastIndexOf("/")+1);
-		if( isNumeric(method) ){
+		if( funcService.isNumeric(method) ){
 			Integer number = Integer.valueOf(method);
 			urlStr = urlStr.substring(0, urlStr.lastIndexOf("/"));
 			method = urlStr.substring(urlStr.lastIndexOf("/")+1);
@@ -129,10 +132,5 @@ public class DeviceCtrl {
 		
 		//返回的url地址
 		model.addAttribute("referer", request.getHeader("referer"));
-	}
-	
-	private static boolean isNumeric(String str){
-	    Pattern pattern = Pattern.compile("[0-9]*");
-	    return pattern.matcher(str).matches();
 	}
 }

@@ -1,7 +1,5 @@
 package com.joyhong.cms;
 
-import java.util.regex.Pattern;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -17,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.joyhong.model.Config;
 import com.joyhong.model.User;
 import com.joyhong.service.ConfigService;
+import com.joyhong.service.common.FuncService;
 
 import net.sf.json.JSONObject;
 
@@ -27,6 +26,8 @@ public class ConfigCtrl {
 	@Autowired
 	private ConfigService configService;
 	
+	@Autowired
+	private FuncService funcService;
 	
 	@RequestMapping(value="/update", method=RequestMethod.GET)
 	public String update(
@@ -103,7 +104,7 @@ public class ConfigCtrl {
 		//解析出方法名称
 		String urlStr = request.getRequestURL().toString();
 		String method = urlStr.substring(urlStr.lastIndexOf("/")+1);
-		if( isNumeric(method) ){
+		if( funcService.isNumeric(method) ){
 //			Integer number = Integer.valueOf(method);
 			urlStr = urlStr.substring(0, urlStr.lastIndexOf("/"));
 			method = urlStr.substring(urlStr.lastIndexOf("/")+1);
@@ -120,8 +121,4 @@ public class ConfigCtrl {
 		model.addAttribute("referer", request.getHeader("referer"));
 	}
 	
-	private static boolean isNumeric(String str){
-	    Pattern pattern = Pattern.compile("[0-9]*");
-	    return pattern.matcher(str).matches();
-	}
 }
