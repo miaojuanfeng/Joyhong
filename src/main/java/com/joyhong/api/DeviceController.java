@@ -18,6 +18,7 @@ import com.joyhong.service.DeviceService;
 import com.joyhong.service.OrderService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
+import com.joyhong.service.common.StatusService;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -70,16 +71,13 @@ public class DeviceController {
 			if( this.deviceService.updateByPrimaryKeySelective(device) == 1 ){
 				JSONObject temp = new JSONObject();
 				temp.put("device_id", exist_device.getId());
-				retval.put("status", true);
+				retval.put("status", StatusService.statusCode_200);
 				retval.put("data", temp);
 			}else{
-				retval.put("status", false);
-				retval.put("msg", "Update device failed, please try again later");
-//				logger.info("Update device to database failed: " + device_token + " - " + device_fcm_token);
+				retval.put("status", StatusService.statusCode_102);
 			}
 		}else{
-			retval.put("status", false);
-			retval.put("msg", "Unable to find the device");
+			retval.put("status", StatusService.statusCode_101);
 		}
 		
 		return retval.toString();
@@ -120,11 +118,10 @@ public class DeviceController {
 			dTemp.put("device_id", device.getId());
 			dTemp.put("users", temp);
 			
-			retval.put("status", true);
+			retval.put("status", StatusService.statusCode_200);
 			retval.put("data", dTemp);
 		}else{
-			retval.put("status", false);
-			retval.put("msg", "Unable to find the device");
+			retval.put("status", StatusService.statusCode_101);
 		}
 		
 		return retval.toString();
@@ -146,11 +143,9 @@ public class DeviceController {
 		
 		if( status.equals("unbind") ){
 			if( userDeviceService.deleteByUserIdAndDeviceId(user_id, device_id) == 1 ){
-				retval.put("status", true);
-				retval.put("msg", "Success");
+				retval.put("status", StatusService.statusCode_200);
 			}else{
-				retval.put("status", false);
-				retval.put("msg", "Unable to find the relationship between user and device");
+				retval.put("status", StatusService.statusCode_103);
 			}
 		}else if( status.equals("lock") ){
 			// 检查设备与用户是否已关联
@@ -161,19 +156,16 @@ public class DeviceController {
 					user.setAccepted("0");
 					user.setModifyDate(new Date());
 					if( userService.updateByPrimaryKey(user) == 1 ){
-						retval.put("status", true);
-						retval.put("msg", "Success");
+						retval.put("status", StatusService.statusCode_200);
 					}else{
-						retval.put("status", false);
-						retval.put("msg", "Update user status failed, please try again later");
+						retval.put("status", StatusService.statusCode_104);
 					}
 				}else{
-					retval.put("status", false);
-					retval.put("msg", "The user has been deleted");
+					retval.put("status", StatusService.statusCode_105);
 				}
 			}else{
 				retval.put("status", false);
-				retval.put("msg", "Unable to find the relationship between user and device");
+				retval.put("msg", StatusService.statusCode_103);
 			}
 		}else if( status.equals("unlock") ){
 			// 检查设备与用户是否已关联
@@ -184,31 +176,24 @@ public class DeviceController {
 					user.setAccepted("1");
 					user.setModifyDate(new Date());
 					if( userService.updateByPrimaryKey(user) == 1 ){
-						retval.put("status", true);
-						retval.put("msg", "Success");
+						retval.put("status", StatusService.statusCode_200);
 					}else{
-						retval.put("status", false);
-						retval.put("msg", "Update user status failed, please try again later");
+						retval.put("status", StatusService.statusCode_104);
 					}
 				}else{
-					retval.put("status", false);
-					retval.put("msg", "The user has been deleted");
+					retval.put("status", StatusService.statusCode_105);
 				}
 			}else{
-				retval.put("status", false);
-				retval.put("msg", "Unable to find the relationship between user and device");
+				retval.put("status", StatusService.statusCode_103);
 			}
 		}else if( status.equals("delete") ){
 			if( userDeviceService.deleteByUserIdAndDeviceId(user_id, device_id) == 1 ){
-				retval.put("status", true);
-				retval.put("msg", "Success");
+				retval.put("status", StatusService.statusCode_200);
 			}else{
-				retval.put("status", false);
-				retval.put("msg", "Unable to find the relationship between user and device");
+				retval.put("status", StatusService.statusCode_103);
 			}
 		}else{
-			retval.put("status", false);
-			retval.put("msg", "Unknow action");
+			retval.put("status", StatusService.statusCode_106);
 		}
 		
 		return retval.toString();
@@ -244,23 +229,18 @@ public class DeviceController {
 					ud.setDeviceId(device.getId());
 					ud.setDeviceName("");
 					if( userDeviceService.insert(ud) == 1 ){
-						retval.put("status", true);
-						retval.put("msg", "Success");
+						retval.put("status", StatusService.statusCode_200);
 					}else{
-						retval.put("status", false);
-						retval.put("msg", "Update user device relationship failed, please try again later");
+						retval.put("status", StatusService.statusCode_107);
 					}
 				}else{
-					retval.put("status", false);
-					retval.put("msg", "The device already been bound");
+					retval.put("status", StatusService.statusCode_108);
 				}
 			}else{
-				retval.put("status", false);
-				retval.put("msg", "Unable to find the device");
+				retval.put("status", StatusService.statusCode_101);
 			}
 		}else{
-			retval.put("status", false);
-			retval.put("msg", "Unable to find the user");
+			retval.put("status", StatusService.statusCode_109);
 		}
 		
 		return retval.toString();
@@ -284,15 +264,12 @@ public class DeviceController {
 		if( userDevice != null ){
 			userDevice.setDeviceName(device_name);
 			if( userDeviceService.updateByPrimaryKey(userDevice) == 1 ){
-				retval.put("status", true);
-				retval.put("msg", "Success");
+				retval.put("status", StatusService.statusCode_200);
 			}else{
-				retval.put("status", false);
-				retval.put("msg", "Update device name failed, please try again later");
+				retval.put("status", StatusService.statusCode_110);
 			}
 		}else{
-			retval.put("status", false);
-			retval.put("msg", "Unable to find the relationship between user and device");
+			retval.put("status", StatusService.statusCode_103);
 		}
 
 		return retval.toString();
@@ -313,7 +290,7 @@ public class DeviceController {
 		
 		Device device = deviceService.selectByPrimaryKey(device_id);
 		if( device != null ){
-			retval.put("status", true);
+			retval.put("status", StatusService.statusCode_103);
 			
 			Integer order_id = device.getOrderId();
 			Order order = orderService.selectByPrimaryKey(order_id);
@@ -326,8 +303,7 @@ public class DeviceController {
 			}
 			retval.put("data", temp);
 		}else{
-			retval.put("status", false);
-			retval.put("msg", "Unable to find the device");
+			retval.put("status", StatusService.statusCode_101);
 		}
 		
 		return retval.toString();
@@ -352,15 +328,13 @@ public class DeviceController {
 			device.setId(exist_device.getId());
 			device.setHeartbeatTime(new Date());
 			if( deviceService.updateByPrimaryKeySelective(device) == 1 ){
-				retval.put("status", true);
-				retval.put("msg", "Success");
+				retval.put("status", StatusService.statusCode_200);
 			}else{
 				retval.put("status", false);
-				retval.put("msg", "Update device status failed, please try again later");
+				retval.put("msg", StatusService.statusCode_111);
 			}
 		}else{
-			retval.put("status", false);
-			retval.put("msg", "Unable to find the device");
+			retval.put("status", StatusService.statusCode_101);
 		}
 		
 		return retval.toString();

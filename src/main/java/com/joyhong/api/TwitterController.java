@@ -20,6 +20,7 @@ import com.joyhong.service.DeviceService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
 import com.joyhong.service.common.FileService;
+import com.joyhong.service.common.StatusService;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -93,8 +94,7 @@ public class TwitterController {
 		this.twitterStream.addListener(userStreamListener);
         this.twitterStream.user();
         
-        retval.put("status", true);
-        retval.put("msg", "Twitter listener start");
+        retval.put("status", StatusService.statusCode_200);
 		return retval.toString();
 	}
 	

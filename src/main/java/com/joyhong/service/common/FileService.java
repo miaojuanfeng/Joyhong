@@ -26,19 +26,19 @@ public class FileService {
 	 * @param newname
 	 * @return
 	 */
-	public String renameFile(String oldPath, String newPath, String oldname, String newname){
+	public int renameFile(String oldPath, String newPath, String oldname, String newname){
 		
         File oldfile = new File(oldPath + "/" + oldname); 
         File newfile = new File(newPath + "/" + newname); 
         if( !oldfile.exists() ){
-            return oldname + " not exists";//重命名文件不存在
+            return StatusService.statusCode_901;
         }
-        if( newfile.exists() ){//若在该目录下已经有一个文件和新文件名相同，则不允许重命名 
-            return newname + " already exists"; 
+        if( newfile.exists() ){
+            return StatusService.statusCode_902; 
         }else{ 
             oldfile.renameTo(newfile); 
         } 
-        return null;
+        return 0;
     }
 	
 	/**

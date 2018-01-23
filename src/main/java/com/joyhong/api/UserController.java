@@ -19,6 +19,7 @@ import com.joyhong.service.DeviceService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
 import com.joyhong.service.common.FuncService;
+import com.joyhong.service.common.StatusService;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -63,14 +64,12 @@ public class UserController {
 		JSONObject uJson = new JSONObject();
 		
 		if( !funcService.isNumeric(user_imei) ){
-			retval.put("status", false);
-			retval.put("msg", "The parameter user_imei should be a number");
+			retval.put("status", StatusService.statusCode_401);
 			return retval.toString();
 		}
 		
 		if( user_imei.length() != 15 ){
-			retval.put("status", false);
-			retval.put("msg", "The parameter user_imei should be 15 digits");
+			retval.put("status", StatusService.statusCode_402);
 			return retval.toString();
 		}
 		
@@ -99,18 +98,17 @@ public class UserController {
 				uJson.put("user_number", user.getNumber());
 				uJson.put("user_nickname", user.getNickname());
 				
-				retval.put("status", true);
+				retval.put("status", StatusService.statusCode_200);
 				retval.put("data", uJson);
 			}else{
-				retval.put("status", false);
-				retval.put("msg", "User registration failed, please try again later");
+				retval.put("status", StatusService.statusCode_403);
 			}
 		}else{
 			uJson.put("user_id", user.getId());
 			uJson.put("user_number", user.getNumber());
 			uJson.put("user_nickname", user.getNickname());
 			
-			retval.put("status", true);
+			retval.put("status", StatusService.statusCode_200);
 			retval.put("data", uJson);
 		}
 		
@@ -135,15 +133,12 @@ public class UserController {
 			user.setNickname(user_nickname);
 			user.setModifyDate(new Date());
 			if( userService.updateByPrimaryKey(user) == 1 ){
-				retval.put("status", true);
-				retval.put("msg", "Success");
+				retval.put("status", StatusService.statusCode_200);
 			}else{
-				retval.put("status", false);
-				retval.put("msg", "Update user profile failed, please try again later");
+				retval.put("status", StatusService.statusCode_404);
 			}
 		}else{
-			retval.put("status", false);
-			retval.put("msg", "Unable to find the user");
+			retval.put("status", StatusService.statusCode_405);
 		}
 		
 		return retval.toString();
@@ -174,31 +169,11 @@ public class UserController {
 				temp.add(uTemp);
 			}
 		}
-		retval.put("status", true);
+		retval.put("status", StatusService.statusCode_200);
 		retval.put("data", temp);
 		
 		return retval.toString();
 	}
-	
-	
-	
-//	@RequestMapping(value="/push", method=RequestMethod.GET)
-//	@ResponseBody
-//	public void push(){
-//		System.out.println(notificationService.push(
-//				12345, 
-//				"sender_name", 
-//				67890, 
-//				"receive_name", 
-//				"fmUSEMs6Bzc:APA91bHvuuezPri_rGkFYiR8TJK8jrBszsKAMltUT4PAWYeyxN3tWhxMEC-_gkz1b4EgOhkESi7s_OCDWgNiOR2kMfo_KBA7gdCQUR-JCZXWD0zn4Qf6JwNDFouB52uROxeWdLbQ_G0H", 
-//				"text", 
-//				"image_url", 
-//				"video_url", 
-//				"text", 
-//				"facebook", 
-//				"title", 
-//				"body"));
-//	}
 	
 	/**
 	 * 获取app版本更新信息
@@ -212,7 +187,7 @@ public class UserController {
 		JSONObject retval = new JSONObject();
 		
 		Config version = configService.selectByTitle("Version");
-		retval.put("status", true);
+		retval.put("status", StatusService.statusCode_200);
 		retval.put("data", version.getValue());
 		
 		return retval.toString();

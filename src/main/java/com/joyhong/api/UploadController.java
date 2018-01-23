@@ -22,6 +22,7 @@ import com.joyhong.model.User;
 import com.joyhong.model.UserDevice;
 import com.joyhong.service.DeviceService;
 import com.joyhong.service.common.PushService;
+import com.joyhong.service.common.StatusService;
 import com.joyhong.service.UploadService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
@@ -85,8 +86,7 @@ public class UploadController {
 		if( null != fileMD5 ){
 			fileMD5 = URLDecoder.decode(fileMD5, "UTF-8");
 		}else{
-			retval.put("status", false);
-			retval.put("msg", "File-MD5 property is not set or format error");
+			retval.put("status", StatusService.statusCode_301);
 			return retval.toString();
 		}
 		/*
@@ -99,13 +99,11 @@ public class UploadController {
 			try{
 				endPoint = Integer.parseInt(fileSize);
 			}catch(Exception e){
-				retval.put("status", false);
-				retval.put("msg", "File-Size property format error");
+				retval.put("status", StatusService.statusCode_302);
 				return retval.toString();
 			}
 		}else{
-			retval.put("status", false);
-			retval.put("msg", "File-Size property is not set");
+			retval.put("status", StatusService.statusCode_303);
 			return retval.toString();
 		}
 		/*
@@ -120,38 +118,32 @@ public class UploadController {
         	try{
         		start = Integer.parseInt(values[0]);
         	}catch(Exception e){
-        		retval.put("status", false);
-    			retval.put("msg", "Start bytes is not set or format error");
+        		retval.put("status", StatusService.statusCode_304);
     			return retval.toString();
         	}
         	try{
             	end = Integer.parseInt(values[1]);
         	}catch(Exception e){
-            	retval.put("status", false);
-    			retval.put("msg", "End bytes is not set or format error");
+            	retval.put("status", StatusService.statusCode_305);
     			return retval.toString();
             }
         }else{
-        	retval.put("status", false);
-			retval.put("msg", "File-Range property is not set or format error");
+        	retval.put("status", StatusService.statusCode_306);
 			return retval.toString();
         }
         /*
          * 计算字节大小
          */
         if( start < 1 ){
-        	retval.put("status", false);
-			retval.put("msg", "The start bytes must be more than 0");
+        	retval.put("status", StatusService.statusCode_307);
 			return retval.toString();
         }
         if( end < start ){
-        	retval.put("status", false);
-			retval.put("msg", "The end bytes must be more or equal than start bytes");
+        	retval.put("status", StatusService.statusCode_308);
 			return retval.toString();
         }
         if( end > endPoint ){
-        	retval.put("status", false);
-			retval.put("msg", "The end bytes must be less or equal than file size");
+        	retval.put("status", StatusService.statusCode_309);
 			return retval.toString();
         }
         int requestSize = end - start + 1;
@@ -166,21 +158,18 @@ public class UploadController {
 	        if( index > -1 ){
 	        	fileName = fileName.substring(index+9);
 	        }else{
-	        	retval.put("status", false);
-				retval.put("msg", "Content-Disposition property format error");
+	        	retval.put("status", StatusService.statusCode_310);
 				return retval.toString();
 	        }
         }else{
-        	retval.put("status", false);
-			retval.put("msg", "Content-Disposition property is not set");
+        	retval.put("status", StatusService.statusCode_311);
 			return retval.toString();
         }
         /*
          * 检查Body二进制数据长度是否等于File-Range长度
          */
         if(request.getContentLength()!=requestSize){
-        	retval.put("status", false);
-			retval.put("msg", "The size of the Body is not equal to the size of the File-Range");
+        	retval.put("status", StatusService.statusCode_312);
 			return retval.toString();
         }
         /*
@@ -193,13 +182,11 @@ public class UploadController {
 			try{
 				user_id = Integer.parseInt(userId);
 			}catch(Exception e){
-				retval.put("status", false);
-				retval.put("msg", "User-Id property format error");
+				retval.put("status", StatusService.statusCode_313);
 				return retval.toString();
 			}
 		}else{
-			retval.put("status", false);
-			retval.put("msg", "User-Id property is not set");
+			retval.put("status", StatusService.statusCode_314);
 			return retval.toString();
 		}
 		/*
@@ -215,14 +202,12 @@ public class UploadController {
     			try{
     				device_id[i] = Integer.valueOf(deviceArr[i]);
     			}catch(Exception e){
-    				retval.put("status", false);
-    				retval.put("msg", "Device-Id property format error");
+    				retval.put("status", StatusService.statusCode_315);
     				return retval.toString();
     			}
 			}
 		}else{
-			retval.put("status", false);
-			retval.put("msg", "Device-Id property is not set");
+			retval.put("status", StatusService.statusCode_316);
 			return retval.toString();
 		}
 		/*
@@ -234,8 +219,7 @@ public class UploadController {
 			fileDesc = URLDecoder.decode(fileDesc, "UTF-8");
 			file_desc = fileDesc;
 		}else{
-			retval.put("status", false);
-			retval.put("msg", "File-Desc property is not set");
+			retval.put("status", StatusService.statusCode_317);
 			return retval.toString();
 		}
         /*
@@ -288,7 +272,7 @@ public class UploadController {
 	        		/*
 	        		 * 推送在上
 	        		 */
-	        		retval.put("status", true);
+	        		retval.put("status", StatusService.statusCode_200);
 					temp.put("complete", true);
 					temp.put("file", fileUrl + fileName);
 					retval.put("data", temp);
@@ -325,8 +309,8 @@ public class UploadController {
     		/*
     		 * 写入完成，重命名文件
     		 */
-			String error = fileService.renameFile(tempPath, filePath, fileName+".temp", fileName);
-			if( error == null ){
+			int error = fileService.renameFile(tempPath, filePath, fileName+".temp", fileName);
+			if( error == 0 ){
 				Upload upload = new Upload();
 				upload.setUserId(user_id);
 				upload.setDescription(file_desc);
@@ -371,20 +355,18 @@ public class UploadController {
 					/*
 					 * 推送在上
 					 */
-					retval.put("status", true);
+					retval.put("status", StatusService.statusCode_200);
 					temp.put("complete", true);
 					temp.put("file", fileUrl + fileName);
 					retval.put("data", temp);
 				}else{
-					retval.put("status", false);
-					retval.put("msg", "Save file url to database failed, please try again later");
+					retval.put("status", StatusService.statusCode_318);
 				}
 			}else{
-				retval.put("status", false);
-				retval.put("msg", error);
+				retval.put("status", error);
 			}
 		}else{
-			retval.put("status", true);
+			retval.put("status", StatusService.statusCode_200);
 			temp.put("complete", false);
 			temp.put("start", start);
 			temp.put("end", end);
@@ -417,8 +399,7 @@ public class UploadController {
 		
 		int fileLength = files.length;
 		if( file_desc.length != fileLength ){
-			retval.put("status", false);
-			retval.put("msg", "The length of the file_desc is not equal to the length of the file");
+			retval.put("status", StatusService.statusCode_319);
 			return retval.toString();
 		}
 		
@@ -433,8 +414,7 @@ public class UploadController {
 				if( uploadService.insert(upload) == 1 ){
 					temp.add(fileUrl + fileName);
 				}else{
-					retval.put("status", false);
-					retval.put("msg", "Save file url to database failed, please try again later");
+					retval.put("status", StatusService.statusCode_318);
 					return retval.toString();
 				}
             }
@@ -479,7 +459,7 @@ public class UploadController {
 		/*
 		 * 推送在上
 		 */
-		retval.put("status", true);
+		retval.put("status", StatusService.statusCode_200);
 		retval.put("data", temp);
 		
 		return retval.toString();
