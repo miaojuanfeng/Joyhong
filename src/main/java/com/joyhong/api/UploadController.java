@@ -16,8 +16,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.joyhong.model.Device;
 import com.joyhong.model.Upload;
+import com.joyhong.model.User;
+import com.joyhong.model.UserDevice;
+import com.joyhong.service.DeviceService;
+import com.joyhong.service.common.PushService;
 import com.joyhong.service.UploadService;
+import com.joyhong.service.UserDeviceService;
+import com.joyhong.service.UserService;
 import com.joyhong.service.common.FileService;
 import com.joyhong.service.common.MD5Service;
 
@@ -33,6 +40,15 @@ import net.sf.json.JSONObject;
 public class UploadController {
 	
 	@Autowired
+	private DeviceService deviceService;
+	
+	@Autowired
+	private UserService userService;
+	
+	@Autowired
+	private UserDeviceService userDeviceService;
+	
+	@Autowired
 	private UploadService uploadService;
 	
 	@Autowired
@@ -41,10 +57,13 @@ public class UploadController {
 	@Autowired
 	private MD5Service md5Service;
 	
-	private String tempPath = "/home/wwwroot/default/upload/";
-	private String filePath = "/home/wwwroot/default/upload/";
-//	private String tempPath = "/Users/user/Desktop/";
-//	private String filePath = "/Users/user/Desktop/test/";
+	@Autowired
+	private PushService pushService;
+	
+//	private String tempPath = "/home/wwwroot/default/upload/";
+//	private String filePath = "/home/wwwroot/default/upload/";
+	private String tempPath = "/Users/user/Desktop/temp";
+	private String filePath = "/Users/user/Desktop/test/";
 	private String fileUrl = "http://47.89.32.89/upload/";
 	
 	/**
@@ -165,6 +184,61 @@ public class UploadController {
 			return retval.toString();
         }
         /*
+		 * 获取用户id
+		 */
+		String userId = request.getHeader("User-Id");
+		int user_id = 0;
+		if( null != userId ){
+			userId = URLDecoder.decode(userId, "UTF-8");
+			try{
+				user_id = Integer.parseInt(userId);
+			}catch(Exception e){
+				retval.put("status", false);
+				retval.put("msg", "User-Id property format error");
+				return retval.toString();
+			}
+		}else{
+			retval.put("status", false);
+			retval.put("msg", "User-Id property is not set");
+			return retval.toString();
+		}
+		/*
+         * 获取device id
+         */
+		String deviceStr = request.getHeader("Device-Id");
+		Integer[] device_id = null;
+		if( null != deviceStr ){
+			deviceStr = URLDecoder.decode(deviceStr, "UTF-8");
+			String[] deviceArr = deviceStr.split(",");
+			device_id = new Integer[deviceArr.length];
+			for(int i=0;i<deviceArr.length;i++){
+    			try{
+    				device_id[i] = Integer.valueOf(deviceArr[i]);
+    			}catch(Exception e){
+    				retval.put("status", false);
+    				retval.put("msg", "Device-Id property format error");
+    				return retval.toString();
+    			}
+			}
+		}else{
+			retval.put("status", false);
+			retval.put("msg", "Device-Id property is not set");
+			return retval.toString();
+		}
+		/*
+		 * 获取文件描述
+		 */
+		String fileDesc = request.getHeader("File-Desc");
+		String file_desc = "";
+		if( null != fileDesc ){
+			fileDesc = URLDecoder.decode(fileDesc, "UTF-8");
+			file_desc = fileDesc;
+		}else{
+			retval.put("status", false);
+			retval.put("msg", "File-Desc property is not set");
+			return retval.toString();
+		}
+        /*
          * 文件从开头处上传时
          */
         if( start == 1 ){
@@ -178,7 +252,39 @@ public class UploadController {
 	        		/*
 	        		 * 推送在下
 	        		 */
-	        		
+	        		User user = userService.selectByPrimaryKey(user_id);
+					if( user != null ){
+						for(Integer id : device_id){
+							Device device = deviceService.selectByPrimaryKey(id);
+							UserDevice userDevice = userDeviceService.selectByUserIdAndDeviceId(user_id, device.getId());
+							if( device != null && userDevice != null ){
+								JSONObject body = new JSONObject();
+								body.put("sender_id", user.getId());
+								body.put("sender_name", user.getNickname());
+								body.put("receive_id", device.getId());
+								body.put("receive_name", userDevice.getDeviceName());
+								body.put("to_fcm_token", device.getDeviceFcmToken());
+								body.put("text", "");
+								body.put("image_url", "");
+								body.put("video_url", fileUrl + fileName);
+								body.put("type", "video");
+								body.put("platform", "app");
+								pushService.push(
+										user.getId(),
+										user.getNickname(), 
+										device.getId(), 
+										userDevice.getDeviceName(), 
+										device.getDeviceFcmToken(), 
+										"", 
+										temp.toString(), 
+										"", 
+										"image", 
+										"app", 
+										"Receive a message from App", 
+										body.toString().replace("\"", "\\\""));
+							}
+						}
+					}
 	        		/*
 	        		 * 推送在上
 	        		 */
@@ -216,57 +322,6 @@ public class UploadController {
 		oSavedFile.close();
        
 		if( end == endPoint ){
-			/*
-    		 * 获取用户id
-    		 */
-    		String userId = request.getHeader("User-Id");
-    		int user_id = 0;
-    		if( null != userId ){
-    			userId = URLDecoder.decode(userId, "UTF-8");
-    			try{
-    				user_id = Integer.parseInt(userId);
-    			}catch(Exception e){
-    				retval.put("status", false);
-    				retval.put("msg", "User-Id property format error");
-    				return retval.toString();
-    			}
-    		}else{
-    			retval.put("status", false);
-    			retval.put("msg", "User-Id property is not set");
-    			return retval.toString();
-    		}
-    		/*
-             * 获取device id
-             */
-    		String deviceStr = request.getHeader("Device-Id");
-    		Integer[] device_id = null;
-    		if( null != deviceStr ){
-    			deviceStr = URLDecoder.decode(deviceStr, "UTF-8");
-    			String[] deviceArr = deviceStr.split(",");
-    			device_id = new Integer[deviceArr.length];
-    			for(int i=0;i<deviceArr.length;i++){
-	    			try{
-	    				device_id[i] = Integer.valueOf(deviceArr[i]);
-	    			}catch(Exception e){
-	    				retval.put("status", false);
-	    				retval.put("msg", "Device-Id property format error");
-	    				return retval.toString();
-	    			}
-    			}
-    		}else{
-    			retval.put("status", false);
-    			retval.put("msg", "Device-Id property is not set");
-    			return retval.toString();
-    		}
-    		/*
-    		 * 获取文件描述
-    		 */
-    		String fileDesc = request.getHeader("File-Desc");
-    		String file_desc = "";
-    		if( null != fileDesc ){
-    			fileDesc = URLDecoder.decode(fileDesc, "UTF-8");
-    			file_desc = fileDesc;
-    		}
     		/*
     		 * 写入完成，重命名文件
     		 */
@@ -280,7 +335,39 @@ public class UploadController {
 					/*
 					 * 推送在下
 					 */
-					
+					User user = userService.selectByPrimaryKey(user_id);
+					if( user != null ){
+						for(Integer id : device_id){
+							Device device = deviceService.selectByPrimaryKey(id);
+							UserDevice userDevice = userDeviceService.selectByUserIdAndDeviceId(user_id, device.getId());
+							if( device != null && userDevice != null ){
+								JSONObject body = new JSONObject();
+								body.put("sender_id", user.getId());
+								body.put("sender_name", user.getNickname());
+								body.put("receive_id", device.getId());
+								body.put("receive_name", userDevice.getDeviceName());
+								body.put("to_fcm_token", device.getDeviceFcmToken());
+								body.put("text", "");
+								body.put("image_url", "");
+								body.put("video_url", fileUrl + fileName);
+								body.put("type", "video");
+								body.put("platform", "app");
+								pushService.push(
+										user.getId(),
+										user.getNickname(), 
+										device.getId(), 
+										userDevice.getDeviceName(), 
+										device.getDeviceFcmToken(), 
+										"", 
+										temp.toString(), 
+										"", 
+										"image", 
+										"app", 
+										"Receive a message from App", 
+										body.toString().replace("\"", "\\\""));
+							}
+						}
+					}
 					/*
 					 * 推送在上
 					 */
@@ -356,7 +443,39 @@ public class UploadController {
 		/*
 		 * 推送在下
 		 */
-		
+		User user = userService.selectByPrimaryKey(user_id);
+		if( user != null ){
+			for(Integer id : device_id){
+				Device device = deviceService.selectByPrimaryKey(id);
+				UserDevice userDevice = userDeviceService.selectByUserIdAndDeviceId(user_id, device.getId());
+				if( device != null && userDevice != null ){
+					JSONObject body = new JSONObject();
+					body.put("sender_id", user.getId());
+					body.put("sender_name", user.getNickname());
+					body.put("receive_id", device.getId());
+					body.put("receive_name", userDevice.getDeviceName());
+					body.put("to_fcm_token", device.getDeviceFcmToken());
+					body.put("text", "");
+					body.put("image_url", temp.toString());
+					body.put("video_url", "");
+					body.put("type", "image");
+					body.put("platform", "app");
+					pushService.push(
+							user.getId(),
+							user.getNickname(), 
+							device.getId(), 
+							userDevice.getDeviceName(), 
+							device.getDeviceFcmToken(), 
+							"", 
+							temp.toString(), 
+							"", 
+							"image", 
+							"app", 
+							"Receive a message from App", 
+							body.toString().replace("\"", "\\\""));
+				}
+			}
+		}
 		/*
 		 * 推送在上
 		 */

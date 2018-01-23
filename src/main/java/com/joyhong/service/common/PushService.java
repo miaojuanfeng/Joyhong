@@ -4,7 +4,6 @@ import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Date;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,9 +104,6 @@ public class PushService {
 	        	  notification.setReceived("0");
 	        	  notification.setFailedReason(reason);
 	          }
-	          notification.setCreateDate(new Date());
-	          notification.setModifyDate(new Date());
-	          notification.setDeleted(0);
 	          
 	          if( notificationService.insert(notification) == 1 ){
 	        	  return Integer.valueOf(resultJson.getString("success"));
