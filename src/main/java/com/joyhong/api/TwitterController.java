@@ -269,13 +269,13 @@ public class TwitterController {
         				Integer user_id = this.insertUserIfNotExist(message);
         				insertUserDeviceAfterDelete(user_id, device.getId());
         				try{
-        					this.twitter.sendDirectMessage(message.getSenderId(), "Success, the device id is bind to: \nname: " + message.getSenderScreenName() + "\nid: " + message.getSenderId());
+        					this.twitter.sendDirectMessage(message.getSenderId(), "Successful Binding!");
         				}catch(Exception e){
         					logger.info(e.getMessage());
         				}
         			}else{
         				try{
-        					this.twitter.sendDirectMessage(message.getSenderId(), "Sorry, the device id is not yet registered");
+        					this.twitter.sendDirectMessage(message.getSenderId(), "Sorry, the device token is not yet registered");
         				}catch(Exception e){
         					logger.info(e.getMessage());
         				}
