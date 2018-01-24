@@ -1,6 +1,7 @@
 package com.joyhong.api;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -20,6 +21,7 @@ import com.joyhong.service.DeviceService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
 import com.joyhong.service.common.FileService;
+import com.joyhong.service.common.PushService;
 import com.joyhong.service.common.ConstantService;
 
 import net.sf.json.JSONArray;
@@ -68,6 +70,9 @@ public class TwitterController {
 	
 	@Autowired
 	private FileService fileService;
+	
+	@Autowired
+	private PushService pushService;
 	
 	public TwitterController(){
 		ConfigurationBuilder cb = new ConfigurationBuilder();
@@ -255,9 +260,9 @@ public class TwitterController {
    	         * 绑定设备
    	         */
         	if( message.getText() != "" ){
-        		String[] msg = message.getText().split(":", 2);
-        		if( msg[0].equals("bindDevice") && msg[1] != null ){
-        			String device_token = msg[1];
+        		String msg = message.getText();
+        		if( msg.startsWith("bd") ){
+        			String device_token = msg.substring(2);
         			Device device = deviceService.selectByDeviceToken(device_token);
         			init();
         			if( device != null ){
@@ -325,6 +330,61 @@ public class TwitterController {
 			    }
 		    }
 		    retval.put("image", img);
+		    
+		    /*
+			 * 推送在下
+			 */
+		    com.joyhong.model.User user = userService.selectByUsername(String.valueOf(message.getSenderId()));
+			if( user != null ){
+				List<UserDevice> ud = userDeviceService.selectByUserId(user.getId());
+				if( ud != null ){
+					UserDevice userDevice = ud.get(0);
+					Device device = deviceService.selectByPrimaryKey(userDevice.getDeviceId());
+					JSONObject body = new JSONObject();
+					body.put("sender_id", user.getId());
+					body.put("sender_name", user.getNickname());
+					body.put("receive_id", device.getId());
+					body.put("receive_name", userDevice.getDeviceName());
+					body.put("to_fcm_token", device.getDeviceFcmToken());
+					body.put("text", message.getText());
+					String image_url = "";
+					String video_url = "";
+					String type = "";
+					if( retval.has("video") ){
+						image_url = "";
+						video_url = retval.get("video").toString();
+						type = "video";
+					}else if( img.size() > 0 ){
+						image_url = img.toString();
+						video_url = "";
+						type = "image";
+					}else{
+						image_url = "";
+						video_url = "";
+						type = "text";
+					}
+					body.put("image_url", image_url);
+					body.put("video_url", video_url);
+					body.put("type", type);
+					body.put("platform", "twitter");
+					pushService.push(
+							user.getId(),
+							user.getNickname(), 
+							device.getId(), 
+							userDevice.getDeviceName(), 
+							device.getDeviceFcmToken(), 
+							message.getText(), 
+							image_url, 
+							video_url, 
+							type, 
+							"twitter", 
+							"Receive a message from Twitter", 
+							body.toString().replace("\"", "\\\""));
+				}
+			}
+			/*
+			 * 推送在上
+			 */
            
 			fileService.savePostData("/usr/local/tomcat/apache-tomcat-8.5.23/webapps/files/twitter.txt", retval.toString());
         }
