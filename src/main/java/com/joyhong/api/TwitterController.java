@@ -20,7 +20,7 @@ import com.joyhong.service.DeviceService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
 import com.joyhong.service.common.FileService;
-import com.joyhong.service.common.StatusService;
+import com.joyhong.service.common.ConstantService;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -94,7 +94,7 @@ public class TwitterController {
 		this.twitterStream.addListener(userStreamListener);
         this.twitterStream.user();
         
-        retval.put("status", StatusService.statusCode_200);
+        retval.put("status", ConstantService.statusCode_200);
 		return retval.toString();
 	}
 	

@@ -19,7 +19,7 @@ import com.joyhong.service.DeviceService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
 import com.joyhong.service.common.FuncService;
-import com.joyhong.service.common.StatusService;
+import com.joyhong.service.common.ConstantService;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -64,12 +64,12 @@ public class UserController {
 		JSONObject uJson = new JSONObject();
 		
 		if( !funcService.isNumeric(user_imei) ){
-			retval.put("status", StatusService.statusCode_401);
+			retval.put("status", ConstantService.statusCode_401);
 			return retval.toString();
 		}
 		
 		if( user_imei.length() != 15 ){
-			retval.put("status", StatusService.statusCode_402);
+			retval.put("status", ConstantService.statusCode_402);
 			return retval.toString();
 		}
 		
@@ -98,17 +98,17 @@ public class UserController {
 				uJson.put("user_number", user.getNumber());
 				uJson.put("user_nickname", user.getNickname());
 				
-				retval.put("status", StatusService.statusCode_200);
+				retval.put("status", ConstantService.statusCode_200);
 				retval.put("data", uJson);
 			}else{
-				retval.put("status", StatusService.statusCode_403);
+				retval.put("status", ConstantService.statusCode_403);
 			}
 		}else{
 			uJson.put("user_id", user.getId());
 			uJson.put("user_number", user.getNumber());
 			uJson.put("user_nickname", user.getNickname());
 			
-			retval.put("status", StatusService.statusCode_200);
+			retval.put("status", ConstantService.statusCode_200);
 			retval.put("data", uJson);
 		}
 		
@@ -133,12 +133,12 @@ public class UserController {
 			user.setNickname(user_nickname);
 			user.setModifyDate(new Date());
 			if( userService.updateByPrimaryKey(user) == 1 ){
-				retval.put("status", StatusService.statusCode_200);
+				retval.put("status", ConstantService.statusCode_200);
 			}else{
-				retval.put("status", StatusService.statusCode_404);
+				retval.put("status", ConstantService.statusCode_404);
 			}
 		}else{
-			retval.put("status", StatusService.statusCode_405);
+			retval.put("status", ConstantService.statusCode_405);
 		}
 		
 		return retval.toString();
@@ -169,7 +169,7 @@ public class UserController {
 				temp.add(uTemp);
 			}
 		}
-		retval.put("status", StatusService.statusCode_200);
+		retval.put("status", ConstantService.statusCode_200);
 		retval.put("data", temp);
 		
 		return retval.toString();
@@ -187,7 +187,7 @@ public class UserController {
 		JSONObject retval = new JSONObject();
 		
 		Config version = configService.selectByTitle("Version");
-		retval.put("status", StatusService.statusCode_200);
+		retval.put("status", ConstantService.statusCode_200);
 		retval.put("data", version.getValue());
 		
 		return retval.toString();

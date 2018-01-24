@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.joyhong.model.Weather;
 import com.joyhong.service.WeatherService;
-import com.joyhong.service.common.StatusService;
+import com.joyhong.service.common.ConstantService;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -264,7 +264,7 @@ public class WeatherController {
 		
 		Weather weather = this.fetch_weather(city_id);
 		if( weather != null && this.invalid_time(weather) ){
-			retval.put("status", StatusService.statusCode_200);
+			retval.put("status", ConstantService.statusCode_200);
 			retval.put("time", weather.getTime().getTime()/1000);
 			retval.put("data", weather.getData());
 		}else{
@@ -280,16 +280,16 @@ public class WeatherController {
 					Date time = new Date();
 					result = weather_data(null, time, weather, jsonResult, true);
 					
-					retval.put("status", StatusService.statusCode_200);
+					retval.put("status", ConstantService.statusCode_200);
 					retval.put("time", time.getTime()/1000);
 					retval.put("data", result);
 				}else{
-					retval.put("status", StatusService.statusCode_500);
+					retval.put("status", ConstantService.statusCode_500);
 					retval.put("msg", result);
 				}
 			}catch(Exception e){
 				logger.info(e.getMessage());
-				retval.put("status", StatusService.statusCode_500);
+				retval.put("status", ConstantService.statusCode_500);
 				retval.put("msg", e.getMessage());
 			}
 		}
@@ -309,7 +309,7 @@ public class WeatherController {
 		
 		Weather weather = this.fetch_weather(city_name, null);
 		if( weather != null && this.invalid_time(weather) ){
-			retval.put("status", StatusService.statusCode_200);
+			retval.put("status", ConstantService.statusCode_200);
 			retval.put("time", weather.getTime().getTime()/1000);
 			retval.put("data", weather.getData());
 		}else{
@@ -325,16 +325,16 @@ public class WeatherController {
 					Date time = new Date();
 					result = weather_data(null, time, weather, jsonResult, true);
 					
-					retval.put("status", StatusService.statusCode_200);
+					retval.put("status", ConstantService.statusCode_200);
 					retval.put("time", time.getTime()/1000);
 					retval.put("data", result);
 				}else{
-					retval.put("status", StatusService.statusCode_500);
+					retval.put("status", ConstantService.statusCode_500);
 					retval.put("msg", result);
 				}
 			}catch(Exception e){
 				logger.info(e.getMessage());
-				retval.put("status", StatusService.statusCode_500);
+				retval.put("status", ConstantService.statusCode_500);
 				retval.put("msg", e.getMessage());
 			}
 		}
@@ -366,16 +366,16 @@ public class WeatherController {
 				Date time = new Date();
 				result = weather_data(null, time, null, jsonResult, false);
 				
-				retval.put("status", StatusService.statusCode_200);
+				retval.put("status", ConstantService.statusCode_200);
 				retval.put("time", time.getTime()/1000);
 				retval.put("data", result);
 			}else{
-				retval.put("status", StatusService.statusCode_500);
+				retval.put("status", ConstantService.statusCode_500);
 				retval.put("msg", result);
 			}
 		}catch(Exception e){
 			logger.info(e.getMessage());
-			retval.put("status", StatusService.statusCode_500);
+			retval.put("status", ConstantService.statusCode_500);
 			retval.put("msg", e.getMessage());
 		}
 			
@@ -396,7 +396,7 @@ public class WeatherController {
 		
 		Weather weather = this.fetch_weather(null, zip_code);
 		if( weather != null && this.invalid_time(weather) ){
-			retval.put("status", StatusService.statusCode_200);
+			retval.put("status", ConstantService.statusCode_200);
 			retval.put("time", weather.getTime().getTime()/1000);
 			retval.put("data", weather.getData());
 		}else{
@@ -412,16 +412,16 @@ public class WeatherController {
 					Date time = new Date();
 					result = weather_data(zip_code, time, weather, jsonResult, true);
 					
-					retval.put("status", StatusService.statusCode_200);
+					retval.put("status", ConstantService.statusCode_200);
 					retval.put("time", time.getTime()/1000);
 					retval.put("data", result);
 				}else{
-					retval.put("status", StatusService.statusCode_500);
+					retval.put("status", ConstantService.statusCode_500);
 					retval.put("msg", result);
 				}
 			}catch(Exception e){
 				logger.info(e.getMessage());
-				retval.put("status", StatusService.statusCode_500);
+				retval.put("status", ConstantService.statusCode_500);
 				retval.put("msg", e.getMessage());
 			}
 		}

@@ -22,7 +22,7 @@ import com.joyhong.model.User;
 import com.joyhong.model.UserDevice;
 import com.joyhong.service.DeviceService;
 import com.joyhong.service.common.PushService;
-import com.joyhong.service.common.StatusService;
+import com.joyhong.service.common.ConstantService;
 import com.joyhong.service.UploadService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
@@ -86,7 +86,7 @@ public class UploadController {
 		if( null != fileMD5 ){
 			fileMD5 = URLDecoder.decode(fileMD5, "UTF-8");
 		}else{
-			retval.put("status", StatusService.statusCode_301);
+			retval.put("status", ConstantService.statusCode_301);
 			return retval.toString();
 		}
 		/*
@@ -99,11 +99,11 @@ public class UploadController {
 			try{
 				endPoint = Integer.parseInt(fileSize);
 			}catch(Exception e){
-				retval.put("status", StatusService.statusCode_302);
+				retval.put("status", ConstantService.statusCode_302);
 				return retval.toString();
 			}
 		}else{
-			retval.put("status", StatusService.statusCode_303);
+			retval.put("status", ConstantService.statusCode_303);
 			return retval.toString();
 		}
 		/*
@@ -118,32 +118,32 @@ public class UploadController {
         	try{
         		start = Integer.parseInt(values[0]);
         	}catch(Exception e){
-        		retval.put("status", StatusService.statusCode_304);
+        		retval.put("status", ConstantService.statusCode_304);
     			return retval.toString();
         	}
         	try{
             	end = Integer.parseInt(values[1]);
         	}catch(Exception e){
-            	retval.put("status", StatusService.statusCode_305);
+            	retval.put("status", ConstantService.statusCode_305);
     			return retval.toString();
             }
         }else{
-        	retval.put("status", StatusService.statusCode_306);
+        	retval.put("status", ConstantService.statusCode_306);
 			return retval.toString();
         }
         /*
          * 计算字节大小
          */
         if( start < 1 ){
-        	retval.put("status", StatusService.statusCode_307);
+        	retval.put("status", ConstantService.statusCode_307);
 			return retval.toString();
         }
         if( end < start ){
-        	retval.put("status", StatusService.statusCode_308);
+        	retval.put("status", ConstantService.statusCode_308);
 			return retval.toString();
         }
         if( end > endPoint ){
-        	retval.put("status", StatusService.statusCode_309);
+        	retval.put("status", ConstantService.statusCode_309);
 			return retval.toString();
         }
         int requestSize = end - start + 1;
@@ -158,18 +158,18 @@ public class UploadController {
 	        if( index > -1 ){
 	        	fileName = fileName.substring(index+9);
 	        }else{
-	        	retval.put("status", StatusService.statusCode_310);
+	        	retval.put("status", ConstantService.statusCode_310);
 				return retval.toString();
 	        }
         }else{
-        	retval.put("status", StatusService.statusCode_311);
+        	retval.put("status", ConstantService.statusCode_311);
 			return retval.toString();
         }
         /*
          * 检查Body二进制数据长度是否等于File-Range长度
          */
         if(request.getContentLength()!=requestSize){
-        	retval.put("status", StatusService.statusCode_312);
+        	retval.put("status", ConstantService.statusCode_312);
 			return retval.toString();
         }
         /*
@@ -182,11 +182,11 @@ public class UploadController {
 			try{
 				user_id = Integer.parseInt(userId);
 			}catch(Exception e){
-				retval.put("status", StatusService.statusCode_313);
+				retval.put("status", ConstantService.statusCode_313);
 				return retval.toString();
 			}
 		}else{
-			retval.put("status", StatusService.statusCode_314);
+			retval.put("status", ConstantService.statusCode_314);
 			return retval.toString();
 		}
 		/*
@@ -202,12 +202,12 @@ public class UploadController {
     			try{
     				device_id[i] = Integer.valueOf(deviceArr[i]);
     			}catch(Exception e){
-    				retval.put("status", StatusService.statusCode_315);
+    				retval.put("status", ConstantService.statusCode_315);
     				return retval.toString();
     			}
 			}
 		}else{
-			retval.put("status", StatusService.statusCode_316);
+			retval.put("status", ConstantService.statusCode_316);
 			return retval.toString();
 		}
 		/*
@@ -219,7 +219,7 @@ public class UploadController {
 			fileDesc = URLDecoder.decode(fileDesc, "UTF-8");
 			file_desc = fileDesc;
 		}else{
-			retval.put("status", StatusService.statusCode_317);
+			retval.put("status", ConstantService.statusCode_317);
 			return retval.toString();
 		}
         /*
@@ -272,7 +272,7 @@ public class UploadController {
 	        		/*
 	        		 * 推送在上
 	        		 */
-	        		retval.put("status", StatusService.statusCode_200);
+	        		retval.put("status", ConstantService.statusCode_200);
 					temp.put("complete", true);
 					temp.put("file", fileUrl + fileName);
 					retval.put("data", temp);
@@ -355,18 +355,18 @@ public class UploadController {
 					/*
 					 * 推送在上
 					 */
-					retval.put("status", StatusService.statusCode_200);
+					retval.put("status", ConstantService.statusCode_200);
 					temp.put("complete", true);
 					temp.put("file", fileUrl + fileName);
 					retval.put("data", temp);
 				}else{
-					retval.put("status", StatusService.statusCode_318);
+					retval.put("status", ConstantService.statusCode_318);
 				}
 			}else{
 				retval.put("status", error);
 			}
 		}else{
-			retval.put("status", StatusService.statusCode_200);
+			retval.put("status", ConstantService.statusCode_200);
 			temp.put("complete", false);
 			temp.put("start", start);
 			temp.put("end", end);
@@ -399,7 +399,7 @@ public class UploadController {
 		
 		int fileLength = files.length;
 		if( file_desc.length != fileLength ){
-			retval.put("status", StatusService.statusCode_319);
+			retval.put("status", ConstantService.statusCode_319);
 			return retval.toString();
 		}
 		
@@ -414,7 +414,7 @@ public class UploadController {
 				if( uploadService.insert(upload) == 1 ){
 					temp.add(fileUrl + fileName);
 				}else{
-					retval.put("status", StatusService.statusCode_318);
+					retval.put("status", ConstantService.statusCode_318);
 					return retval.toString();
 				}
             }
@@ -459,7 +459,7 @@ public class UploadController {
 		/*
 		 * 推送在上
 		 */
-		retval.put("status", StatusService.statusCode_200);
+		retval.put("status", ConstantService.statusCode_200);
 		retval.put("data", temp);
 		
 		return retval.toString();

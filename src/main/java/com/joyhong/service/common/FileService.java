@@ -31,10 +31,10 @@ public class FileService {
         File oldfile = new File(oldPath + "/" + oldname); 
         File newfile = new File(newPath + "/" + newname); 
         if( !oldfile.exists() ){
-            return StatusService.statusCode_901;
+            return ConstantService.statusCode_901;
         }
         if( newfile.exists() ){
-            return StatusService.statusCode_902; 
+            return ConstantService.statusCode_902; 
         }else{ 
             oldfile.renameTo(newfile); 
         } 
