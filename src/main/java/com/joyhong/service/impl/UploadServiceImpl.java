@@ -41,12 +41,18 @@ public class UploadServiceImpl implements UploadService {
 
 	public int updateByPrimaryKeySelective(Upload record) {
 		// TODO Auto-generated method stub
+		record.setModifyDate(new Date());
 		return uploadMapper.updateByPrimaryKeySelective(record);
 	}
 
 	public int updateByPrimaryKey(Upload record) {
 		// TODO Auto-generated method stub
 		return uploadMapper.updateByPrimaryKey(record);
+	}
+
+	public Upload selectByNameAndMD5(String name, String md5) {
+		// TODO Auto-generated method stub
+		return uploadMapper.selectByNameAndMD5(name, md5);
 	}
 
 }

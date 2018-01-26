@@ -117,4 +117,78 @@ public class FileService {
 	    	logger.info(e.getMessage());
 	    }
 	}
+	
+	/**
+	 * 获取文件加下文件数量
+	 * @param filepath
+	 * @return
+	 */
+	public int getFileCount(String filePath) {
+		int count = 0;
+        File file = new File(filePath);
+        File[] listfile = file.listFiles();
+        for (int i = 0; i < listfile.length; i++) {
+            if( !listfile[i].isDirectory() ){
+            	if( !listfile[i].getName().startsWith(".") ){
+            		count++;
+            	}
+            }else{
+            	getFileCount(listfile[i].toString());
+            }
+        }
+        return count;
+    }
+	
+	/**
+	 * 创建文件
+	 * @param fileName
+	 * @throws Exception
+	 */
+	public void makeFile(String fileName) throws Exception{
+		File file = new File(fileName);  
+        if (!file.exists()) {  
+            file.createNewFile();  
+        }
+	}
+	
+	/**
+	 * 创建文件夹
+	 * @param fileDir
+	 */
+	public void makeDir(String fileDir){
+		File emptyDir = new File(fileDir);
+        if( !emptyDir.exists() ){
+        	emptyDir.mkdir();
+        }
+	}
+	
+	/**
+	 * 删除文件
+	 * @param fileName
+	 */
+	public void deleteFile(String fileName){
+		File existsFile = new File(fileName);
+    	if( existsFile.exists() && existsFile.isFile() ){
+    		existsFile.delete();
+    	}
+	}
+	
+	/**
+	 * 删除目录及其下所有文件
+	 * @param filePath
+	 */
+	public void deleteDir(String fileDir){
+		File existsPath = new File(fileDir);
+		File[] listfile = existsPath.listFiles();
+		if( listfile != null ){
+			for (int i = 0; i < listfile.length; i++) {
+	            if( !listfile[i].isDirectory() ){
+	            	listfile[i].delete();
+	            }else{
+	            	deleteDir(listfile[i].toString());
+	            }
+	        }
+		}
+		existsPath.delete();
+	}
 }

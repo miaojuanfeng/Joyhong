@@ -4,14 +4,16 @@
   <resultMap id="BaseResultMap" type="com.joyhong.model.Upload">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="description" jdbcType="VARCHAR" property="description" />
     <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="md5" jdbcType="CHAR" property="md5" />
     <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
     <result column="modify_date" jdbcType="TIMESTAMP" property="modifyDate" />
     <result column="deleted" jdbcType="INTEGER" property="deleted" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, user_id, description, url, create_date, modify_date, deleted
+    id, user_id, name, description, url, md5, create_date, modify_date, deleted
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -19,16 +21,22 @@
     from jh_upload
     where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </select>
+  <select id="selectByNameAndMD5" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from jh_upload
+    where deleted = 0 and name = #{0} and md5 = #{1}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from jh_upload
     where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.joyhong.model.Upload">
-    insert into jh_upload (id, user_id, description, 
-      url, create_date, modify_date, 
+    insert into jh_upload (id, user_id, name, description, 
+      url, md5, create_date, modify_date, 
       deleted)
-    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{description,jdbcType=VARCHAR}, 
-      #{url,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{modifyDate,jdbcType=TIMESTAMP}, 
+    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
+      #{url,jdbcType=VARCHAR}, #{md5,jdbcType=CHAR}, #{createDate,jdbcType=TIMESTAMP}, #{modifyDate,jdbcType=TIMESTAMP}, 
       #{deleted,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.joyhong.model.Upload">
@@ -40,11 +48,17 @@
       <if test="userId != null">
         user_id,
       </if>
+      <if test="name != null">
+        name,
+      </if>
       <if test="description != null">
         description,
       </if>
       <if test="url != null">
         url,
+      </if>
+      <if test="md5 != null">
+        md5,
       </if>
       <if test="createDate != null">
         create_date,
@@ -63,11 +77,17 @@
       <if test="userId != null">
         #{userId,jdbcType=INTEGER},
       </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
       <if test="description != null">
         #{description,jdbcType=VARCHAR},
       </if>
       <if test="url != null">
         #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="md5 != null">
+        #{md5,jdbcType=CHAR},
       </if>
       <if test="createDate != null">
         #{createDate,jdbcType=TIMESTAMP},
@@ -86,11 +106,17 @@
       <if test="userId != null">
         user_id = #{userId,jdbcType=INTEGER},
       </if>
+      <if test="name != null">
+        name = #{description,jdbcType=VARCHAR},
+      </if>
       <if test="description != null">
         description = #{description,jdbcType=VARCHAR},
       </if>
       <if test="url != null">
         url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="md5 != null">
+        md5 = #{md5,jdbcType=CHAR},
       </if>
       <if test="createDate != null">
         create_date = #{createDate,jdbcType=TIMESTAMP},
@@ -107,8 +133,10 @@
   <update id="updateByPrimaryKey" parameterType="com.joyhong.model.Upload">
     update jh_upload
     set user_id = #{userId,jdbcType=INTEGER},
+      name = #{name,jdbcType=VARCHAR},
       description = #{description,jdbcType=VARCHAR},
       url = #{url,jdbcType=VARCHAR},
+      md5 = #{md5,jdbcType=CHAR},
       create_date = #{createDate,jdbcType=TIMESTAMP},
       modify_date = #{modifyDate,jdbcType=TIMESTAMP},
       deleted = #{deleted,jdbcType=INTEGER}

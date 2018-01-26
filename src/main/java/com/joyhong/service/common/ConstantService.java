@@ -42,6 +42,13 @@ public class ConstantService {
 	public static int statusCode_317 = 317;		// File-Desc property is not set
 	public static int statusCode_318 = 318;		// Save file url to database failed, please try again later
 	public static int statusCode_319 = 319;		// The length of the file_desc is not equal to the length of the file
+	public static int statusCode_320 = 320;		// Current block is not set or format error
+	public static int statusCode_321 = 321;		// Total block is not set or format error
+	public static int statusCode_322 = 322;		// File-Block property is not set or format error
+	public static int statusCode_323 = 323;		// The current block must be more than 0
+	public static int statusCode_324 = 324;		// The total block must be more than 0
+	public static int statusCode_325 = 325;		// The total block must be more or equal than current block
+	public static int statusCode_326 = 326;		// Block file not exists
 	/*
 	 * User controller error
 	 */

@@ -10,6 +10,8 @@ public interface UploadService {
     int insertSelective(Upload record);
 
     Upload selectByPrimaryKey(Integer id);
+    
+    Upload selectByNameAndMD5(String name, String md5);
 
     int updateByPrimaryKeySelective(Upload record);
 

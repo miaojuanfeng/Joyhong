@@ -2,6 +2,7 @@ package com.joyhong.api;
 
 import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.URLDecoder;
@@ -27,7 +28,6 @@ import com.joyhong.service.UploadService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
 import com.joyhong.service.common.FileService;
-import com.joyhong.service.common.MD5Service;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -56,15 +56,12 @@ public class UploadController {
 	private FileService fileService;
 	
 	@Autowired
-	private MD5Service md5Service;
-	
-	@Autowired
 	private PushService pushService;
 	
-//	private String tempPath = "/home/wwwroot/default/upload/";
-//	private String filePath = "/home/wwwroot/default/upload/";
-	private String tempPath = "/Users/user/Desktop/temp";
-	private String filePath = "/Users/user/Desktop/test/";
+	private String tempPath = "/home/wwwroot/default/upload/";
+	private String filePath = "/home/wwwroot/default/upload/";
+//	private String tempPath = "/Users/user/Desktop/temp/";
+//	private String filePath = "/Users/user/Desktop/test/";
 	private String fileUrl = "http://47.89.32.89/upload/";
 	
 	/**
@@ -148,6 +145,46 @@ public class UploadController {
         }
         int requestSize = end - start + 1;
         /*
+		 * 获取分块范围
+		 */
+		String block = request.getHeader("File-Block");
+        int currentBlock = 0;
+        int totalBlock = 0;
+        if( null != block ){
+        	range = URLDecoder.decode(range, "UTF-8");
+            String[] values = block.split("/");
+        	try{
+        		currentBlock = Integer.parseInt(values[0]);
+        	}catch(Exception e){
+        		retval.put("status", ConstantService.statusCode_320);
+    			return retval.toString();
+        	}
+        	try{
+        		totalBlock = Integer.parseInt(values[1]);
+        	}catch(Exception e){
+            	retval.put("status", ConstantService.statusCode_321);
+    			return retval.toString();
+            }
+        }else{
+        	retval.put("status", ConstantService.statusCode_322);
+			return retval.toString();
+        }
+        /*
+         * 判断分块范围是否合法
+         */
+        if( currentBlock < 1 ){
+        	retval.put("status", ConstantService.statusCode_323);
+			return retval.toString();
+        }
+        if( totalBlock < 1 ){
+        	retval.put("status", ConstantService.statusCode_324);
+			return retval.toString();
+        }
+        if( currentBlock > totalBlock ){
+        	retval.put("status", ConstantService.statusCode_325);
+			return retval.toString();
+        }
+        /*
          * 获取文件名
          */
         String fileName = request.getHeader("Content-Disposition");
@@ -225,14 +262,16 @@ public class UploadController {
         /*
          * 文件从开头处上传时
          */
+		String tempDir = tempPath + fileName + ".temp/";
         if( start == 1 ){
         	/*
              * 检查文件是否存在
              * 根据文件MD5值检查，相同MD5值则不写文件直接推送
              */
-	        File existsFile = new File(filePath + fileName);
-	        if( existsFile.exists() ){
-	        	if( fileMD5.equals(md5Service.getMD5OfFile(filePath + fileName)) ){
+        	Upload existsFile = uploadService.selectByNameAndMD5(fileName, fileMD5);
+	        if( existsFile != null ){
+	        	existsFile.setDescription(file_desc);
+	        	if( uploadService.updateByPrimaryKey(existsFile) == 1 ){
 	        		/*
 	        		 * 推送在下
 	        		 */
@@ -283,16 +322,14 @@ public class UploadController {
 	         * 检查临时文件是否存在
 	         * 如果start为1表示需要重写文件，将已上传的数据块删除
 	         */
-        	File existsTempFile = new File(tempPath + fileName + ".temp");
-        	if( existsTempFile.exists() ){
-        		existsTempFile.delete();
-        	}
+        	fileService.deleteDir(tempDir);
         }
         /*
          * 追加文件
          */
+        fileService.makeDir(tempDir);
         InputStream is = request.getInputStream();
-        RandomAccessFile oSavedFile = new RandomAccessFile(tempPath + fileName + ".temp", "rw"); 
+        RandomAccessFile oSavedFile = new RandomAccessFile(tempDir + fileName + "." + currentBlock, "rw"); 
         long nPos = start-1;
         
 	    oSavedFile.seek(nPos);
@@ -301,20 +338,53 @@ public class UploadController {
 	    DataInputStream in = new DataInputStream(is);
 	    in.readFully(dataOrigin);
 	    oSavedFile.write(dataOrigin, 0, dataOrigin.length);
+	    
 	    in.close();
-		
 		oSavedFile.close();
        
-		if( end == endPoint ){
+		if( fileService.getFileCount(tempDir) == totalBlock ){
+			/*
+			 *  将分块文件写入到一个文件中
+			 */
+			RandomAccessFile mergeFile = new RandomAccessFile(tempDir + fileName + ".done", "rw");
+			long fileLength = mergeFile.length();
+			for(int i=1;i<=totalBlock;i++){
+				File file = new File(tempDir + fileName + "." + i);
+		        if (!file.exists()) {
+		        	mergeFile.close();
+		        	fileService.deleteDir(tempDir);
+		        	retval.put("status", ConstantService.statusCode_326);
+					return retval.toString();
+		        }
+		        FileInputStream fileInput = new FileInputStream(file);
+		        byte[] buffer = new byte[1024];
+		        int byteread = 0; 
+		        while ((byteread = fileInput.read(buffer)) != -1) {
+		        	mergeFile.seek(fileLength);
+		        	mergeFile.write(buffer, 0, byteread);
+		        	fileLength += byteread;
+		        }
+		        fileInput.close();
+			}
+			mergeFile.close();
     		/*
     		 * 写入完成，重命名文件
     		 */
-			int error = fileService.renameFile(tempPath, filePath, fileName+".temp", fileName);
+			int error = fileService.renameFile(tempDir, filePath, fileName+".done", fileName);
+			/*
+	         * 将已上传的临时文件夹及里面的所有文件删除
+	         */
+        	fileService.deleteDir(tempDir);
+        	/*
+        	 * 文件合并重命名成功，推送
+        	 */
 			if( error == 0 ){
 				Upload upload = new Upload();
 				upload.setUserId(user_id);
+				upload.setName(fileName);
 				upload.setDescription(file_desc);
 				upload.setUrl(fileUrl+fileName);
+				upload.setMd5(fileMD5);
 				if( uploadService.insert(upload) == 1 ){
 					/*
 					 * 推送在下
@@ -363,13 +433,6 @@ public class UploadController {
 					retval.put("status", ConstantService.statusCode_318);
 				}
 			}else{
-				/*
-		         * 将已上传的临时文件删除
-		         */
-	        	File existsTempFile = new File(tempPath + fileName + ".temp");
-	        	if( existsTempFile.exists() ){
-	        		existsTempFile.delete();
-	        	}
 				retval.put("status", error);
 			}
 		}else{
@@ -378,6 +441,8 @@ public class UploadController {
 			temp.put("start", start);
 			temp.put("end", end);
 			temp.put("next", end+1);
+			temp.put("current_block", currentBlock);
+			temp.put("total_block", totalBlock);
 			retval.put("data", temp);
 		}
 		
@@ -472,10 +537,4 @@ public class UploadController {
 		
 		return retval.toString();
 	}
-	
-//	@RequestMapping(value="/test", method = RequestMethod.GET)
-//	@ResponseBody
-//	public String test(HttpServletRequest request) throws Exception {
-//		return md5Service.getMD5OfFile("/Users/user/Desktop/VID_20150130_004828.3gp");
-//	}
 }
