@@ -363,6 +363,13 @@ public class UploadController {
 					retval.put("status", ConstantService.statusCode_318);
 				}
 			}else{
+				/*
+		         * 将已上传的临时文件删除
+		         */
+	        	File existsTempFile = new File(tempPath + fileName + ".temp");
+	        	if( existsTempFile.exists() ){
+	        		existsTempFile.delete();
+	        	}
 				retval.put("status", error);
 			}
 		}else{
@@ -407,6 +414,7 @@ public class UploadController {
 			if( !files[i].isEmpty() ){
 				String fileName = files[i].getOriginalFilename();
 				files[i].transferTo(new File(filePath + fileName));
+				Runtime.getRuntime().exec("chmod 644 " + filePath + fileName);
 				Upload upload = new Upload();
 				upload.setUserId(user_id);
 				upload.setDescription(file_desc[i]);
@@ -464,4 +472,10 @@ public class UploadController {
 		
 		return retval.toString();
 	}
+	
+//	@RequestMapping(value="/test", method = RequestMethod.GET)
+//	@ResponseBody
+//	public String test(HttpServletRequest request) throws Exception {
+//		return md5Service.getMD5OfFile("/Users/user/Desktop/VID_20150130_004828.3gp");
+//	}
 }

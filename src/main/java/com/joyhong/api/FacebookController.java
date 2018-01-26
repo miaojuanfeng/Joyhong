@@ -119,6 +119,8 @@ public class FacebookController {
 				
 				JSONObject json_obj = JSONObject.fromObject(postdata);
 				
+				fileService.savePostData("/usr/local/tomcat/apache-tomcat-8.5.23/webapps/files/facebook2.txt", postdata);
+				
 				JSONObject message = json_obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("message");
 				
 				if( message.has("attachments") ){

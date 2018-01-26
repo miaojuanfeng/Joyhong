@@ -27,17 +27,21 @@ public class FileService {
 	 * @return
 	 */
 	public int renameFile(String oldPath, String newPath, String oldname, String newname){
-		
-        File oldfile = new File(oldPath + "/" + oldname); 
-        File newfile = new File(newPath + "/" + newname); 
-        if( !oldfile.exists() ){
-            return ConstantService.statusCode_901;
-        }
-        if( newfile.exists() ){
-            return ConstantService.statusCode_902; 
-        }else{ 
-            oldfile.renameTo(newfile); 
-        } 
+		try{
+	        File oldfile = new File(oldPath + "/" + oldname); 
+	        File newfile = new File(newPath + "/" + newname); 
+	        if( !oldfile.exists() ){
+	            return ConstantService.statusCode_901;
+	        }
+	        if( newfile.exists() ){
+	            return ConstantService.statusCode_902; 
+	        }else{ 
+	            oldfile.renameTo(newfile);
+	            Runtime.getRuntime().exec("chmod 644 " + newPath + "/" + newname);
+	        }
+		}catch(Exception e){
+			logger.info(e.getMessage());
+		}
         return 0;
     }
 	
