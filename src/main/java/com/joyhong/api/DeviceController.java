@@ -230,6 +230,9 @@ public class DeviceController {
 					ud.setDeviceName("");
 					if( userDeviceService.insert(ud) == 1 ){
 						retval.put("status", ConstantService.statusCode_200);
+						JSONObject temp = new JSONObject();
+						temp.put("device_id", device.getId());
+						retval.put("data", temp);
 					}else{
 						retval.put("status", ConstantService.statusCode_107);
 					}

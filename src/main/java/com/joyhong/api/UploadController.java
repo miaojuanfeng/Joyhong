@@ -58,10 +58,10 @@ public class UploadController {
 	@Autowired
 	private PushService pushService;
 	
-	private String tempPath = "/home/wwwroot/default/upload/";
-	private String filePath = "/home/wwwroot/default/upload/";
-//	private String tempPath = "/Users/user/Desktop/temp/";
-//	private String filePath = "/Users/user/Desktop/test/";
+//	private String tempPath = "/home/wwwroot/default/upload/";
+//	private String filePath = "/home/wwwroot/default/upload/";
+	private String tempPath = "/Users/user/Desktop/temp/";
+	private String filePath = "/Users/user/Desktop/test/";
 	private String fileUrl = "http://47.89.32.89/upload/";
 	
 	/**
@@ -329,7 +329,7 @@ public class UploadController {
          */
         fileService.makeDir(tempDir);
         InputStream is = request.getInputStream();
-        RandomAccessFile oSavedFile = new RandomAccessFile(tempDir + fileName + "." + currentBlock, "rw"); 
+        RandomAccessFile oSavedFile = new RandomAccessFile(tempDir + fileName + "." + currentBlock + ".temp", "rw"); 
         long nPos = start-1;
         
 	    oSavedFile.seek(nPos);
@@ -341,8 +341,10 @@ public class UploadController {
 	    
 	    in.close();
 		oSavedFile.close();
+		
+		fileService.renameFile(tempDir, tempDir, fileName + "." + currentBlock + ".temp", fileName + "." + currentBlock);
        
-		if( fileService.getFileCount(tempDir) == totalBlock ){
+		if( fileService.getFileCount(tempDir, null, ".temp") == totalBlock ){
 			/*
 			 *  将分块文件写入到一个文件中
 			 */

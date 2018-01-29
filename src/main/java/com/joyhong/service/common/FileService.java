@@ -120,20 +120,29 @@ public class FileService {
 	
 	/**
 	 * 获取文件加下文件数量
-	 * @param filepath
+	 * @param filePath
+	 * @param expectExt 期望文件后缀的文件
+	 * @param exceptExt 排除文件后缀的文件
 	 * @return
 	 */
-	public int getFileCount(String filePath) {
+	public int getFileCount(String filePath, String expectExt, String exceptExt) {
 		int count = 0;
         File file = new File(filePath);
         File[] listfile = file.listFiles();
         for (int i = 0; i < listfile.length; i++) {
             if( !listfile[i].isDirectory() ){
-            	if( !listfile[i].getName().startsWith(".") ){
-            		count++;
+            	if( expectExt != null && !listfile[i].getName().endsWith(expectExt) ){
+            		continue;
             	}
+            	if( exceptExt != null && listfile[i].getName().endsWith(exceptExt) ){
+            		continue;
+            	}
+            	if( listfile[i].getName().startsWith(".") ){
+            		continue;
+            	}
+            	count++;
             }else{
-            	getFileCount(listfile[i].toString());
+            	getFileCount(listfile[i].toString(), expectExt, exceptExt);
             }
         }
         return count;
