@@ -58,10 +58,10 @@ public class UploadController {
 	@Autowired
 	private PushService pushService;
 	
-//	private String tempPath = "/home/wwwroot/default/upload/";
-//	private String filePath = "/home/wwwroot/default/upload/";
-	private String tempPath = "/Users/user/Desktop/temp/";
-	private String filePath = "/Users/user/Desktop/test/";
+	private String tempPath = "/home/wwwroot/default/upload/";
+	private String filePath = "/home/wwwroot/default/upload/";
+//	private String tempPath = "/Users/user/Desktop/temp/";
+//	private String filePath = "/Users/user/Desktop/test/";
 	private String fileUrl = "http://47.89.32.89/upload/";
 	
 	/**
@@ -328,6 +328,7 @@ public class UploadController {
          * 追加文件
          */
         fileService.makeDir(tempDir);
+        fileService.deleteFile(tempDir + fileName + "." + currentBlock + ".temp");
         InputStream is = request.getInputStream();
         RandomAccessFile oSavedFile = new RandomAccessFile(tempDir + fileName + "." + currentBlock + ".temp", "rw"); 
         long nPos = start-1;

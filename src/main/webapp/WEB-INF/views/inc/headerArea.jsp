@@ -6,6 +6,12 @@
 			<div class="menu-area">
 				<div class="container-fluid">
 					<div class="row">
+						<div class="menu-column-area col-lg-3 col-md-3 col-sm-6 col-xs-6 col-ms-6">
+							<h3 class="corpcolor-font">Dashboard</h3>
+							<ul>
+								<li><a href="<c:url value="/cms/dashboard/select"></c:url>">Dashboard</a></li>
+							</ul>
+						</div>
 						
 						<div class="menu-column-area col-lg-3 col-md-3 col-sm-6 col-xs-6 col-ms-6">
 							<h3 class="corpcolor-font">Order / Device</h3>
@@ -20,12 +26,6 @@
 							<ul>
 								<li><a href="<c:url value="/cms/user/all/select"></c:url>">All</a></li>
 								<li><a href="<c:url value="/cms/user/app/select"></c:url>">App</a></li>
-							</ul>
-						</div>
-						
-						<div class="menu-column-area col-lg-3 col-md-3 col-sm-6 col-xs-6 col-ms-6">
-							<h3 class="corpcolor-font">User</h3>
-							<ul>
 								<li><a href="<c:url value="/cms/user/facebook/select"></c:url>">Facebook</a></li>
 								<li><a href="<c:url value="/cms/user/twitter/select"></c:url>">Twitter</a></li>
 							</ul>
@@ -34,8 +34,8 @@
 						<div class="menu-column-area col-lg-3 col-md-3 col-sm-6 col-xs-6 col-ms-6">
 							<h3 class="corpcolor-font">System</h3>
 							<ul>
-								<li><a href="<c:url value="/cms/dashboard/select"></c:url>">Dashboard</a></li>
-								<li><a href="<c:url value="/cms/config/update"></c:url>">Config</a></li>
+								<li><a href="<c:url value="/cms/config/update"></c:url>">Account</a></li>
+								<li><a href="<c:url value="/cms/version/select"></c:url>">Version</a></li>
 							</ul>
 						</div>
 

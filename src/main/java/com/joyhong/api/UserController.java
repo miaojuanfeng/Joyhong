@@ -14,10 +14,12 @@ import com.joyhong.model.Config;
 import com.joyhong.model.Device;
 import com.joyhong.model.User;
 import com.joyhong.model.UserDevice;
+import com.joyhong.model.Version;
 import com.joyhong.service.ConfigService;
 import com.joyhong.service.DeviceService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
+import com.joyhong.service.VersionService;
 import com.joyhong.service.common.FuncService;
 import com.joyhong.service.common.ConstantService;
 
@@ -45,7 +47,7 @@ public class UserController {
 	private UserService userService;
 	
 	@Autowired
-	private ConfigService configService;
+	private VersionService versionService;
 	
 	@Autowired
 	private FuncService funcService;
@@ -183,12 +185,20 @@ public class UserController {
 	 */
 	@RequestMapping(value="/version", method=RequestMethod.POST)
 	@ResponseBody
-	public String version(){
+	public String version(@RequestParam("name") String name){
 		JSONObject retval = new JSONObject();
 		
-		Config version = configService.selectByTitle("Version");
-		retval.put("status", ConstantService.statusCode_200);
-		retval.put("data", version.getValue());
+		Version version = versionService.selectByName(name);
+		JSONObject temp = new JSONObject();
+		if( version != null ){
+			retval.put("status", ConstantService.statusCode_200);
+			temp.put("name", version.getName());
+			temp.put("last_version", version.getLastVersion());
+			temp.put("download_link", version.getLastVersion());
+			retval.put("data", temp);
+		}else{
+			retval.put("status", ConstantService.statusCode_406);
+		}
 		
 		return retval.toString();
 	}

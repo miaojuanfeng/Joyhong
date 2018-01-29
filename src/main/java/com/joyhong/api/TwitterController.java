@@ -1,8 +1,17 @@
 package com.joyhong.api;
 
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.Date;
 import java.util.List;
 
+import javax.crypto.Mac;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+
+import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -57,6 +66,9 @@ public class TwitterController {
 	private static String accessToken = "2881432034-7TZQHuwUSvCKwsniZCQZEmE1RFStxN0G1krG8pl";
 	private static String accessTokenSecret = "1FqyuKAPEZNcRU2AANVqwnGWwpIaba9Sj9lDaldD9agSG";
 	
+	private static String twitterImagePath = "/home/wwwroot/default/twitter/attachments/image/";
+	private static String twitterImageUrl = "http://47.89.32.89/twitter/attachments/image/";
+	
 	private TwitterStream twitterStream = null;
 	
 	@Autowired
@@ -103,6 +115,86 @@ public class TwitterController {
 		return retval.toString();
 	}
 	
+	private byte[] url(String url){
+		byte[] fileByte = null;
+		
+		try{
+			CloseableHttpClient httpclient = HttpClients.createDefault();
+			
+			String oauth_timestamp = String.valueOf(new Date().getTime()/1000);
+			String hmacSHA1Text = "GET&" + URLEncoder.encode(url, "UTF-8") + "&" + 
+								  URLEncoder.encode("oauth_consumer_key="+consumerKey+"&"+
+								  "oauth_nonce="+oauth_timestamp+"&"+
+								  "oauth_signature_method=HMAC-SHA1&"+
+								  "oauth_timestamp="+oauth_timestamp+"&"+
+								  "oauth_token="+accessToken+"&"+
+								  "oauth_version=1.0", "UTF-8");
+	
+			String hmacSHA1Key = consumerSecret + "&" + accessTokenSecret;
+			
+			String oauth_signature = URLEncoder.encode(new String(Base64.encodeBase64(HmacSHA1Encrypt(hmacSHA1Text, hmacSHA1Key))), "UTF-8");
+			
+			HttpGet httpget = new HttpGet(url);
+	
+			httpget.setHeader("Authorization", "OAuth oauth_consumer_key=\""+consumerKey+"\",oauth_token=\""+accessToken+"\",oauth_signature_method=\"HMAC-SHA1\",oauth_timestamp=\""+oauth_timestamp+"\",oauth_nonce=\""+oauth_timestamp+"\",oauth_version=\"1.0\",oauth_signature=\""+oauth_signature+"\"");
+			
+			CloseableHttpResponse response = httpclient.execute(httpget);
+			//if (response.getStatusLine().getStatusCode() == 200) {
+				fileByte = EntityUtils.toByteArray(response.getEntity());
+			//}
+			System.out.println("asd");
+			System.out.println(response.getStatusLine().getStatusCode());
+			System.out.println(EntityUtils.toString(response.getEntity()));
+		}catch(Exception e){
+			logger.info(e.getMessage());
+		}
+		
+		return fileByte;
+	}
+	
+	private String imageUrl(String url){
+		byte[] fileByte = url(url);
+		String fileName = url.substring(url.lastIndexOf("/"));
+		
+		try{
+			FileOutputStream fileOut = new FileOutputStream(twitterImagePath+fileName);  
+	        BufferedOutputStream bos = new BufferedOutputStream(fileOut); 
+	        bos.write(fileByte, 0, fileByte.length);
+	        bos.close();
+		}catch(Exception e){
+			logger.info(e.getMessage());
+		}
+		
+		return twitterImageUrl+fileName;
+	}
+	
+//	private String videoUrl(long id){
+//		System.out.println("https://api.twitter.com/1.1/direct_messages/show.json?id="+id);
+//		byte[] s = url("https://api.twitter.com/1.1/direct_messages/show.json?id="+id);
+//		System.out.println(s.toString());
+//		return s.toString();
+//	}
+	
+	/**
+     * 使用 HMAC-SHA1 签名方法对对encryptText进行签名
+     * @param encryptText 被签名的字符串
+     * @param encryptKey 密钥
+     * @return 返回被加密后的字符串
+     * @throws Exception
+     */
+	public static byte[] HmacSHA1Encrypt( String encryptText, String encryptKey ) throws Exception{
+	    byte[] data = encryptKey.getBytes( "UTF-8" );
+	    // 根据给定的字节数组构造一个密钥,第二参数指定一个密钥算法的名称
+	    SecretKey secretKey = new SecretKeySpec( data, "HmacSHA1" );
+	    // 生成一个指定 Mac 算法 的 Mac 对象
+	    Mac mac = Mac.getInstance( "HmacSHA1" );
+	    // 用给定密钥初始化 Mac 对象
+	    mac.init( secretKey );
+	    byte[] text = encryptText.getBytes( "UTF-8" );
+	    // 完成 Mac 操作
+	    return mac.doFinal( text );
+	}
+	
 	UserStreamListener userStreamListener = new UserStreamListener() {
 
 		private Twitter twitter = null;
@@ -129,73 +221,20 @@ public class TwitterController {
 		 */
 		public String getUserProfile(Long userId){
 			String retval = "";
-			
+			// 用户头像文件夹
 			String filePath = "/home/wwwroot/default/twitter/attachments/users/" + String.valueOf(userId) + "/";
 			String fileName = "";
+			// 用户头像url
 			String fileUrl = "http://47.89.32.89/twitter/attachments/users/" + String.valueOf(userId) + "/";
 			
 			try{
 		        User user = this.twitter.showUser(userId);
-//		        retval.put("id", user.getId());
-//		        retval.put("name", user.getName());
-//		        retval.put("screen_name", user.getScreenName());
-//		        /**
-//		         * Cache mini image
-//		         */
-//		        fileName = user.getMiniProfileImageURL().substring(user.getMiniProfileImageURL().lastIndexOf("/")+1);
-//		        this.saveUrlAs(user.getMiniProfileImageURL(), filePath, fileName);
-//		        retval.put("mini_image", fileUrl + fileName);
-//		        /**
-//		         * Cache normal image
-//		         */
-//		        fileName = user.getProfileImageURL().substring(user.getProfileImageURL().lastIndexOf("/")+1);
-//		        this.saveUrlAs(user.getProfileImageURL(), filePath, fileName);
-//		        retval.put("normal_image", fileUrl + fileName);
-//		        /**
-//		         * Cache big image
-//		         */
-//		        fileName = user.getBiggerProfileImageURL().substring(user.getBiggerProfileImageURL().lastIndexOf("/")+1);
-//		        this.saveUrlAs(user.getBiggerProfileImageURL(), filePath, fileName);
-//		        retval.put("bigger_image", fileUrl + fileName);
 		        /**
 		         * Cache origin image
 		         */
 		        fileName = user.getOriginalProfileImageURL().substring(user.getOriginalProfileImageURL().lastIndexOf("/")+1);
 		        fileService.saveUrlAs(user.getOriginalProfileImageURL(), filePath, fileName);
 		        retval = fileUrl + fileName;
-//		        if( user.getURL() != null ){
-//		        	retval.put("url", user.getURL());
-//		        }else{
-//		        	retval.put("url", "");
-//		        }
-//		        if( user.getDescription() != null ){
-//		        	retval.put("description", user.getDescription());
-//		        }else{
-//		        	retval.put("description", "");
-//		        }
-//		        if( user.getLocation() != null ){
-//		        	retval.put("location", user.getLocation());
-//		        }else{
-//		        	retval.put("location", "");
-//		        }
-//		        retval.put("language", user.getLang());
-//		        retval.put("favourites_count", user.getFavouritesCount());
-//		        retval.put("followers_count", user.getFollowersCount());
-//		        retval.put("friends_count", user.getFriendsCount());
-//		        retval.put("listed_count", user.getListedCount());
-//		        retval.put("statuses_count", user.getStatusesCount());
-//		        retval.put("background_color", user.getProfileBackgroundColor());
-//		        /*
-//		         * Cache background image
-//		         */
-//		        if( user.getProfileBackgroundImageURL() != null ){
-//		        	fileName = user.getProfileBackgroundImageURL().substring(user.getProfileBackgroundImageURL().lastIndexOf("/")+1);
-//			        this.saveUrlAs(user.getProfileBackgroundImageURL(), filePath, fileName);
-//			        retval.put("background_image", fileUrl + fileName);
-//		        }else{
-//		        	retval.put("background_image", "");
-//		        }
-		        
 			} catch (TwitterException e) {
 		        logger.info(e.getMessage());
 		    }
@@ -240,8 +279,6 @@ public class TwitterController {
 			
 			return userDeviceService.insert(userDevice);
 		}
-		
-		
 		
 		/**
 		 * 监听到消息事件
@@ -291,22 +328,23 @@ public class TwitterController {
 		    	/**
 		    	 *  同步图片
 		    	 */
-		    	CloseableHttpClient httpclient1 = HttpClients.createDefault();
-			    HttpGet httpget1 = new HttpGet("http://47.89.32.89/twitter/?type=image&url="+m.getMediaURL());
-			    try{
-			    	CloseableHttpResponse response = httpclient1.execute(httpget1);
-					if (response.getStatusLine().getStatusCode() == 200) {
-						String str = "";
-		                try {
-		                    str = EntityUtils.toString(response.getEntity());
-		                } catch (Exception e) {
-		                	logger.info(e.getMessage());
-		                }
-		                img.add(str);
-					}
-			    }catch(IOException e){
-			    	e.printStackTrace();
-			    }
+//		    	CloseableHttpClient httpclient1 = HttpClients.createDefault();
+//			    HttpGet httpget1 = new HttpGet("http://47.89.32.89/twitter/?type=image&url="+m.getMediaURL());
+//			    try{
+//			    	CloseableHttpResponse response = httpclient1.execute(httpget1);
+//					if (response.getStatusLine().getStatusCode() == 200) {
+//						String str = "";
+//		                try {
+//		                    str = EntityUtils.toString(response.getEntity());
+//		                } catch (Exception e) {
+//		                	logger.info(e.getMessage());
+//		                }
+//		                img.add(str);
+//					}
+//			    }catch(IOException e){
+//			    	e.printStackTrace();
+//			    }
+		    	img.add(imageUrl(m.getMediaURL()));
 			    /**
 		    	 *  同步视频
 		    	 */
@@ -327,6 +365,7 @@ public class TwitterController {
 					}catch(IOException e){
 						e.printStackTrace();
 					}
+//			    	retval.put("video", url(m.getMediaURL()));
 			    }
 		    }
 		    retval.put("image", img);

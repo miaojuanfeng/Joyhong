@@ -41,10 +41,6 @@ public class ConfigCtrl {
 		Config administrator = configService.selectByTitle("Administrator");
 		JSONObject administratorObj = JSONObject.fromObject(administrator.getValue());
 		model.addAttribute("username", administratorObj.getString("username"));
-		Config version = configService.selectByTitle("Version");
-		JSONObject versionObj = JSONObject.fromObject(version.getValue());
-		model.addAttribute("last_version", versionObj.getString("last_version"));
-		model.addAttribute("download_link", versionObj.getString("download_link"));
 		
 		return "ConfigView";
 	}
@@ -53,9 +49,7 @@ public class ConfigCtrl {
 	public String update(
 			@ModelAttribute("redirect") String redirect,
 			@RequestParam("username") String username,
-			@RequestParam("password") String password,
-			@RequestParam("last_version") String last_version,
-			@RequestParam("download_link") String download_link
+			@RequestParam("password") String password
 	){
 		if( redirect != null ){
 			return redirect;
@@ -77,15 +71,6 @@ public class ConfigCtrl {
 		config.setTitle("Administrator");
 		config.setValue(administratorObj.toString());
 		configService.updateByTitleWithBLOBs(config);
-		/*
-		 * update version
-		 */
-		JSONObject versionObj = new JSONObject();
-		versionObj.put("last_version", last_version);
-		versionObj.put("download_link", download_link);
-		config.setTitle("Version");
-		config.setValue(versionObj.toString());
-		configService.updateByTitleWithBLOBs(config);
 		
 		return "redirect:/cms/config/update";
 	}
@@ -105,12 +90,8 @@ public class ConfigCtrl {
 		String urlStr = request.getRequestURL().toString();
 		String method = urlStr.substring(urlStr.lastIndexOf("/")+1);
 		if( funcService.isNumeric(method) ){
-//			Integer number = Integer.valueOf(method);
 			urlStr = urlStr.substring(0, urlStr.lastIndexOf("/"));
 			method = urlStr.substring(urlStr.lastIndexOf("/")+1);
-//			if( method.equals("update") ){
-//				model.addAttribute("device", deviceService.selectByPrimaryKey(number));
-//			}
 		}
 		model.addAttribute("method", method);
 		

@@ -77,15 +77,6 @@
 											<label for="password">Password <span class="highlight"></span></label>
 											<input id="password" name="password" type="password" class="form-control input-sm" placeholder="Password" />
 										</p>
-										<h4 class="corpcolor-font">Version information</h4>
-										<p class="form-group">
-											<label for="last_version">Last version <span class="highlight"></span></label>
-											<input id="last_version" name="last_version" type="text" class="form-control input-sm" placeholder="Last version" value="${last_version}" />
-										</p>
-										<p class="form-group">
-											<label for="download_link">Download link <span class="highlight"></span></label>
-											<input id="download_link" name="download_link" type="text" class="form-control input-sm" placeholder="Download link" value="${download_link}" />
-										</p>
 									</div>
 									<div class="col-sm-8 col-xs-12 pull-right">
 										
