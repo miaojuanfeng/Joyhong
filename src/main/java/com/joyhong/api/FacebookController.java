@@ -141,9 +141,9 @@ public class FacebookController {
 				        fileService.saveUrlAs(fileUrl, filePath, fileName);
 				        
 				        postdata = postdata.replace(oldUrl, "http://47.89.32.89/facebook/attachments/" + type + fileName);
-				        if( type == "image" ){
+				        if( type.equals("image") ){
 				        	image_url = "http://47.89.32.89/facebook/attachments/" + type + fileName;
-				        }else if( type == "video" ){
+				        }else if( type.equals("video") ){
 				        	video_url = "http://47.89.32.89/facebook/attachments/" + type + fileName;
 				        }
 					}
