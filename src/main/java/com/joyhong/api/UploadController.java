@@ -328,6 +328,7 @@ public class UploadController {
          * 追加文件
          */
         fileService.makeDir(tempDir);
+        fileService.deleteFile(tempDir + fileName + "." + currentBlock);
         fileService.deleteFile(tempDir + fileName + "." + currentBlock + ".temp");
         InputStream is = request.getInputStream();
         RandomAccessFile oSavedFile = new RandomAccessFile(tempDir + fileName + "." + currentBlock + ".temp", "rw"); 
@@ -485,8 +486,10 @@ public class UploadController {
 				Runtime.getRuntime().exec("chmod 644 " + filePath + fileName);
 				Upload upload = new Upload();
 				upload.setUserId(user_id);
+				upload.setName(fileName);
 				upload.setDescription(file_desc[i]);
 				upload.setUrl(fileUrl+fileName);
+				upload.setMd5("");
 				if( uploadService.insert(upload) == 1 ){
 					temp.add(fileUrl + fileName);
 				}else{

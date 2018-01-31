@@ -148,8 +148,9 @@ public class FacebookController {
 				
 				String sender_id = json_obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("sender").getString("id");
 				
-				String postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'Sorry, I can not understand what you say.'}}";
+				
 				if( message.has("text") ){
+					String postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'Sorry, I can not understand what you say.'}}";
 					String msgStr = message.getString("text");
 					if( msgStr.equals("Hello") || msgStr.equals("hello") ){
 						postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'hello world'}}";
@@ -167,35 +168,33 @@ public class FacebookController {
 		        			}
 		        		}
 					}
+//					String url = "https://graph.facebook.com/v2.6/me/messages?access_token=EAAHQ2lh6o2UBAAeLni23hen920ECISXqjY5SsJXPeUKrHRid3f3huz82pdu8ptYSmCI8yhGJmjc0E3InZAl3mgKZBGTjMyIZCGGniep8lnGRVaheHfZB7h0dh06YDvV5mAmFL7pdfKgOMJTP9aUFM9ZAGZAuldUPUwPG5oQoY2wIvNEaZCuZAN4DLyQqURJKH9IZD";
+//					URL obj = new URL(url);
+//					HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+//									 
+//					// Setting basic post request
+//					con.setConnectTimeout(20*1000);
+//					con.setReadTimeout(20*1000);
+//					con.setRequestMethod("POST");
+//					con.setRequestProperty("Content-Type","application/json");
+//									 
+//					// Send post request
+//					con.setDoOutput(true);
+//					DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+//					wr.writeBytes(postJsonData);
+//					wr.flush();
+//					wr.close();
+//					/*
+//					 * not work comment this line
+//					 */
+//					int responseCode = con.getResponseCode();
+//					if( responseCode != 200 ){
+//						logger.info("Response Code : " + responseCode);
+//					}
+//					System.out.println("nSending 'POST' request to URL : " + url);
+//					System.out.println("Post Data : " + con.getResponseMessage());
+//					System.out.println("Response Code : " + responseCode);
 				}
-				
-				String url = "https://graph.facebook.com/v2.6/me/messages?access_token=EAAHQ2lh6o2UBAAeLni23hen920ECISXqjY5SsJXPeUKrHRid3f3huz82pdu8ptYSmCI8yhGJmjc0E3InZAl3mgKZBGTjMyIZCGGniep8lnGRVaheHfZB7h0dh06YDvV5mAmFL7pdfKgOMJTP9aUFM9ZAGZAuldUPUwPG5oQoY2wIvNEaZCuZAN4DLyQqURJKH9IZD";
-				URL obj = new URL(url);
-				HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-								 
-				// Setting basic post request
-				con.setConnectTimeout(20*1000);
-				con.setReadTimeout(20*1000);
-				con.setRequestMethod("POST");
-				con.setRequestProperty("Content-Type","application/json");
-								 
-				// Send post request
-				con.setDoOutput(true);
-				DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-				wr.writeBytes(postJsonData);
-				wr.flush();
-				wr.close();
-				
-				/*
-				 * not work comment this line
-				 */
-				int responseCode = con.getResponseCode();
-				if( responseCode != 200 ){
-					logger.info("Response Code : " + responseCode);
-				}
-//				System.out.println("nSending 'POST' request to URL : " + url);
-//				System.out.println("Post Data : " + con.getResponseMessage());
-//				System.out.println("Response Code : " + responseCode);
 				
 				/*
 				 * 推送在下
