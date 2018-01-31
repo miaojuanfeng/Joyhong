@@ -87,6 +87,7 @@ public class FileService {
 	         bos.close();
 	         bis.close();
 	         conn.disconnect();
+	         Runtime.getRuntime().exec("chmod 644 " + filePath + fileName);
 	    } catch (Exception e)  {
 	    	logger.info(e.getMessage());
 	    }

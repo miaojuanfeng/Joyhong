@@ -117,125 +117,124 @@ public class FacebookController {
 					postdata = postdata + line;
 				}
 				
-				JSONObject json_obj = JSONObject.fromObject(postdata);
-				
 				fileService.savePostData("/usr/local/tomcat/apache-tomcat-8.5.23/webapps/files/facebook2.txt", postdata);
 				
+				JSONObject json_obj = JSONObject.fromObject(postdata);
 				JSONObject message = json_obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("message");
-				
-				if( message.has("attachments") ){
-					
-					JSONObject attachments = message.getJSONArray("attachments").getJSONObject(0);
-					
-					type = attachments.getString("type");
-					String url = attachments.getJSONObject("payload").getString("url");
-					String oldUrl = url.replace("/", "\\/");
-					String fileUrl = url.replace("\\", "");
-					                     
-			        String fileName = fileUrl.substring(fileUrl.lastIndexOf("/")+1);
-			        fileName = fileName.substring(0, fileName.lastIndexOf("?"));
-  
-			        String filePath = "/home/wwwroot/default/facebook/attachments/" + type + "/";   
-			        fileService.saveUrlAs(fileUrl, filePath, fileName);
-			        
-			        postdata = postdata.replace(oldUrl, "http://47.89.32.89/facebook/attachments/" + type + fileName);
-			        if( type == "image" ){
-			        	image_url = "http://47.89.32.89/facebook/attachments/" + type + fileName;
-			        }else if( type == "video" ){
-			        	video_url = "http://47.89.32.89/facebook/attachments/" + type + fileName;
-			        }
-				}
-				
 				String sender_id = json_obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("sender").getString("id");
 				
-				
-				if( message.has("text") ){
-					String postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'Sorry, I can not understand what you say.'}}";
-					String msgStr = message.getString("text");
-					if( msgStr.equals("Hello") || msgStr.equals("hello") ){
-						postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'hello world'}}";
-					}else{
-						String msg = msgStr;
-						if( msg.startsWith("bd") ){
-		        			String device_token = msg.substring(2);
-		        			Device device = deviceService.selectByDeviceToken(device_token);
-		        			if( device != null ){
-		        				Integer user_id = this.insertUserIfNotExist(json_obj);
-		        				insertUserDeviceAfterDelete(user_id, device.getId());
-		        				postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'Successful Binding!'}}";
-		        			}else{
-		        				postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'Sorry, the device token is not yet registered'}}";
-		        			}
-		        		}
+				if( !sender_id.equals("867139310126070") ){
+					if( message.has("attachments") ){
+						
+						JSONObject attachments = message.getJSONArray("attachments").getJSONObject(0);
+						
+						type = attachments.getString("type");
+						String url = attachments.getJSONObject("payload").getString("url");
+						String oldUrl = url.replace("/", "\\/");
+						String fileUrl = url.replace("\\", "");
+						                     
+				        String fileName = fileUrl.substring(fileUrl.lastIndexOf("/")+1);
+				        fileName = fileName.substring(0, fileName.lastIndexOf("?"));
+	  
+				        String filePath = "/home/wwwroot/default/facebook/attachments/" + type + "/";   
+				        fileService.saveUrlAs(fileUrl, filePath, fileName);
+				        
+				        postdata = postdata.replace(oldUrl, "http://47.89.32.89/facebook/attachments/" + type + fileName);
+				        if( type == "image" ){
+				        	image_url = "http://47.89.32.89/facebook/attachments/" + type + fileName;
+				        }else if( type == "video" ){
+				        	video_url = "http://47.89.32.89/facebook/attachments/" + type + fileName;
+				        }
 					}
-//					String url = "https://graph.facebook.com/v2.6/me/messages?access_token=EAAHQ2lh6o2UBAAeLni23hen920ECISXqjY5SsJXPeUKrHRid3f3huz82pdu8ptYSmCI8yhGJmjc0E3InZAl3mgKZBGTjMyIZCGGniep8lnGRVaheHfZB7h0dh06YDvV5mAmFL7pdfKgOMJTP9aUFM9ZAGZAuldUPUwPG5oQoY2wIvNEaZCuZAN4DLyQqURJKH9IZD";
-//					URL obj = new URL(url);
-//					HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-//									 
-//					// Setting basic post request
-//					con.setConnectTimeout(20*1000);
-//					con.setReadTimeout(20*1000);
-//					con.setRequestMethod("POST");
-//					con.setRequestProperty("Content-Type","application/json");
-//									 
-//					// Send post request
-//					con.setDoOutput(true);
-//					DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-//					wr.writeBytes(postJsonData);
-//					wr.flush();
-//					wr.close();
-//					/*
-//					 * not work comment this line
-//					 */
-//					int responseCode = con.getResponseCode();
-//					if( responseCode != 200 ){
-//						logger.info("Response Code : " + responseCode);
-//					}
-//					System.out.println("nSending 'POST' request to URL : " + url);
-//					System.out.println("Post Data : " + con.getResponseMessage());
-//					System.out.println("Response Code : " + responseCode);
-				}
-				
-				/*
-				 * 推送在下
-				 */
-			    User user = userService.selectByUsername(sender_id);
-				if( user != null ){
-					List<UserDevice> ud = userDeviceService.selectByUserId(user.getId());
-					if( ud != null ){
-						UserDevice userDevice = ud.get(0);
-						Device device = deviceService.selectByPrimaryKey(userDevice.getDeviceId());
-						JSONObject body = new JSONObject();
-						body.put("sender_id", user.getId());
-						body.put("sender_name", user.getNickname());
-						body.put("receive_id", device.getId());
-						body.put("receive_name", userDevice.getDeviceName());
-						body.put("to_fcm_token", device.getDeviceFcmToken());
-						body.put("text", message.getString("text"));
-						body.put("image_url", image_url);
-						body.put("video_url", video_url);
-						body.put("type", type);
-						body.put("platform", "twitter");
-						pushService.push(
-								user.getId(),
-								user.getNickname(), 
-								device.getId(), 
-								userDevice.getDeviceName(), 
-								device.getDeviceFcmToken(), 
-								message.getString("text"), 
-								image_url, 
-								video_url, 
-								type, 
-								"facebook", 
-								"Receive a message from Facebook", 
-								body.toString().replace("\"", "\\\""));
+					
+					if( message.has("text") ){
+						String postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'Sorry, I can not understand what you say.'}}";
+						String msgStr = message.getString("text");
+						if( msgStr.equals("Hello") || msgStr.equals("hello") ){
+							postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'hello world'}}";
+						}else{
+							String msg = msgStr;
+							if( msg.startsWith("bd") ){
+			        			String device_token = msg.substring(2);
+			        			Device device = deviceService.selectByDeviceToken(device_token);
+			        			if( device != null ){
+			        				Integer user_id = this.insertUserIfNotExist(json_obj);
+			        				insertUserDeviceAfterDelete(user_id, device.getId());
+			        				postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'Successful Binding!'}}";
+			        			}else{
+			        				postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'Sorry, the device token is not yet registered'}}";
+			        			}
+			        		}
+						}
+						String url = "https://graph.facebook.com/v2.6/me/messages?access_token=EAAC3x3FZBZBv4BAKDi2rfE3FY8oMtla3fS7ngWJ4D68PfEWY37lmK4Xb1ag6c48AZA49Ec6jMIdNuZBynTxKAzWo5qgyuacNtqBZA66cVAp7E3KC9fmDyjBZBGhsFoeAZC1KgsqDdtgGPlIfWjN0cYeijxOaexdgZBrfEi4rrgkaVVNJrFZBiZB1vs";
+						URL obj = new URL(url);
+						HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+										 
+						// Setting basic post request
+						con.setConnectTimeout(20*1000);
+						con.setReadTimeout(20*1000);
+						con.setRequestMethod("POST");
+						con.setRequestProperty("Content-Type","application/json");
+										 
+						// Send post request
+						con.setDoOutput(true);
+						DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+						wr.writeBytes(postJsonData);
+						wr.flush();
+						wr.close();
+						/*
+						 * not work comment this line
+						 */
+						int responseCode = con.getResponseCode();
+						if( responseCode != 200 ){
+							logger.info("Response Code : " + responseCode);
+						}
+						System.out.println("nSending 'POST' request to URL : " + url);
+						System.out.println("Post Data : " + con.getResponseMessage());
+						System.out.println("Response Code : " + responseCode);
 					}
+					
+					/*
+					 * 推送在下
+					 */
+				    User user = userService.selectByUsername(sender_id);
+					if( user != null ){
+						List<UserDevice> ud = userDeviceService.selectByUserId(user.getId());
+						if( ud != null ){
+							UserDevice userDevice = ud.get(0);
+							Device device = deviceService.selectByPrimaryKey(userDevice.getDeviceId());
+							JSONObject body = new JSONObject();
+							body.put("sender_id", user.getId());
+							body.put("sender_name", user.getNickname());
+							body.put("receive_id", device.getId());
+							body.put("receive_name", userDevice.getDeviceName());
+							body.put("to_fcm_token", device.getDeviceFcmToken());
+							body.put("text", message.getString("text"));
+							body.put("image_url", image_url);
+							body.put("video_url", video_url);
+							body.put("type", type);
+							body.put("platform", "twitter");
+							pushService.push(
+									user.getId(),
+									user.getNickname(), 
+									device.getId(), 
+									userDevice.getDeviceName(), 
+									device.getDeviceFcmToken(), 
+									message.getString("text"), 
+									image_url, 
+									video_url, 
+									type, 
+									"facebook", 
+									"Receive a message from Facebook", 
+									body.toString().replace("\"", "\\\""));
+						}
+					}
+					/*
+					 * 推送在上
+					 */
+					
+					fileService.savePostData("/usr/local/tomcat/apache-tomcat-8.5.23/webapps/files/facebook.txt", postdata);
 				}
-				/*
-				 * 推送在上
-				 */
-				
-				fileService.savePostData("/usr/local/tomcat/apache-tomcat-8.5.23/webapps/files/facebook.txt", postdata);
 			}catch(IOException e){
 				logger.info(e.getMessage());
 			}

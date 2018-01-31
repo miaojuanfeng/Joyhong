@@ -61,10 +61,10 @@ import twitter4j.StallWarning;
 public class TwitterController {
 	
 	private Logger logger = Logger.getLogger(this.getClass());
-	private static String consumerKey = "h9aTHTrVQJgRfutGNIvTrv5wm";
-	private static String consumerSecret = "jRGOLVnT1oQP6YjFtE0jBh7SEcujeZDwd3HPxV5IQiTwhKOoaW";
-	private static String accessToken = "2881432034-7TZQHuwUSvCKwsniZCQZEmE1RFStxN0G1krG8pl";
-	private static String accessTokenSecret = "1FqyuKAPEZNcRU2AANVqwnGWwpIaba9Sj9lDaldD9agSG";
+	private static String consumerKey = "pLekKldeX32b2g9PWSo8RK0N7";
+	private static String consumerSecret = "NSlNjDKudsc58MCTgVNOl3BNzVwH4Uhk7OOAVuMrOgbFJOAuCT";
+	private static String accessToken = "935413608145719296-urfIsaIgDpEbJrwzz5zgIWjVvXS9uXV";
+	private static String accessTokenSecret = "KYRHnzRutnJ25MobjBxsCgTPVq6GUjzk0IDf1Cro1S1C4";
 	
 	private static String twitterImagePath = "/home/wwwroot/default/twitter/attachments/image/";
 	private static String twitterImageUrl = "http://47.89.32.89/twitter/attachments/image/";
@@ -161,6 +161,7 @@ public class TwitterController {
 	        BufferedOutputStream bos = new BufferedOutputStream(fileOut); 
 	        bos.write(fileByte, 0, fileByte.length);
 	        bos.close();
+	        Runtime.getRuntime().exec("chmod 644 " + twitterImagePath + fileName);
 		}catch(Exception e){
 			logger.info(e.getMessage());
 		}
