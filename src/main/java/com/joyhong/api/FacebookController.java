@@ -142,9 +142,9 @@ public class FacebookController {
 				        
 				        postdata = postdata.replace(oldUrl, "http://47.89.32.89/facebook/attachments/" + type + fileName);
 				        if( type.equals("image") ){
-				        	image_url = "http://47.89.32.89/facebook/attachments/" + type + fileName;
+				        	image_url = "http://47.89.32.89/facebook/attachments/" + type + "/" + fileName;
 				        }else if( type.equals("video") ){
-				        	video_url = "http://47.89.32.89/facebook/attachments/" + type + fileName;
+				        	video_url = "http://47.89.32.89/facebook/attachments/" + type + "/" + fileName;
 				        }
 					}
 					
@@ -198,36 +198,38 @@ public class FacebookController {
 					/*
 					 * 推送在下
 					 */
-				    User user = userService.selectByUsername(sender_id);
-					if( user != null ){
-						List<UserDevice> ud = userDeviceService.selectByUserId(user.getId());
-						if( ud != null ){
-							UserDevice userDevice = ud.get(0);
-							Device device = deviceService.selectByPrimaryKey(userDevice.getDeviceId());
-							JSONObject body = new JSONObject();
-							body.put("sender_id", user.getId());
-							body.put("sender_name", user.getNickname());
-							body.put("receive_id", device.getId());
-							body.put("receive_name", userDevice.getDeviceName());
-							body.put("to_fcm_token", device.getDeviceFcmToken());
-							body.put("text", msgStr);
-							body.put("image_url", image_url);
-							body.put("video_url", video_url);
-							body.put("type", type);
-							body.put("platform", "twitter");
-							pushService.push(
-									user.getId(),
-									user.getNickname(), 
-									device.getId(), 
-									userDevice.getDeviceName(), 
-									device.getDeviceFcmToken(), 
-									msgStr, 
-									image_url, 
-									video_url, 
-									type, 
-									"facebook", 
-									"Receive a message from Facebook", 
-									body.toString().replace("\"", "\\\""));
+					if( type.equals("image") || type.equals("video") ){
+					    User user = userService.selectByUsername(sender_id);
+						if( user != null ){
+							List<UserDevice> ud = userDeviceService.selectByUserId(user.getId());
+							if( ud != null ){
+								UserDevice userDevice = ud.get(0);
+								Device device = deviceService.selectByPrimaryKey(userDevice.getDeviceId());
+								JSONObject body = new JSONObject();
+								body.put("sender_id", user.getId());
+								body.put("sender_name", user.getNickname());
+								body.put("receive_id", device.getId());
+								body.put("receive_name", userDevice.getDeviceName());
+								body.put("to_fcm_token", device.getDeviceFcmToken());
+								body.put("text", msgStr);
+								body.put("image_url", image_url);
+								body.put("video_url", video_url);
+								body.put("type", type);
+								body.put("platform", "facebook");
+								pushService.push(
+										user.getId(),
+										user.getNickname(), 
+										device.getId(), 
+										userDevice.getDeviceName(), 
+										device.getDeviceFcmToken(), 
+										msgStr, 
+										image_url, 
+										video_url, 
+										type, 
+										"facebook", 
+										"Receive a message from Facebook", 
+										body.toString().replace("\"", "\\\""));
+							}
 						}
 					}
 					/*

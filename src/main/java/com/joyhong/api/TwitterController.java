@@ -286,147 +286,151 @@ public class TwitterController {
 		 */
         public void onDirectMessage(DirectMessage message) {
             // TODO Auto-generated method stub
-        	JSONObject retval = new JSONObject();
-        	retval.put("id", message.getId());
-        	retval.put("sender_id", message.getSenderId());
-        	retval.put("sender_name", message.getSenderScreenName());
-        	retval.put("recipient_id", message.getRecipientId());
-        	retval.put("recipient_name", message.getRecipientScreenName());
-        	retval.put("message", message.getText());
-        	retval.put("time", message.getCreatedAt().toString());
-   	        /**
-   	         * 绑定设备
-   	         */
-        	if( message.getText() != "" ){
-        		String msg = message.getText();
-        		if( msg.startsWith("bd") ){
-        			String device_token = msg.substring(2);
-        			Device device = deviceService.selectByDeviceToken(device_token);
-        			init();
-        			if( device != null ){
-        				Integer user_id = this.insertUserIfNotExist(message);
-        				insertUserDeviceAfterDelete(user_id, device.getId());
-        				try{
-        					this.twitter.sendDirectMessage(message.getSenderId(), "Successful Binding!");
-        				}catch(Exception e){
-        					logger.info(e.getMessage());
-        				}
-        			}else{
-        				try{
-        					this.twitter.sendDirectMessage(message.getSenderId(), "Sorry, the device token is not yet registered");
-        				}catch(Exception e){
-        					logger.info(e.getMessage());
-        				}
-        			}
-        		}
-        	}
-        	/**
-        	 * 遍历所有附件
-        	 */
-   	        MediaEntity[] media = message.getMediaEntities();
-   	        JSONArray img = new JSONArray();
-		    for(MediaEntity m : media){
-		    	/**
-		    	 *  同步图片
-		    	 */
-//		    	CloseableHttpClient httpclient1 = HttpClients.createDefault();
-//			    HttpGet httpget1 = new HttpGet("http://47.89.32.89/twitter/?type=image&url="+m.getMediaURL());
-//			    try{
-//			    	CloseableHttpResponse response = httpclient1.execute(httpget1);
-//					if (response.getStatusLine().getStatusCode() == 200) {
-//						String str = "";
-//		                try {
-//		                    str = EntityUtils.toString(response.getEntity());
-//		                } catch (Exception e) {
-//		                	logger.info(e.getMessage());
-//		                }
-//		                img.add(str);
-//					}
-//			    }catch(IOException e){
-//			    	e.printStackTrace();
-//			    }
-		    	img.add(imageUrl(m.getMediaURL()));
-			    /**
-		    	 *  同步视频
-		    	 */
-			    if( m.getType().equals("video") ){
-			    	CloseableHttpClient httpclient2 = HttpClients.createDefault();
-			    	HttpGet httpget2 = new HttpGet("http://47.89.32.89/twitter/?type=video&id="+message.getId());
-					try{
-						CloseableHttpResponse response = httpclient2.execute(httpget2);
-						if (response.getStatusLine().getStatusCode() == 200) {
-							String str = "";
-			                try {
-			                	str = EntityUtils.toString(response.getEntity());
-			                } catch (Exception e) {
-			                	logger.info(e.getMessage());
-			                }
-			                retval.put("video", str);
+        	if( message.getSenderId() != 935413608145719296L ){
+	        	JSONObject retval = new JSONObject();
+	        	retval.put("id", message.getId());
+	        	retval.put("sender_id", message.getSenderId());
+	        	retval.put("sender_name", message.getSenderScreenName());
+	        	retval.put("recipient_id", message.getRecipientId());
+	        	retval.put("recipient_name", message.getRecipientScreenName());
+	        	retval.put("message", message.getText());
+	        	retval.put("time", message.getCreatedAt().toString());
+	   	        /**
+	   	         * 绑定设备
+	   	         */
+	        	if( message.getText() != "" ){
+	        		String msg = message.getText();
+	        		if( msg.startsWith("bd") ){
+	        			String device_token = msg.substring(2);
+	        			Device device = deviceService.selectByDeviceToken(device_token);
+	        			init();
+	        			if( device != null ){
+	        				Integer user_id = this.insertUserIfNotExist(message);
+	        				insertUserDeviceAfterDelete(user_id, device.getId());
+	        				try{
+	        					this.twitter.sendDirectMessage(message.getSenderId(), "Successful Binding!");
+	        				}catch(Exception e){
+	        					logger.info(e.getMessage());
+	        				}
+	        			}else{
+	        				try{
+	        					this.twitter.sendDirectMessage(message.getSenderId(), "Sorry, the device token is not yet registered");
+	        				}catch(Exception e){
+	        					logger.info(e.getMessage());
+	        				}
+	        			}
+	        		}
+	        	}
+	        	/**
+	        	 * 遍历所有附件
+	        	 */
+	   	        MediaEntity[] media = message.getMediaEntities();
+	   	        JSONArray img = new JSONArray();
+			    for(MediaEntity m : media){
+			    	/**
+			    	 *  同步图片
+			    	 */
+	//		    	CloseableHttpClient httpclient1 = HttpClients.createDefault();
+	//			    HttpGet httpget1 = new HttpGet("http://47.89.32.89/twitter/?type=image&url="+m.getMediaURL());
+	//			    try{
+	//			    	CloseableHttpResponse response = httpclient1.execute(httpget1);
+	//					if (response.getStatusLine().getStatusCode() == 200) {
+	//						String str = "";
+	//		                try {
+	//		                    str = EntityUtils.toString(response.getEntity());
+	//		                } catch (Exception e) {
+	//		                	logger.info(e.getMessage());
+	//		                }
+	//		                img.add(str);
+	//					}
+	//			    }catch(IOException e){
+	//			    	e.printStackTrace();
+	//			    }
+			    	img.add(imageUrl(m.getMediaURL()));
+				    /**
+			    	 *  同步视频
+			    	 */
+				    if( m.getType().equals("video") ){
+				    	CloseableHttpClient httpclient2 = HttpClients.createDefault();
+				    	HttpGet httpget2 = new HttpGet("http://47.89.32.89/twitter/?type=video&id="+message.getId());
+						try{
+							CloseableHttpResponse response = httpclient2.execute(httpget2);
+							if (response.getStatusLine().getStatusCode() == 200) {
+								String str = "";
+				                try {
+				                	str = EntityUtils.toString(response.getEntity());
+				                } catch (Exception e) {
+				                	logger.info(e.getMessage());
+				                }
+				                retval.put("video", str);
+							}
+						}catch(IOException e){
+							e.printStackTrace();
 						}
-					}catch(IOException e){
-						e.printStackTrace();
-					}
-//			    	retval.put("video", url(m.getMediaURL()));
+	//			    	retval.put("video", url(m.getMediaURL()));
+				    }
 			    }
-		    }
-		    retval.put("image", img);
-		    
-		    /*
-			 * 推送在下
-			 */
-		    com.joyhong.model.User user = userService.selectByUsername(String.valueOf(message.getSenderId()));
-			if( user != null ){
-				List<UserDevice> ud = userDeviceService.selectByUserId(user.getId());
-				if( ud != null ){
-					UserDevice userDevice = ud.get(0);
-					Device device = deviceService.selectByPrimaryKey(userDevice.getDeviceId());
-					JSONObject body = new JSONObject();
-					body.put("sender_id", user.getId());
-					body.put("sender_name", user.getNickname());
-					body.put("receive_id", device.getId());
-					body.put("receive_name", userDevice.getDeviceName());
-					body.put("to_fcm_token", device.getDeviceFcmToken());
-					body.put("text", message.getText());
-					String image_url = "";
-					String video_url = "";
-					String type = "";
-					if( retval.has("video") ){
-						image_url = "";
-						video_url = retval.get("video").toString();
-						type = "video";
-					}else if( img.size() > 0 ){
-						image_url = img.toString();
-						video_url = "";
-						type = "image";
-					}else{
-						image_url = "";
-						video_url = "";
-						type = "text";
+			    retval.put("image", img);
+			    
+			    if( img.size() > 0 || retval.has("video") ){
+				    /*
+					 * 推送在下
+					 */
+				    com.joyhong.model.User user = userService.selectByUsername(String.valueOf(message.getSenderId()));
+					if( user != null ){
+						List<UserDevice> ud = userDeviceService.selectByUserId(user.getId());
+						if( ud != null ){
+							UserDevice userDevice = ud.get(0);
+							Device device = deviceService.selectByPrimaryKey(userDevice.getDeviceId());
+							JSONObject body = new JSONObject();
+							body.put("sender_id", user.getId());
+							body.put("sender_name", user.getNickname());
+							body.put("receive_id", device.getId());
+							body.put("receive_name", userDevice.getDeviceName());
+							body.put("to_fcm_token", device.getDeviceFcmToken());
+							body.put("text", message.getText());
+							String image_url = "";
+							String video_url = "";
+							String type = "";
+							if( retval.has("video") ){
+								image_url = "";
+								video_url = retval.get("video").toString();
+								type = "video";
+							}else if( img.size() > 0 ){
+								image_url = img.toString();
+								video_url = "";
+								type = "image";
+							}else{
+								image_url = "";
+								video_url = "";
+								type = "text";
+							}
+							body.put("image_url", image_url);
+							body.put("video_url", video_url);
+							body.put("type", type);
+							body.put("platform", "twitter");
+							pushService.push(
+									user.getId(),
+									user.getNickname(), 
+									device.getId(), 
+									userDevice.getDeviceName(), 
+									device.getDeviceFcmToken(), 
+									message.getText(), 
+									image_url, 
+									video_url, 
+									type, 
+									"twitter", 
+									"Receive a message from Twitter", 
+									body.toString().replace("\"", "\\\""));
+						}
 					}
-					body.put("image_url", image_url);
-					body.put("video_url", video_url);
-					body.put("type", type);
-					body.put("platform", "twitter");
-					pushService.push(
-							user.getId(),
-							user.getNickname(), 
-							device.getId(), 
-							userDevice.getDeviceName(), 
-							device.getDeviceFcmToken(), 
-							message.getText(), 
-							image_url, 
-							video_url, 
-							type, 
-							"twitter", 
-							"Receive a message from Twitter", 
-							body.toString().replace("\"", "\\\""));
-				}
-			}
-			/*
-			 * 推送在上
-			 */
-           
-			fileService.savePostData("/usr/local/tomcat/apache-tomcat-8.5.23/webapps/files/twitter.txt", retval.toString());
+					/*
+					 * 推送在上
+					 */
+			    }
+	           
+				fileService.savePostData("/usr/local/tomcat/apache-tomcat-8.5.23/webapps/files/twitter.txt", retval.toString());
+        	}
         }
 
         public void onDeletionNotice(long arg0, long arg1) {
