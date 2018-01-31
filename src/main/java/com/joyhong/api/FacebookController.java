@@ -110,6 +110,7 @@ public class FacebookController {
 				BufferedReader in = request.getReader();
 				String line = null;
 				String postdata = "";
+				String msgStr = "";
 				String image_url = "";
 				String video_url = "";
 				String type = "text";
@@ -149,7 +150,7 @@ public class FacebookController {
 					
 					if( message.has("text") ){
 						String postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'Sorry, I can not understand what you say.'}}";
-						String msgStr = message.getString("text");
+						msgStr = message.getString("text");
 						if( msgStr.equals("Hello") || msgStr.equals("hello") ){
 							postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'hello world'}}";
 						}else{
@@ -189,9 +190,9 @@ public class FacebookController {
 						if( responseCode != 200 ){
 							logger.info("Response Code : " + responseCode);
 						}
-						System.out.println("nSending 'POST' request to URL : " + url);
-						System.out.println("Post Data : " + con.getResponseMessage());
-						System.out.println("Response Code : " + responseCode);
+//						System.out.println("nSending 'POST' request to URL : " + url);
+//						System.out.println("Post Data : " + con.getResponseMessage());
+//						System.out.println("Response Code : " + responseCode);
 					}
 					
 					/*
@@ -209,7 +210,7 @@ public class FacebookController {
 							body.put("receive_id", device.getId());
 							body.put("receive_name", userDevice.getDeviceName());
 							body.put("to_fcm_token", device.getDeviceFcmToken());
-							body.put("text", message.getString("text"));
+							body.put("text", msgStr);
 							body.put("image_url", image_url);
 							body.put("video_url", video_url);
 							body.put("type", type);
@@ -220,7 +221,7 @@ public class FacebookController {
 									device.getId(), 
 									userDevice.getDeviceName(), 
 									device.getDeviceFcmToken(), 
-									message.getString("text"), 
+									msgStr, 
 									image_url, 
 									video_url, 
 									type, 
