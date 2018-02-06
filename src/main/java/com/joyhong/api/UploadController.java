@@ -62,7 +62,7 @@ public class UploadController {
 	private String filePath = "/home/wwwroot/default/upload/";
 //	private String tempPath = "/Users/user/Desktop/temp/";
 //	private String filePath = "/Users/user/Desktop/test/";
-	private String fileUrl = "http://47.89.32.89/upload/";
+	private String fileUrl = "http://47.75.40.129/upload/";
 	
 	/**
 	 * 上传视频

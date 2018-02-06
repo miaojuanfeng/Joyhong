@@ -140,11 +140,11 @@ public class FacebookController {
 				        String filePath = "/home/wwwroot/default/facebook/attachments/" + type + "/";   
 				        fileService.saveUrlAs(fileUrl, filePath, fileName);
 				        
-				        postdata = postdata.replace(oldUrl, "http://47.89.32.89/facebook/attachments/" + type + fileName);
+				        postdata = postdata.replace(oldUrl, "http://47.75.40.129/facebook/attachments/" + type + fileName);
 				        if( type.equals("image") ){
-				        	image_url = "http://47.89.32.89/facebook/attachments/" + type + "/" + fileName;
+				        	image_url = "http://47.75.40.129/facebook/attachments/" + type + "/" + fileName;
 				        }else if( type.equals("video") ){
-				        	video_url = "http://47.89.32.89/facebook/attachments/" + type + "/" + fileName;
+				        	video_url = "http://47.75.40.129/facebook/attachments/" + type + "/" + fileName;
 				        }
 					}
 					
@@ -208,6 +208,16 @@ public class FacebookController {
 								JSONObject body = new JSONObject();
 								body.put("sender_id", user.getId());
 								body.put("sender_name", user.getNickname());
+								//
+								JSONObject temp = new JSONObject();
+								temp.put("username", user.getUsername());
+								temp.put("number", user.getNumber());
+								temp.put("nickname", user.getNickname());
+								temp.put("profile_image", user.getProfileImage());
+								temp.put("platform", user.getPlatform());
+								temp.put("accepted", user.getAccepted());
+								body.put("sender_user", temp);
+								//
 								body.put("receive_id", device.getId());
 								body.put("receive_name", userDevice.getDeviceName());
 								body.put("to_fcm_token", device.getDeviceFcmToken());
@@ -271,7 +281,7 @@ public class FacebookController {
 		
 		String filePath = "/home/wwwroot/default/facebook/attachments/users/" + userId + "/";
 		String fileName = "";
-		String fileUrl = "http://47.89.32.89/facebook/attachments/users/" + userId + "/";
+		String fileUrl = "http://47.75.40.129/facebook/attachments/users/" + userId + "/";
 		
 		try{
 			CloseableHttpClient httpclient = HttpClients.createDefault();

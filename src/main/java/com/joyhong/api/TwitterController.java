@@ -67,7 +67,7 @@ public class TwitterController {
 	private static String accessTokenSecret = "KYRHnzRutnJ25MobjBxsCgTPVq6GUjzk0IDf1Cro1S1C4";
 	
 	private static String twitterImagePath = "/home/wwwroot/default/twitter/attachments/image/";
-	private static String twitterImageUrl = "http://47.89.32.89/twitter/attachments/image/";
+	private static String twitterImageUrl = "http://47.75.40.129/twitter/attachments/image/";
 	
 	private TwitterStream twitterStream = null;
 	
@@ -226,7 +226,7 @@ public class TwitterController {
 			String filePath = "/home/wwwroot/default/twitter/attachments/users/" + String.valueOf(userId) + "/";
 			String fileName = "";
 			// 用户头像url
-			String fileUrl = "http://47.89.32.89/twitter/attachments/users/" + String.valueOf(userId) + "/";
+			String fileUrl = "http://47.75.40.129/twitter/attachments/users/" + String.valueOf(userId) + "/";
 			
 			try{
 		        User user = this.twitter.showUser(userId);
@@ -331,7 +331,7 @@ public class TwitterController {
 			    	 *  同步图片
 			    	 */
 	//		    	CloseableHttpClient httpclient1 = HttpClients.createDefault();
-	//			    HttpGet httpget1 = new HttpGet("http://47.89.32.89/twitter/?type=image&url="+m.getMediaURL());
+	//			    HttpGet httpget1 = new HttpGet("http://47.75.40.129/twitter/?type=image&url="+m.getMediaURL());
 	//			    try{
 	//			    	CloseableHttpResponse response = httpclient1.execute(httpget1);
 	//					if (response.getStatusLine().getStatusCode() == 200) {
@@ -352,7 +352,7 @@ public class TwitterController {
 			    	 */
 				    if( m.getType().equals("video") ){
 				    	CloseableHttpClient httpclient2 = HttpClients.createDefault();
-				    	HttpGet httpget2 = new HttpGet("http://47.89.32.89/twitter/?type=video&id="+message.getId());
+				    	HttpGet httpget2 = new HttpGet("http://47.75.40.129/twitter/?type=video&id="+message.getId());
 						try{
 							CloseableHttpResponse response = httpclient2.execute(httpget2);
 							if (response.getStatusLine().getStatusCode() == 200) {
@@ -385,6 +385,16 @@ public class TwitterController {
 							JSONObject body = new JSONObject();
 							body.put("sender_id", user.getId());
 							body.put("sender_name", user.getNickname());
+							//
+							JSONObject temp = new JSONObject();
+							temp.put("username", user.getUsername());
+							temp.put("number", user.getNumber());
+							temp.put("nickname", user.getNickname());
+							temp.put("profile_image", user.getProfileImage());
+							temp.put("platform", user.getPlatform());
+							temp.put("accepted", user.getAccepted());
+							body.put("sender_user", temp);
+							//
 							body.put("receive_id", device.getId());
 							body.put("receive_name", userDevice.getDeviceName());
 							body.put("to_fcm_token", device.getDeviceFcmToken());
