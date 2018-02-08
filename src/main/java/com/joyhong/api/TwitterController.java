@@ -68,6 +68,8 @@ public class TwitterController {
 	
 	private static String twitterImagePath = "/home/wwwroot/default/twitter/attachments/image/";
 	private static String twitterImageUrl = "http://47.75.40.129/twitter/attachments/image/";
+	private static String twitterVideoPath = "/home/wwwroot/default/twitter/attachments/video/";
+	private static String twitterVideoUrl = "http://47.75.40.129/twitter/attachments/video/";
 	
 	private TwitterStream twitterStream = null;
 	
@@ -115,7 +117,7 @@ public class TwitterController {
 		return retval.toString();
 	}
 	
-	private byte[] url(String url){
+	private byte[] getFileBytes(String url){
 		byte[] fileByte = null;
 		
 		try{
@@ -139,12 +141,12 @@ public class TwitterController {
 			httpget.setHeader("Authorization", "OAuth oauth_consumer_key=\""+consumerKey+"\",oauth_token=\""+accessToken+"\",oauth_signature_method=\"HMAC-SHA1\",oauth_timestamp=\""+oauth_timestamp+"\",oauth_nonce=\""+oauth_timestamp+"\",oauth_version=\"1.0\",oauth_signature=\""+oauth_signature+"\"");
 			
 			CloseableHttpResponse response = httpclient.execute(httpget);
-			//if (response.getStatusLine().getStatusCode() == 200) {
+			if (response.getStatusLine().getStatusCode() == 200) {
 				fileByte = EntityUtils.toByteArray(response.getEntity());
-			//}
-			System.out.println("asd");
-			System.out.println(response.getStatusLine().getStatusCode());
-			System.out.println(EntityUtils.toString(response.getEntity()));
+			}
+//			System.out.println("asd");
+//			System.out.println(response.getStatusLine().getStatusCode());
+//			System.out.println(EntityUtils.toString(response.getEntity()));
 		}catch(Exception e){
 			logger.info(e.getMessage());
 		}
@@ -152,8 +154,46 @@ public class TwitterController {
 		return fileByte;
 	}
 	
+	private String getVideoJson(long id){
+		String videoJson = null;
+		String url = "https://api.twitter.com/1.1/direct_messages/show.json?id=" + String.valueOf(id);
+		
+		try{
+			CloseableHttpClient httpclient = HttpClients.createDefault();
+			
+			String oauth_timestamp = String.valueOf(new Date().getTime()/1000);
+			String hmacSHA1Text = "GET&" + URLEncoder.encode(url, "UTF-8").replace("%3F", "&") + "%26" + 
+								  URLEncoder.encode("oauth_consumer_key="+consumerKey+"&"+
+								  "oauth_nonce="+oauth_timestamp+"&"+
+								  "oauth_signature_method=HMAC-SHA1&"+
+								  "oauth_timestamp="+oauth_timestamp+"&"+
+								  "oauth_token="+accessToken+"&"+
+								  "oauth_version=1.0", "UTF-8").replace("&", "%26");
+	
+			String hmacSHA1Key = consumerSecret + "&" + accessTokenSecret;
+			
+			String oauth_signature = URLEncoder.encode(new String(Base64.encodeBase64(HmacSHA1Encrypt(hmacSHA1Text, hmacSHA1Key))), "UTF-8");
+			
+			HttpGet httpget = new HttpGet(url);
+	
+			httpget.setHeader("Authorization", "OAuth oauth_consumer_key=\""+consumerKey+"\",oauth_token=\""+accessToken+"\",oauth_signature_method=\"HMAC-SHA1\",oauth_timestamp=\""+oauth_timestamp+"\",oauth_nonce=\""+oauth_timestamp+"\",oauth_version=\"1.0\",oauth_signature=\""+oauth_signature+"\"");
+			
+			CloseableHttpResponse response = httpclient.execute(httpget);
+			if (response.getStatusLine().getStatusCode() == 200) {
+				videoJson = EntityUtils.toString(response.getEntity());
+			}
+//			System.out.println("asd");
+//			System.out.println(response.getStatusLine().getStatusCode());
+//			System.out.println(EntityUtils.toString(response.getEntity()));
+		}catch(Exception e){
+			logger.info(e.getMessage());
+		}
+		
+		return videoJson;
+	}
+	
 	private String imageUrl(String url){
-		byte[] fileByte = url(url);
+		byte[] fileByte = getFileBytes(url);
 		String fileName = url.substring(url.lastIndexOf("/"));
 		
 		try{
@@ -169,12 +209,46 @@ public class TwitterController {
 		return twitterImageUrl+fileName;
 	}
 	
-//	private String videoUrl(long id){
-//		System.out.println("https://api.twitter.com/1.1/direct_messages/show.json?id="+id);
-//		byte[] s = url("https://api.twitter.com/1.1/direct_messages/show.json?id="+id);
-//		System.out.println(s.toString());
-//		return s.toString();
-//	}
+	private String videoUrl(long id){
+		JSONArray retval = new JSONArray();
+		
+		String videoJson = getVideoJson(id);
+		
+		JSONObject videoJsonObj = JSONObject.fromObject(videoJson);
+		if( videoJsonObj.has("entities") ){
+			JSONObject entities = videoJsonObj.getJSONObject("entities");
+			if( entities.has("media") ){
+				JSONArray medias = entities.getJSONArray("media");
+				for(int i=0;i<medias.size();i++){
+					JSONObject media = medias.getJSONObject(i);
+					if( media.has("video_info") ){
+						JSONObject video_info = media.getJSONObject("video_info");
+						if( video_info.has("variants") ){
+							JSONArray variants = video_info.getJSONArray("variants");
+							for(int j=0;j<variants.size();j++){
+								JSONObject video = variants.getJSONObject(j);
+								String url = video.getString("url");
+								String fileName = url.substring(url.lastIndexOf("/"));
+								byte[] fileByte = getFileBytes(url);
+								try{
+									FileOutputStream fileOut = new FileOutputStream(twitterVideoPath+fileName);  
+							        BufferedOutputStream bos = new BufferedOutputStream(fileOut); 
+							        bos.write(fileByte, 0, fileByte.length);
+							        bos.close();
+							        Runtime.getRuntime().exec("chmod 644 " + twitterVideoPath + fileName);
+							        retval.add(twitterVideoUrl+fileName);
+								}catch(Exception e){
+									logger.info(e.getMessage());
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		return retval.toString();
+	}
 	
 	/**
      * 使用 HMAC-SHA1 签名方法对对encryptText进行签名
@@ -330,44 +404,12 @@ public class TwitterController {
 			    	/**
 			    	 *  同步图片
 			    	 */
-	//		    	CloseableHttpClient httpclient1 = HttpClients.createDefault();
-	//			    HttpGet httpget1 = new HttpGet("http://47.75.40.129/twitter/?type=image&url="+m.getMediaURL());
-	//			    try{
-	//			    	CloseableHttpResponse response = httpclient1.execute(httpget1);
-	//					if (response.getStatusLine().getStatusCode() == 200) {
-	//						String str = "";
-	//		                try {
-	//		                    str = EntityUtils.toString(response.getEntity());
-	//		                } catch (Exception e) {
-	//		                	logger.info(e.getMessage());
-	//		                }
-	//		                img.add(str);
-	//					}
-	//			    }catch(IOException e){
-	//			    	e.printStackTrace();
-	//			    }
 			    	img.add(imageUrl(m.getMediaURL()));
 				    /**
 			    	 *  同步视频
 			    	 */
 				    if( m.getType().equals("video") ){
-				    	CloseableHttpClient httpclient2 = HttpClients.createDefault();
-				    	HttpGet httpget2 = new HttpGet("http://47.75.40.129/twitter/?type=video&id="+message.getId());
-						try{
-							CloseableHttpResponse response = httpclient2.execute(httpget2);
-							if (response.getStatusLine().getStatusCode() == 200) {
-								String str = "";
-				                try {
-				                	str = EntityUtils.toString(response.getEntity());
-				                } catch (Exception e) {
-				                	logger.info(e.getMessage());
-				                }
-				                retval.put("video", str);
-							}
-						}catch(IOException e){
-							e.printStackTrace();
-						}
-	//			    	retval.put("video", url(m.getMediaURL()));
+				    	retval.put("video", videoUrl(message.getId()));
 				    }
 			    }
 			    retval.put("image", img);
