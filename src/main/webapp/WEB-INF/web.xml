@@ -4,7 +4,8 @@
       version="3.0">  
     <servlet>  
         <servlet-name>joyhong</servlet-name>  
-        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>  
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup> 
     </servlet>  
   
     <servlet-mapping>  

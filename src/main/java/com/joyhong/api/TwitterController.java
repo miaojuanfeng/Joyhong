@@ -2,11 +2,11 @@ package com.joyhong.api;
 
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -105,6 +105,7 @@ public class TwitterController {
 	 * @url {base_url}/twitter/listener
 	 * @return json
 	 */
+	@PostConstruct
 	@RequestMapping(value="/listener", method = RequestMethod.GET)
 	@ResponseBody
 	public String listener(){
