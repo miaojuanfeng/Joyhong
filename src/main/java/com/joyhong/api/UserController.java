@@ -10,12 +10,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.joyhong.model.Config;
 import com.joyhong.model.Device;
 import com.joyhong.model.User;
 import com.joyhong.model.UserDevice;
 import com.joyhong.model.Version;
-import com.joyhong.service.ConfigService;
 import com.joyhong.service.DeviceService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
