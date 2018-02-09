@@ -148,8 +148,8 @@ public class FacebookController {
 				        }
 					}
 					
+					String postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'Sorry, I can not understand what you say.'}}";
 					if( message.has("text") ){
-						String postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'Sorry, I can not understand what you say.'}}";
 						msgStr = message.getString("text");
 						if( msgStr.equals("Hello") || msgStr.equals("hello") ){
 							postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'hello world'}}";
@@ -167,33 +167,33 @@ public class FacebookController {
 			        			}
 			        		}
 						}
-						String url = "https://graph.facebook.com/v2.6/me/messages?access_token=EAAC3x3FZBZBv4BAKDi2rfE3FY8oMtla3fS7ngWJ4D68PfEWY37lmK4Xb1ag6c48AZA49Ec6jMIdNuZBynTxKAzWo5qgyuacNtqBZA66cVAp7E3KC9fmDyjBZBGhsFoeAZC1KgsqDdtgGPlIfWjN0cYeijxOaexdgZBrfEi4rrgkaVVNJrFZBiZB1vs";
-						URL obj = new URL(url);
-						HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-										 
-						// Setting basic post request
-						con.setConnectTimeout(20*1000);
-						con.setReadTimeout(20*1000);
-						con.setRequestMethod("POST");
-						con.setRequestProperty("Content-Type","application/json");
-										 
-						// Send post request
-						con.setDoOutput(true);
-						DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-						wr.writeBytes(postJsonData);
-						wr.flush();
-						wr.close();
-						/*
-						 * not work comment this line
-						 */
-						int responseCode = con.getResponseCode();
-						if( responseCode != 200 ){
-							logger.info("Response Code : " + responseCode);
-						}
-//						System.out.println("nSending 'POST' request to URL : " + url);
-//						System.out.println("Post Data : " + con.getResponseMessage());
-//						System.out.println("Response Code : " + responseCode);
 					}
+					String url = "https://graph.facebook.com/v2.6/me/messages?access_token=EAAC3x3FZBZBv4BAKDi2rfE3FY8oMtla3fS7ngWJ4D68PfEWY37lmK4Xb1ag6c48AZA49Ec6jMIdNuZBynTxKAzWo5qgyuacNtqBZA66cVAp7E3KC9fmDyjBZBGhsFoeAZC1KgsqDdtgGPlIfWjN0cYeijxOaexdgZBrfEi4rrgkaVVNJrFZBiZB1vs";
+					URL obj = new URL(url);
+					HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+									 
+					// Setting basic post request
+					con.setConnectTimeout(20*1000);
+					con.setReadTimeout(20*1000);
+					con.setRequestMethod("POST");
+					con.setRequestProperty("Content-Type","application/json");
+									 
+					// Send post request
+					con.setDoOutput(true);
+					DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+					wr.writeBytes(postJsonData);
+					wr.flush();
+					wr.close();
+					/*
+					 * not work comment this line
+					 */
+					int responseCode = con.getResponseCode();
+					if( responseCode != 200 ){
+						logger.info("Response Code : " + responseCode);
+					}
+//					System.out.println("nSending 'POST' request to URL : " + url);
+//					System.out.println("Post Data : " + con.getResponseMessage());
+//					System.out.println("Response Code : " + responseCode);
 					
 					/*
 					 * 推送在下
