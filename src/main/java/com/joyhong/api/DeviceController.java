@@ -205,11 +205,12 @@ public class DeviceController {
 	 * @method POST
 	 * @param Integer user_id
 	 * @param String device_token
+	 * @param String device_name
 	 * @return
 	 */
 	@RequestMapping(value="/bind", method=RequestMethod.POST)
 	@ResponseBody
-	public String bind(@RequestParam("user_id") Integer user_id, @RequestParam("device_token") String device_token){
+	public String bind(@RequestParam("user_id") Integer user_id, @RequestParam("device_token") String device_token, @RequestParam("device_name") String device_name){
 		JSONObject retval = new JSONObject();
 		
 		User user = userService.selectByPrimaryKey(user_id);
@@ -227,7 +228,7 @@ public class DeviceController {
 					UserDevice ud = new UserDevice();
 					ud.setUserId(user_id);
 					ud.setDeviceId(device.getId());
-					ud.setDeviceName("");
+					ud.setDeviceName(device_name);
 					if( userDeviceService.insert(ud) == 1 ){
 						retval.put("status", ConstantService.statusCode_200);
 						JSONObject temp = new JSONObject();

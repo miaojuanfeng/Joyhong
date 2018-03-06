@@ -193,6 +193,7 @@ public class UserController {
 			temp.put("name", version.getName());
 			temp.put("last_version", version.getLastVersion());
 			temp.put("download_link", version.getLastVersion());
+			temp.put("apk_id", 1);
 			retval.put("data", temp);
 		}else{
 			retval.put("status", ConstantService.statusCode_406);
