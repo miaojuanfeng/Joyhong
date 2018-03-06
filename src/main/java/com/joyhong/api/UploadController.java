@@ -287,7 +287,7 @@ public class UploadController {
 								body.put("receive_id", device.getId());
 								body.put("receive_name", userDevice.getDeviceName());
 								body.put("to_fcm_token", device.getDeviceFcmToken());
-								body.put("text", "");
+								body.put("text", file_desc);
 								body.put("image_url", "");
 								body.put("video_url", fileUrl + fileName);
 								body.put("type", "video");
@@ -298,7 +298,7 @@ public class UploadController {
 										device.getId(), 
 										userDevice.getDeviceName(), 
 										device.getDeviceFcmToken(), 
-										"", 
+										file_desc, 
 										temp.toString(), 
 										"", 
 										"image", 
@@ -405,7 +405,7 @@ public class UploadController {
 								body.put("receive_id", device.getId());
 								body.put("receive_name", userDevice.getDeviceName());
 								body.put("to_fcm_token", device.getDeviceFcmToken());
-								body.put("text", "");
+								body.put("text", file_desc);
 								body.put("image_url", "");
 								body.put("video_url", fileUrl + fileName);
 								body.put("type", "video");
@@ -416,7 +416,7 @@ public class UploadController {
 										device.getId(), 
 										userDevice.getDeviceName(), 
 										device.getDeviceFcmToken(), 
-										"", 
+										file_desc, 
 										temp.toString(), 
 										"", 
 										"image", 
@@ -472,6 +472,7 @@ public class UploadController {
 	) throws Exception {
 		JSONObject retval = new JSONObject();
 		JSONArray temp = new JSONArray();
+		JSONArray desc_temp = new JSONArray();
 		
 		int fileLength = files.length;
 		if( file_desc.length != fileLength ){
@@ -492,6 +493,7 @@ public class UploadController {
 				upload.setMd5("");
 				if( uploadService.insert(upload) == 1 ){
 					temp.add(fileUrl + fileName);
+					desc_temp.add(file_desc[i]);
 				}else{
 					retval.put("status", ConstantService.statusCode_318);
 					return retval.toString();
@@ -514,7 +516,7 @@ public class UploadController {
 					body.put("receive_id", device.getId());
 					body.put("receive_name", userDevice.getDeviceName());
 					body.put("to_fcm_token", device.getDeviceFcmToken());
-					body.put("text", "");
+					body.put("text", desc_temp.toString());
 					body.put("image_url", temp.toString());
 					body.put("video_url", "");
 					body.put("type", "image");
@@ -525,7 +527,7 @@ public class UploadController {
 							device.getId(), 
 							userDevice.getDeviceName(), 
 							device.getDeviceFcmToken(), 
-							"", 
+							desc_temp.toString(), 
 							temp.toString(), 
 							"", 
 							"image", 
