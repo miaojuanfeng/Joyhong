@@ -104,6 +104,7 @@ public class DeviceController {
 					JSONObject uTemp = new JSONObject();
 					uTemp.put("id", user.getId());
 					uTemp.put("username", user.getUsername());
+					uTemp.put("account", user.getNumber());
 					uTemp.put("nickname", user.getNickname());
 					uTemp.put("profile_image", user.getProfileImage());
 					uTemp.put("platform", user.getPlatform());

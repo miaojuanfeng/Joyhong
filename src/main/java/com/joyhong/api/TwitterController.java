@@ -324,6 +324,15 @@ public class TwitterController {
 			com.joyhong.model.User user = userService.selectByUsername(String.valueOf(message.getSenderId()));
 			if( user == null ){
 				user = new com.joyhong.model.User();
+				int user_number = 0;
+				while(true){
+					user_number = (int)((Math.random()*9+1)*1000000000);
+					com.joyhong.model.User exist_user = userService.selectByNumber(user_number);
+					if( exist_user == null ){
+						break;
+					}
+				}
+				user.setNumber(user_number);
 				user.setUsername(String.valueOf(message.getSenderId()));
 				user.setNumber(0);
 				user.setNickname(message.getSenderScreenName());
@@ -431,6 +440,7 @@ public class TwitterController {
 							temp.put("username", user.getUsername());
 							temp.put("number", user.getNumber());
 							temp.put("nickname", user.getNickname());
+							temp.put("account", user.getNumber());
 							temp.put("profile_image", user.getProfileImage());
 							temp.put("platform", user.getPlatform());
 							temp.put("accepted", user.getAccepted());

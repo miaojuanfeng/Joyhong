@@ -113,7 +113,7 @@
 													<tr>
 														<th>#</th>
 														<th>Username</th>
-														<th>Number</th>
+														<th>Account</th>
 														<th>Nickname</th>
 														<th>Platform</th>
 														<th>Create</th>

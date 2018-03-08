@@ -189,12 +189,18 @@ public class WeatherController {
 		for(i = 0; i < list.size(); i++){
 			try{
 				JSONObject timeStamp = list.getJSONObject(i);
-				String date = timeStamp.getString("dt_txt").substring(0, 10);
-				String datetime = timeStamp.getString("dt_txt");
+//				String date = timeStamp.getString("dt_txt").substring(0, 10);
+//				String datetime = timeStamp.getString("dt_txt");
+				// 纠正时区
+				String date = timeStamp2Date(timeStamp.getString("dt"), "yyyy-MM-dd");
+				String datetime = timeStamp2Date(timeStamp.getString("dt"), "yyyy-MM-dd HH:mm:ss");
+				
 				/*
 				 * 当前时间
 				 */
 				if( !retObj.has("now") && datetime.compareTo(todayDatetime) > 0 ){
+					// 纠正时区
+					timeStamp.put("dt_txt", datetime);
 					retObj.put("now", timeStamp);
 				}
 				/*
@@ -209,10 +215,14 @@ public class WeatherController {
 					}
 					if( Float.valueOf(timeStamp.getJSONObject("main").getString("temp_min")) < temp_min ){
 						temp_min = Float.valueOf(timeStamp.getJSONObject("main").getString("temp_min"));
+						// 纠正时区
+						timeStamp.put("dt_txt", datetime);
 						day_temp.put("min", timeStamp);
 					}
 					if( Float.valueOf(timeStamp.getJSONObject("main").getString("temp_min")) > temp_max ){
 						temp_max = Float.valueOf(timeStamp.getJSONObject("main").getString("temp_min"));
+						// 纠正时区
+						timeStamp.put("dt_txt", datetime);
 						day_temp.put("max", timeStamp);
 					}
 					retObj.put(date, day_temp);

@@ -92,7 +92,7 @@
 											<form:input id="username" path="username" type="text" class="form-control input-sm required" placeholder="Username" />
 										</p>
 										<p class="form-group">
-											<label for="number">Number <span class="highlight">*</span></label>
+											<label for="number">Account <span class="highlight">*</span></label>
 											<form:input id="number" path="number" type="number" class="form-control input-sm required" placeholder="Number" />
 										</p>
 										<p class="form-group">
@@ -264,7 +264,7 @@
 											<tr>
 												<th>#</th>
 												<th>Username</th>
-												<th>Number</th>
+												<th>Account</th>
 												<th>Nickname</th>
 												<th>Profile image</th>
 												<th>Platform</th>

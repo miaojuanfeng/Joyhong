@@ -95,7 +95,7 @@ public class UserController {
 			user.setDeleted(0);
 			if( userService.insert(user) == 1 ){
 				uJson.put("user_id", user.getId());
-				uJson.put("user_number", user.getNumber());
+				uJson.put("user_account", user.getNumber());
 				uJson.put("user_nickname", user.getNickname());
 				
 				retval.put("status", ConstantService.statusCode_200);
@@ -105,7 +105,7 @@ public class UserController {
 			}
 		}else{
 			uJson.put("user_id", user.getId());
-			uJson.put("user_number", user.getNumber());
+			uJson.put("user_account", user.getNumber());
 			uJson.put("user_nickname", user.getNickname());
 			
 			retval.put("status", ConstantService.statusCode_200);

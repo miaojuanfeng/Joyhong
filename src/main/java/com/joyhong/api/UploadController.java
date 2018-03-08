@@ -3,12 +3,14 @@ package com.joyhong.api;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.URLDecoder;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,6 +41,8 @@ import net.sf.json.JSONObject;
 @Controller
 @RequestMapping(value="/upload")
 public class UploadController {
+	
+	private Logger logger = Logger.getLogger(this.getClass());
 	
 	@Autowired
 	private DeviceService deviceService;
@@ -72,10 +76,11 @@ public class UploadController {
 	 */
 	@RequestMapping(value="/video", method = RequestMethod.POST)
 	@ResponseBody
-	public String video(HttpServletRequest request) throws Exception {
+	public String video(HttpServletRequest request) {
 		JSONObject retval = new JSONObject();
 		JSONObject temp = new JSONObject();
 		
+		try{
 		/*
          * 获取MD5
          */
@@ -259,6 +264,11 @@ public class UploadController {
 			retval.put("status", ConstantService.statusCode_317);
 			return retval.toString();
 		}
+		
+		
+		logger.info("currentBlock: "+currentBlock+" totalBlock: "+totalBlock);
+		
+		
         /*
          * 文件从开头处上传时
          */
@@ -284,6 +294,7 @@ public class UploadController {
 								JSONObject body = new JSONObject();
 								body.put("sender_id", user.getId());
 								body.put("sender_name", user.getNickname());
+								body.put("sender_account", user.getNumber());
 								body.put("receive_id", device.getId());
 								body.put("receive_name", userDevice.getDeviceName());
 								body.put("to_fcm_token", device.getDeviceFcmToken());
@@ -324,130 +335,148 @@ public class UploadController {
 	         */
         	fileService.deleteDir(tempDir);
         }
+        
+        logger.info("go on");
+        
         /*
          * 追加文件
          */
         fileService.makeDir(tempDir);
-        fileService.deleteFile(tempDir + fileName + "." + currentBlock);
-        fileService.deleteFile(tempDir + fileName + "." + currentBlock + ".temp");
+//        fileService.deleteFile(tempDir + fileName + "." + currentBlock);
+//        fileService.deleteFile(tempDir + fileName + "." + currentBlock + ".temp");
         InputStream is = request.getInputStream();
-        RandomAccessFile oSavedFile = new RandomAccessFile(tempDir + fileName + "." + currentBlock + ".temp", "rw"); 
-        long nPos = start-1;
         
-	    oSavedFile.seek(nPos);
+        logger.info(tempDir + fileName + "." + currentBlock);
+        
+//        RandomAccessFile oSavedFile = new RandomAccessFile(tempDir + fileName + "." + currentBlock + ".temp", "rw"); 
+//        long nPos = 0;
+        
+        logger.info(tempDir + fileName + "." + currentBlock + ".temp");
+        
+//	    oSavedFile.seek(nPos);
 	    
 	    byte[] dataOrigin = new byte[requestSize];
 	    DataInputStream in = new DataInputStream(is);
 	    in.readFully(dataOrigin);
-	    oSavedFile.write(dataOrigin, 0, dataOrigin.length);
+//	    oSavedFile.write(dataOrigin, 0, dataOrigin.length);
 	    
 	    in.close();
-		oSavedFile.close();
+//		oSavedFile.close();
 		
-		fileService.renameFile(tempDir, tempDir, fileName + "." + currentBlock + ".temp", fileName + "." + currentBlock);
+		logger.info("requestSize: "+requestSize);
+		logger.info("dataOrigin length: "+dataOrigin.length);
+		this.saveFile(tempDir + fileName + "." + currentBlock + ".test", dataOrigin);
+		
+//		fileService.renameFile(tempDir, tempDir, fileName + "." + currentBlock + ".temp", fileName + "." + currentBlock);
        
-		if( fileService.getFileCount(tempDir, null, ".temp") == totalBlock ){
-			/*
-			 *  将分块文件写入到一个文件中
-			 */
-			RandomAccessFile mergeFile = new RandomAccessFile(tempDir + fileName + ".done", "rw");
-			long fileLength = mergeFile.length();
-			for(int i=1;i<=totalBlock;i++){
-				File file = new File(tempDir + fileName + "." + i);
-		        if (!file.exists()) {
-		        	mergeFile.close();
-		        	fileService.deleteDir(tempDir);
-		        	retval.put("status", ConstantService.statusCode_326);
-					return retval.toString();
-		        }
-		        FileInputStream fileInput = new FileInputStream(file);
-		        byte[] buffer = new byte[1024];
-		        int byteread = 0; 
-		        while ((byteread = fileInput.read(buffer)) != -1) {
-		        	mergeFile.seek(fileLength);
-		        	mergeFile.write(buffer, 0, byteread);
-		        	fileLength += byteread;
-		        }
-		        fileInput.close();
-			}
-			mergeFile.close();
-    		/*
-    		 * 写入完成，重命名文件
-    		 */
-			int error = fileService.renameFile(tempDir, filePath, fileName+".done", fileName);
-			/*
-	         * 将已上传的临时文件夹及里面的所有文件删除
-	         */
-        	fileService.deleteDir(tempDir);
-        	/*
-        	 * 文件合并重命名成功，推送
-        	 */
-			if( error == 0 ){
-				Upload upload = new Upload();
-				upload.setUserId(user_id);
-				upload.setName(fileName);
-				upload.setDescription(file_desc);
-				upload.setUrl(fileUrl+fileName);
-				upload.setMd5(fileMD5);
-				if( uploadService.insert(upload) == 1 ){
-					/*
-					 * 推送在下
-					 */
-					User user = userService.selectByPrimaryKey(user_id);
-					if( user != null ){
-						for(Integer id : device_id){
-							Device device = deviceService.selectByPrimaryKey(id);
-							UserDevice userDevice = userDeviceService.selectByUserIdAndDeviceId(user_id, device.getId());
-							if( device != null && userDevice != null ){
-								JSONObject body = new JSONObject();
-								body.put("sender_id", user.getId());
-								body.put("sender_name", user.getNickname());
-								body.put("receive_id", device.getId());
-								body.put("receive_name", userDevice.getDeviceName());
-								body.put("to_fcm_token", device.getDeviceFcmToken());
-								body.put("text", file_desc);
-								body.put("image_url", "");
-								body.put("video_url", fileUrl + fileName);
-								body.put("type", "video");
-								body.put("platform", "app");
-								pushService.push(
-										user.getId(),
-										user.getNickname(), 
-										device.getId(), 
-										userDevice.getDeviceName(), 
-										device.getDeviceFcmToken(), 
-										file_desc, 
-										temp.toString(), 
-										"", 
-										"image", 
-										"app", 
-										"Receive a message from App", 
-										body.toString().replace("\"", "\\\""));
-							}
-						}
-					}
-					/*
-					 * 推送在上
-					 */
-					retval.put("status", ConstantService.statusCode_200);
-					temp.put("complete", true);
-					temp.put("file", fileUrl + fileName);
-					retval.put("data", temp);
-				}else{
-					retval.put("status", ConstantService.statusCode_318);
-				}
-			}else{
-				retval.put("status", error);
-			}
-		}else{
-			retval.put("status", ConstantService.statusCode_200);
-			temp.put("complete", false);
-			temp.put("start", start);
-			temp.put("end", end);
-			temp.put("next", end+1);
-			temp.put("current_block", currentBlock);
-			temp.put("total_block", totalBlock);
-			retval.put("data", temp);
+		logger.info("Done: " + fileName + "." + currentBlock);
+		
+//		if( fileService.getFileCount(tempDir, null, ".temp") == totalBlock ){
+//			/*
+//			 *  将分块文件写入到一个文件中
+//			 */
+//			RandomAccessFile mergeFile = new RandomAccessFile(tempDir + fileName + ".done", "rw");
+//			long fileLength = mergeFile.length();
+//			for(int i=1;i<=totalBlock;i++){
+//				File file = new File(tempDir + fileName + "." + i);
+//		        if (!file.exists()) {
+//		        	mergeFile.close();
+//		        	fileService.deleteDir(tempDir);
+//		        	retval.put("status", ConstantService.statusCode_326);
+//					return retval.toString();
+//		        }
+//		        FileInputStream fileInput = new FileInputStream(file);
+//		        byte[] buffer = new byte[1024];
+//		        int byteread = 0; 
+//		        while ((byteread = fileInput.read(buffer)) != -1) {
+//		        	mergeFile.seek(fileLength);
+//		        	mergeFile.write(buffer, 0, byteread);
+//		        	fileLength += byteread;
+//		        }
+//		        fileInput.close();
+//			}
+//			mergeFile.close();
+//    		/*
+//    		 * 写入完成，重命名文件
+//    		 */
+//			int error = fileService.renameFile(tempDir, filePath, fileName+".done", fileName);
+//			/*
+//	         * 将已上传的临时文件夹及里面的所有文件删除
+//	         */
+//        	fileService.deleteDir(tempDir);
+//        	/*
+//        	 * 文件合并重命名成功，推送
+//        	 */
+//			if( error == 0 ){
+//				Upload upload = new Upload();
+//				upload.setUserId(user_id);
+//				upload.setName(fileName);
+//				upload.setDescription(file_desc);
+//				upload.setUrl(fileUrl+fileName);
+//				upload.setMd5(fileMD5);
+//				if( uploadService.insert(upload) == 1 ){
+//					/*
+//					 * 推送在下
+//					 */
+//					User user = userService.selectByPrimaryKey(user_id);
+//					if( user != null ){
+//						for(Integer id : device_id){
+//							Device device = deviceService.selectByPrimaryKey(id);
+//							UserDevice userDevice = userDeviceService.selectByUserIdAndDeviceId(user_id, device.getId());
+//							if( device != null && userDevice != null ){
+//								JSONObject body = new JSONObject();
+//								body.put("sender_id", user.getId());
+//								body.put("sender_name", user.getNickname());
+//								body.put("sender_account", user.getNumber());
+//								body.put("receive_id", device.getId());
+//								body.put("receive_name", userDevice.getDeviceName());
+//								body.put("to_fcm_token", device.getDeviceFcmToken());
+//								body.put("text", file_desc);
+//								body.put("image_url", "");
+//								body.put("video_url", fileUrl + fileName);
+//								body.put("type", "video");
+//								body.put("platform", "app");
+//								pushService.push(
+//										user.getId(),
+//										user.getNickname(), 
+//										device.getId(), 
+//										userDevice.getDeviceName(), 
+//										device.getDeviceFcmToken(), 
+//										file_desc, 
+//										temp.toString(), 
+//										"", 
+//										"image", 
+//										"app", 
+//										"Receive a message from App", 
+//										body.toString().replace("\"", "\\\""));
+//							}
+//						}
+//					}
+//					/*
+//					 * 推送在上
+//					 */
+//					retval.put("status", ConstantService.statusCode_200);
+//					temp.put("complete", true);
+//					temp.put("file", fileUrl + fileName);
+//					retval.put("data", temp);
+//				}else{
+//					retval.put("status", ConstantService.statusCode_318);
+//				}
+//			}else{
+//				retval.put("status", error);
+//			}
+//		}else{
+//			retval.put("status", ConstantService.statusCode_200);
+//			temp.put("complete", false);
+//			temp.put("start", start);
+//			temp.put("end", end);
+//			temp.put("next", end+1);
+//			temp.put("current_block", currentBlock);
+//			temp.put("total_block", totalBlock);
+//			retval.put("data", temp);
+//		}
+		}catch(Exception e){
+			logger.info(e.getMessage());
 		}
 		
         return retval.toString();
@@ -513,6 +542,7 @@ public class UploadController {
 					JSONObject body = new JSONObject();
 					body.put("sender_id", user.getId());
 					body.put("sender_name", user.getNickname());
+					body.put("sender_account", user.getNumber());
 					body.put("receive_id", device.getId());
 					body.put("receive_name", userDevice.getDeviceName());
 					body.put("to_fcm_token", device.getDeviceFcmToken());
@@ -544,5 +574,24 @@ public class UploadController {
 		retval.put("data", temp);
 		
 		return retval.toString();
+	}
+	
+	/**  
+	* 将字节流转换成文件  
+	* @param filepath  
+	* @param data  
+	* @throws Exception  
+	*/    
+	public void saveFile(String filepath, byte [] data)throws Exception{     
+	    if(data != null){   
+	      File file  = new File(filepath);     
+	      if(file.exists()){     
+	         file.delete();     
+	      }     
+	      FileOutputStream fos = new FileOutputStream(file);     
+	      fos.write(data,0,data.length);     
+	      fos.flush();     
+	      fos.close();     
+	    }     
 	}
 }
