@@ -211,10 +211,9 @@ public class FacebookController {
 								//
 								JSONObject temp = new JSONObject();
 								temp.put("username", user.getUsername());
-								temp.put("number", user.getNumber());
-								temp.put("nickname", user.getNickname());
 								temp.put("account", user.getNumber());
-								temp.put("profile_image", user.getProfileImage());
+								temp.put("nickname", user.getNickname());
+								temp.put("avatar", user.getProfileImage());
 								temp.put("platform", user.getPlatform());
 								temp.put("accepted", user.getAccepted());
 								body.put("sender_user", temp);
@@ -361,7 +360,6 @@ public class FacebookController {
 			}
 			user.setNumber(user_number);
 			user.setUsername(sender_id);
-			user.setNumber(0);
 			user.setNickname(username);
 			if( uJson.has("profile_pic") ){
 				user.setProfileImage(uJson.getString("profile_pic"));

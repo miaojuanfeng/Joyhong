@@ -106,7 +106,7 @@ public class DeviceController {
 					uTemp.put("username", user.getUsername());
 					uTemp.put("account", user.getNumber());
 					uTemp.put("nickname", user.getNickname());
-					uTemp.put("profile_image", user.getProfileImage());
+					uTemp.put("avatar", user.getProfileImage());
 					uTemp.put("platform", user.getPlatform());
 					uTemp.put("accepted", user.getAccepted());
 					uTemp.put("create_date", user.getCreateDate().getTime());

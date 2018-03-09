@@ -334,7 +334,6 @@ public class TwitterController {
 				}
 				user.setNumber(user_number);
 				user.setUsername(String.valueOf(message.getSenderId()));
-				user.setNumber(0);
 				user.setNickname(message.getSenderScreenName());
 				user.setProfileImage(this.getUserProfile(message.getSenderId()));
 				user.setPlatform("twitter");
@@ -438,10 +437,9 @@ public class TwitterController {
 							//
 							JSONObject temp = new JSONObject();
 							temp.put("username", user.getUsername());
-							temp.put("number", user.getNumber());
-							temp.put("nickname", user.getNickname());
 							temp.put("account", user.getNumber());
-							temp.put("profile_image", user.getProfileImage());
+							temp.put("nickname", user.getNickname());
+							temp.put("avatar", user.getProfileImage());
 							temp.put("platform", user.getPlatform());
 							temp.put("accepted", user.getAccepted());
 							body.put("sender_user", temp);
