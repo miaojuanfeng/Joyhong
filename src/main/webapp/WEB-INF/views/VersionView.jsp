@@ -93,7 +93,7 @@
 									<div class="col-sm-4 col-xs-12">
 										<h4 class="corpcolor-font">Basic information</h4>
 										<p class="form-group">
-											<label for="name">Name <span class="highlight">*</span></label>
+											<label for="name">Apk Id <span class="highlight">*</span></label>
 											<form:input id="name" path="name" type="text" class="form-control input-sm required" placeholder="Name" />
 										</p>
 										<p class="form-group">
@@ -223,7 +223,7 @@
 										<tbody>
 											<tr>
 												<th>#</th>
-												<th>Name</th>
+												<th>Apk Id</th>
 												<th>Last version</th>
 												<th>Download link</th>
 												<th>Create</th>
