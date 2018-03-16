@@ -183,16 +183,16 @@ public class UserController {
 	 */
 	@RequestMapping(value="/version", method=RequestMethod.POST)
 	@ResponseBody
-	public String version(@RequestParam("name") String name){
+	public String version(@RequestParam("apk_id") String name){
 		JSONObject retval = new JSONObject();
 		
 		Version version = versionService.selectByName(name);
 		JSONObject temp = new JSONObject();
 		if( version != null ){
 			retval.put("status", ConstantService.statusCode_200);
-			temp.put("apk_id", version.getName());
+//			temp.put("apk_id", version.getName());
 			temp.put("last_version", version.getLastVersion());
-			temp.put("download_link", version.getLastVersion());
+			temp.put("download_link", version.getDownloadLink());
 			retval.put("data", temp);
 		}else{
 			retval.put("status", ConstantService.statusCode_406);

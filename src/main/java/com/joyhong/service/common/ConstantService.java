@@ -57,7 +57,7 @@ public class ConstantService {
 	public static int statusCode_403 = 403;		// User registration failed, please try again later
 	public static int statusCode_404 = 404;		// Update user profile failed, please try again later
 	public static int statusCode_405 = 405;		// Unable to find the user
-	public static int statusCode_406 = 406;		// Unable to find the app name
+	public static int statusCode_406 = 406;		// Unable to find the app by apk_id
 	/*
 	 * Failed with msg, error message get from other website, so you should read msg parameter to get error details.
 	 */
