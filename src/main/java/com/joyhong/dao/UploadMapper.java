@@ -11,7 +11,7 @@ public interface UploadMapper {
 
     Upload selectByPrimaryKey(Integer id);
     
-    Upload selectByNameAndMD5(String name, String md5);
+    Upload selectByNameAndMD5(Integer user_id, String md5);
 
     int updateByPrimaryKeySelective(Upload record);
 

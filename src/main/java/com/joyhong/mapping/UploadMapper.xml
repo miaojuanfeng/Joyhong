@@ -21,11 +21,11 @@
     from jh_upload
     where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </select>
-  <select id="selectByNameAndMD5" parameterType="java.lang.String" resultMap="BaseResultMap">
+  <select id="selectByNameAndMD5" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from jh_upload
-    where deleted = 0 and name = #{0} and md5 = #{1}
+    where deleted = 0 and user_id = #{0} and md5 = #{1}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from jh_upload

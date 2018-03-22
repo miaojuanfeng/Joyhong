@@ -50,9 +50,9 @@ public class UploadServiceImpl implements UploadService {
 		return uploadMapper.updateByPrimaryKey(record);
 	}
 
-	public Upload selectByNameAndMD5(String name, String md5) {
+	public Upload selectByNameAndMD5(Integer user_id, String md5) {
 		// TODO Auto-generated method stub
-		return uploadMapper.selectByNameAndMD5(name, md5);
+		return uploadMapper.selectByNameAndMD5(user_id, md5);
 	}
 
 }

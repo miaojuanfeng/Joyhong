@@ -599,6 +599,78 @@ public class UploadController {
 		if( !files.isEmpty() ){
 			String fileName = files.getOriginalFilename();
 			String tempDir = tempPath + fileName + ".temp/";
+			
+			
+			/*
+	         * 文件从开头处上传时
+	         */
+	        if( file_block == 1 ){
+	        	/*
+	             * 检查文件是否存在
+	             * 根据文件MD5值检查，相同MD5值则不写文件直接推送
+	             */
+	        	Upload existsFile = uploadService.selectByNameAndMD5(user_id, file_MD5);
+		        if( existsFile != null ){
+		        	existsFile.setDescription(file_desc);
+		        	if( uploadService.updateByPrimaryKey(existsFile) == 1 ){
+		        		/*
+		        		 * 推送在下
+		        		 */
+		        		User user = userService.selectByPrimaryKey(user_id);
+						if( user != null ){
+							for(Integer id : device_id){
+								Device device = deviceService.selectByPrimaryKey(id);
+								UserDevice userDevice = userDeviceService.selectByUserIdAndDeviceId(user_id, device.getId());
+								if( device != null && userDevice != null ){
+									JSONObject body = new JSONObject();
+									body.put("sender_id", user.getId());
+									body.put("sender_name", user.getNickname());
+									body.put("sender_account", user.getNumber());
+									body.put("receive_id", device.getId());
+									body.put("receive_name", userDevice.getDeviceName());
+									body.put("to_fcm_token", device.getDeviceFcmToken());
+									body.put("text", file_desc);
+									body.put("image_url", "");
+									body.put("video_url", fileUrl + fileName);
+									body.put("type", "video");
+									body.put("platform", "app");
+									pushService.push(
+											user.getId(),
+											user.getNickname(), 
+											device.getId(), 
+											userDevice.getDeviceName(), 
+											device.getDeviceFcmToken(), 
+											file_desc, 
+											"", 
+											fileUrl + fileName, 
+											"video", 
+											"app", 
+											"Receive a message from App", 
+											body.toString().replace("\"", "\\\""));
+								}
+							}
+						}
+		        		/*
+		        		 * 推送在上
+		        		 */
+						fileService.deleteDir(tempDir);
+						
+		        		retval.put("status", ConstantService.statusCode_200);
+						temp.put("complete", true);
+						temp.put("file", fileUrl + fileName);
+						retval.put("data", temp);
+						return retval.toString();
+		        	}
+		        }
+		        /*
+		         * 检查临时文件是否存在
+		         * 如果start为1表示需要重写文件，将已上传的数据块删除
+		         */
+	        	fileService.deleteDir(tempDir);
+	        }
+			
+			
+			
 			fileService.makeDir(tempDir);
 			files.transferTo(new File(tempDir + fileName + "." + file_block + ".temp"));
 			// 重命名分块
