@@ -47,8 +47,8 @@ public class UserController {
 	@Autowired
 	private VersionService versionService;
 	
-	@Autowired
-	private FuncService funcService;
+//	@Autowired
+//	private FuncService funcService;
 	
 	/**
 	 * App用户登录
@@ -63,15 +63,15 @@ public class UserController {
 		JSONObject retval = new JSONObject();
 		JSONObject uJson = new JSONObject();
 		
-		if( !funcService.isNumeric(user_imei) ){
-			retval.put("status", ConstantService.statusCode_401);
-			return retval.toString();
-		}
+//		if( !funcService.isNumeric(user_imei) ){
+//			retval.put("status", ConstantService.statusCode_401);
+//			return retval.toString();
+//		}
 		
-		if( user_imei.length() != 15 ){
-			retval.put("status", ConstantService.statusCode_402);
-			return retval.toString();
-		}
+//		if( user_imei.length() != 15 ){
+//			retval.put("status", ConstantService.statusCode_402);
+//			return retval.toString();
+//		}
 		
 		User user = userService.selectByUsername(user_imei);
 		if( user == null ){

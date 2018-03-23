@@ -234,6 +234,11 @@ public class DeviceController {
 						retval.put("status", ConstantService.statusCode_200);
 						JSONObject temp = new JSONObject();
 						temp.put("device_id", device.getId());
+						temp.put("device_token", device.getDeviceToken());
+						temp.put("device_fcm_token", device.getDeviceFcmToken());
+						temp.put("device_name", device_name);
+						temp.put("create_date", device.getCreateDate().getTime());
+						temp.put("modify_date", device.getModifyDate().getTime());
 						retval.put("data", temp);
 					}else{
 						retval.put("status", ConstantService.statusCode_107);
