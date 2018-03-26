@@ -39,9 +39,11 @@
     where deleted = 0 
     limit #{0},#{1}
   </select>
-  <select id="selectByName" parameterType="java.lang.String" resultMap="BaseResultMap">
+  <select id="selectByName" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
     select 
     <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
     from jh_version
     where deleted = 0 and name = #{name,jdbcType=VARCHAR}
   </select>

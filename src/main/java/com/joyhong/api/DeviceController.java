@@ -334,7 +334,6 @@ public class DeviceController {
 		
 		Device exist_device = this.deviceService.selectByPrimaryKey(device_id);
 		if( exist_device != null ){
-			
 			Device device = new Device();
 			device.setId(exist_device.getId());
 			device.setHeartbeatTime(new Date());
