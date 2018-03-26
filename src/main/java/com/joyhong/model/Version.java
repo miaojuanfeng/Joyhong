@@ -16,6 +16,8 @@ public class Version {
     private Date modifyDate;
 
     private Integer deleted;
+    
+    private String versionDesc;
 
     public Integer getId() {
         return id;
@@ -71,5 +73,13 @@ public class Version {
 
     public void setDeleted(Integer deleted) {
         this.deleted = deleted;
+    }
+    
+    public String getVersionDesc() {
+        return versionDesc;
+    }
+
+    public void setVersionDesc(String versionDesc) {
+        this.versionDesc = versionDesc == null ? null : versionDesc.trim();
     }
 }

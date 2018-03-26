@@ -305,13 +305,14 @@ public class DeviceController {
 			Integer order_id = device.getOrderId();
 			Order order = orderService.selectByPrimaryKey(order_id);
 			if( order != null ){
+				retval.put("status", ConstantService.statusCode_200);
 				temp.put("last_version", order.getLastVersion());
 				temp.put("download_link", order.getDownloadLink());
+				temp.put("version_desc", order.getVersionDesc());
+				retval.put("data", temp);
 			}else{
-				temp.put("last_version", "");
-				temp.put("download_link", "");
+				retval.put("status", ConstantService.statusCode_112);
 			}
-			retval.put("data", temp);
 		}else{
 			retval.put("status", ConstantService.statusCode_101);
 		}

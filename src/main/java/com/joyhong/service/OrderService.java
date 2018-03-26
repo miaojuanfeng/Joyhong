@@ -18,6 +18,8 @@ public interface OrderService {
     List<Order> selectOffsetAndLimit(Integer offset, Integer limit);
 
     int updateByPrimaryKeySelective(Order record);
+    
+    int updateByPrimaryKeyWithBLOBs(Order record);
 
     int updateByPrimaryKey(Order record);
 }

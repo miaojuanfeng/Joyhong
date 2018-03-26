@@ -140,7 +140,7 @@ public class VersionCtrl {
 		
 		version.setId(version_id);
 		version.setModifyDate(new Date());
-		if( versionService.updateByPrimaryKey(version) == 1 ){
+		if( versionService.updateByPrimaryKeyWithBLOBs(version) == 1 ){
 			if( referer != "" ){
 				return "redirect:"+referer.substring(referer.lastIndexOf("/cms/"));
 			}

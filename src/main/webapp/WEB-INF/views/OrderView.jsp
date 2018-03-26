@@ -120,6 +120,10 @@
 											<label for="download_link">Download link <span class="highlight"></span></label>
 											<form:input id="download_link" path="downloadLink" type="text" class="form-control input-sm" placeholder="Download link" />
 										</p>
+										<p class="form-group">
+											<label for="version_desc">Version Description <span class="highlight"></span></label>
+											<form:textarea id="version_desc" rows="10" path="versionDesc" class="form-control input-sm" placeholder="Version Description"></form:textarea>
+										</p>
 									</div>
 									<div class="col-sm-8 col-xs-12 pull-right">
 										<c:if test="${method == 'update'}">

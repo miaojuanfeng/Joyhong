@@ -10,12 +10,20 @@
     <result column="modify_date" jdbcType="TIMESTAMP" property="modifyDate" />
     <result column="deleted" jdbcType="INTEGER" property="deleted" />
   </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.joyhong.model.Version">		
+	<result column="version_desc" jdbcType="LONGVARCHAR" property="versionDesc" />		
+  </resultMap>
   <sql id="Base_Column_List">
     id, name, last_version, download_link, create_date, modify_date, deleted
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  <sql id="Blob_Column_List">
+    version_desc
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
     select 
     <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
     from jh_version
     where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </select>
@@ -44,10 +52,10 @@
   <insert id="insert" parameterType="com.joyhong.model.Version">
     insert into jh_version (id, name, last_version, 
       download_link, create_date, modify_date, 
-      deleted)
+      deleted, version_desc)
     values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{lastVersion,jdbcType=VARCHAR}, 
       #{downloadLink,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{modifyDate,jdbcType=TIMESTAMP}, 
-      #{deleted,jdbcType=INTEGER})
+      #{deleted,jdbcType=INTEGER}, #{versionDesc,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.joyhong.model.Version">
     insert into jh_version
@@ -72,6 +80,9 @@
       </if>
       <if test="deleted != null">
         deleted,
+      </if>		
+	  <if test="versionDesc != null">		
+	  	version_desc,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -96,6 +107,9 @@
       <if test="deleted != null">
         #{deleted,jdbcType=INTEGER},
       </if>
+      <if test="versionDesc != null">		
+      	#{versionDesc,jdbcType=LONGVARCHAR},		
+	  </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.joyhong.model.Version">
@@ -119,8 +133,22 @@
       <if test="deleted != null">
         deleted = #{deleted,jdbcType=INTEGER},
       </if>
+      <if test="versionDesc != null">		
+		version_desc = #{versionDesc,jdbcType=LONGVARCHAR},		
+	  </if>
     </set>
     where deleted = 0 and id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.joyhong.model.Version">
+    update jh_version
+    set name = #{name,jdbcType=VARCHAR},
+      last_version = #{lastVersion,jdbcType=VARCHAR},
+      download_link = #{downloadLink,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      modify_date = #{modifyDate,jdbcType=TIMESTAMP},
+      deleted = #{deleted,jdbcType=INTEGER},
+      version_desc = #{versionDesc,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.joyhong.model.Version">
     update jh_version

@@ -143,7 +143,7 @@ public class OrderCtrl {
 		
 		order.setId(order_id);
 		order.setModifyDate(new Date());
-		if( orderService.updateByPrimaryKey(order) == 1 ){
+		if( orderService.updateByPrimaryKeyWithBLOBs(order) == 1 ){
 			if( referer != "" ){
 				return "redirect:"+referer.substring(referer.lastIndexOf("/cms/"));
 			}

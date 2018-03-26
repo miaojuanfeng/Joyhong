@@ -59,4 +59,9 @@ public class OrderServiceImpl implements OrderService {
 		return orderMapper.updateByPrimaryKey(record);
 	}
 
+	public int updateByPrimaryKeyWithBLOBs(Order record) {
+		// TODO Auto-generated method stub
+		return orderMapper.updateByPrimaryKeyWithBLOBs(record);
+	}
+
 }

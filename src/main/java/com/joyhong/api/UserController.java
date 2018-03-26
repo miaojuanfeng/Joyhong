@@ -185,14 +185,14 @@ public class UserController {
 	@ResponseBody
 	public String version(@RequestParam("apk_id") String name){
 		JSONObject retval = new JSONObject();
+		JSONObject temp = new JSONObject();
 		
 		Version version = versionService.selectByName(name);
-		JSONObject temp = new JSONObject();
 		if( version != null ){
 			retval.put("status", ConstantService.statusCode_200);
-//			temp.put("apk_id", version.getName());
 			temp.put("last_version", version.getLastVersion());
 			temp.put("download_link", version.getDownloadLink());
+			temp.put("version_desc", version.getVersionDesc());
 			retval.put("data", temp);
 		}else{
 			retval.put("status", ConstantService.statusCode_406);

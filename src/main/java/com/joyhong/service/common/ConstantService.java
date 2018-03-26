@@ -16,6 +16,7 @@ public class ConstantService {
 	public static final int statusCode_109 = 109;		// Unable to find the user
 	public static final int statusCode_110 = 110;		// Update device name failed, please try again later
 	public static final int statusCode_111 = 111;		// Update device status failed, please try again later
+	public static final int statusCode_112 = 112;		// Unable to find the order by device_id
 	/*
 	 *  Success
 	 */

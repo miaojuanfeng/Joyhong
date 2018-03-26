@@ -20,6 +20,8 @@ public interface VersionMapper {
     Version selectByName(String name);
 
     int updateByPrimaryKeySelective(Version record);
+    
+    int updateByPrimaryKeyWithBLOBs(Version record);
 
     int updateByPrimaryKey(Version record);
 }

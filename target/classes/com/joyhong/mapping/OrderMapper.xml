@@ -14,13 +14,21 @@
     <result column="modify_date" jdbcType="TIMESTAMP" property="modifyDate" />
     <result column="deleted" jdbcType="INTEGER" property="deleted" />
   </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.joyhong.model.Order">
+    <result column="version_desc" jdbcType="LONGVARCHAR" property="versionDesc" />
+  </resultMap>
   <sql id="Base_Column_List">
     id, order_code, machine_code, dealer_code, hardware_code, order_qty, last_version, download_link, create_date, 
     modify_date, deleted
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  <sql id="Blob_Column_List">
+    version_desc
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
     select 
     <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
     from jh_order
     where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </select>
@@ -43,12 +51,12 @@
   <insert id="insert" parameterType="com.joyhong.model.Order">
     insert into jh_order (id, order_code, machine_code, 
       dealer_code, hardware_code, order_qty, last_version, download_link, 
-      create_date, modify_date, deleted
+      create_date, modify_date, deleted, version_desc
       )
     values (#{id,jdbcType=INTEGER}, #{orderCode,jdbcType=CHAR}, #{machineCode,jdbcType=CHAR}, 
       #{dealerCode,jdbcType=CHAR}, #{hardwareCode,jdbcType=CHAR}, #{orderQty,jdbcType=INTEGER}, 
       #{lastVersion,jdbcType=VARCHAR}, #{downloadLink,jdbcType=VARCHAR},
-      #{createDate,jdbcType=TIMESTAMP}, #{modifyDate,jdbcType=TIMESTAMP}, #{deleted,jdbcType=INTEGER}
+      #{createDate,jdbcType=TIMESTAMP}, #{modifyDate,jdbcType=TIMESTAMP}, #{deleted,jdbcType=INTEGER}, #{versionDesc,jdbcType=LONGVARCHAR}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.joyhong.model.Order">
@@ -87,6 +95,9 @@
       <if test="deleted != null">
         deleted,
       </if>
+      <if test="versionDesc != null">		
+	    version_desc,		
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -122,6 +133,9 @@
       <if test="deleted != null">
         #{deleted,jdbcType=INTEGER},
       </if>
+      <if test="versionDesc != null">
+        #{versionDesc,jdbcType=LONGVARCHAR},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.joyhong.model.Order">
@@ -143,10 +157,10 @@
         order_qty = #{orderQty,jdbcType=INTEGER},
       </if>
       <if test="lastVersion != null">
-        order_qty = #{lastVersion,jdbcType=VARCHAR},
+        last_version = #{lastVersion,jdbcType=VARCHAR},
       </if>
       <if test="downloadLink != null">
-        order_qty = #{downloadLink,jdbcType=VARCHAR},
+        download_link = #{downloadLink,jdbcType=VARCHAR},
       </if>
       <if test="createDate != null">
         create_date = #{createDate,jdbcType=TIMESTAMP},
@@ -157,8 +171,26 @@
       <if test="deleted != null">
         deleted = #{deleted,jdbcType=INTEGER},
       </if>
+      <if test="versionDesc != null">
+        version_desc = #{versionDesc,jdbcType=LONGVARCHAR},
+      </if>
     </set>
     where deleted = 0 and id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.joyhong.model.Order">
+    update jh_order
+    set order_code = #{orderCode,jdbcType=CHAR},
+      machine_code = #{machineCode,jdbcType=CHAR},
+      dealer_code = #{dealerCode,jdbcType=CHAR},
+      hardware_code = #{hardwareCode,jdbcType=CHAR},
+      order_qty = #{orderQty,jdbcType=INTEGER},
+      last_version = #{lastVersion,jdbcType=VARCHAR},
+      download_link = #{downloadLink,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      modify_date = #{modifyDate,jdbcType=TIMESTAMP},
+      deleted = #{deleted,jdbcType=INTEGER},
+      version_desc = #{versionDesc,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.joyhong.model.Order">
     update jh_order

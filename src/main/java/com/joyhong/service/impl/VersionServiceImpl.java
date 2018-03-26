@@ -67,4 +67,9 @@ public class VersionServiceImpl implements VersionService {
 		return versionMapper.selectByName(name);
 	}
 
+	public int updateByPrimaryKeyWithBLOBs(Version record) {
+		// TODO Auto-generated method stub
+		return versionMapper.updateByPrimaryKeyWithBLOBs(record);
+	}
+
 }
