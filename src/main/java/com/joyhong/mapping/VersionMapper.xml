@@ -4,7 +4,7 @@
   <resultMap id="BaseResultMap" type="com.joyhong.model.Version">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
-    <result column="last_version" jdbcType="VARCHAR" property="lastVersion" />
+    <result column="last_version" jdbcType="INTEGER" property="lastVersion" />
     <result column="download_link" jdbcType="VARCHAR" property="downloadLink" />
     <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
     <result column="modify_date" jdbcType="TIMESTAMP" property="modifyDate" />
@@ -55,7 +55,7 @@
     insert into jh_version (id, name, last_version, 
       download_link, create_date, modify_date, 
       deleted, version_desc)
-    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{lastVersion,jdbcType=VARCHAR}, 
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{lastVersion,jdbcType=INTEGER}, 
       #{downloadLink,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{modifyDate,jdbcType=TIMESTAMP}, 
       #{deleted,jdbcType=INTEGER}, #{versionDesc,jdbcType=LONGVARCHAR})
   </insert>
@@ -95,7 +95,7 @@
         #{name,jdbcType=VARCHAR},
       </if>
       <if test="lastVersion != null">
-        #{lastVersion,jdbcType=VARCHAR},
+        #{lastVersion,jdbcType=INTEGER},
       </if>
       <if test="downloadLink != null">
         #{downloadLink,jdbcType=VARCHAR},
@@ -121,7 +121,7 @@
         name = #{name,jdbcType=VARCHAR},
       </if>
       <if test="lastVersion != null">
-        last_version = #{lastVersion,jdbcType=VARCHAR},
+        last_version = #{lastVersion,jdbcType=INTEGER},
       </if>
       <if test="downloadLink != null">
         download_link = #{downloadLink,jdbcType=VARCHAR},
@@ -144,7 +144,7 @@
   <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.joyhong.model.Version">
     update jh_version
     set name = #{name,jdbcType=VARCHAR},
-      last_version = #{lastVersion,jdbcType=VARCHAR},
+      last_version = #{lastVersion,jdbcType=INTEGER},
       download_link = #{downloadLink,jdbcType=VARCHAR},
       create_date = #{createDate,jdbcType=TIMESTAMP},
       modify_date = #{modifyDate,jdbcType=TIMESTAMP},
@@ -155,7 +155,7 @@
   <update id="updateByPrimaryKey" parameterType="com.joyhong.model.Version">
     update jh_version
     set name = #{name,jdbcType=VARCHAR},
-      last_version = #{lastVersion,jdbcType=VARCHAR},
+      last_version = #{lastVersion,jdbcType=INTEGER},
       download_link = #{downloadLink,jdbcType=VARCHAR},
       create_date = #{createDate,jdbcType=TIMESTAMP},
       modify_date = #{modifyDate,jdbcType=TIMESTAMP},

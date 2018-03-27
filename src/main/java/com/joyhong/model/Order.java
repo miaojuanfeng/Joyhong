@@ -15,7 +15,7 @@ public class Order {
 
     private Integer orderQty;
     
-    private String lastVersion;
+    private Integer lastVersion;
     
     private String downloadLink;
 
@@ -75,11 +75,11 @@ public class Order {
         this.orderQty = orderQty;
     }
     
-    public String getLastVersion() {
+    public Integer getLastVersion() {
 		return lastVersion;
 	}
 
-	public void setLastVersion(String lastVersion) {
+	public void setLastVersion(Integer lastVersion) {
 		this.lastVersion = lastVersion;
 	}
 

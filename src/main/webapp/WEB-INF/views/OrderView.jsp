@@ -114,7 +114,7 @@
 										</p>
 										<p class="form-group">
 											<label for="last_version">Last version <span class="highlight"></span></label>
-											<form:input id="last_version" path="lastVersion" type="text" class="form-control input-sm" placeholder="Last version" />
+											<form:input id="last_version" path="lastVersion" type="number" min="0" class="form-control input-sm" placeholder="Last version" />
 										</p>
 										<p class="form-group">
 											<label for="download_link">Download link <span class="highlight"></span></label>

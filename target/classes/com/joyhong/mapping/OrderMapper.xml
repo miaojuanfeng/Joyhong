@@ -8,7 +8,7 @@
     <result column="dealer_code" jdbcType="CHAR" property="dealerCode" />
     <result column="hardware_code" jdbcType="CHAR" property="hardwareCode" />
     <result column="order_qty" jdbcType="INTEGER" property="orderQty" />
-    <result column="last_version" jdbcType="VARCHAR" property="lastVersion" />
+    <result column="last_version" jdbcType="INTEGER" property="lastVersion" />
     <result column="download_link" jdbcType="VARCHAR" property="downloadLink" />
     <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
     <result column="modify_date" jdbcType="TIMESTAMP" property="modifyDate" />
@@ -55,7 +55,7 @@
       )
     values (#{id,jdbcType=INTEGER}, #{orderCode,jdbcType=CHAR}, #{machineCode,jdbcType=CHAR}, 
       #{dealerCode,jdbcType=CHAR}, #{hardwareCode,jdbcType=CHAR}, #{orderQty,jdbcType=INTEGER}, 
-      #{lastVersion,jdbcType=VARCHAR}, #{downloadLink,jdbcType=VARCHAR},
+      #{lastVersion,jdbcType=INTEGER}, #{downloadLink,jdbcType=VARCHAR},
       #{createDate,jdbcType=TIMESTAMP}, #{modifyDate,jdbcType=TIMESTAMP}, #{deleted,jdbcType=INTEGER}, #{versionDesc,jdbcType=LONGVARCHAR}
       )
   </insert>
@@ -119,7 +119,7 @@
         #{orderQty,jdbcType=INTEGER},
       </if>
       <if test="lastVersion != null">
-        #{lastVersion,jdbcType=VARCHAR},
+        #{lastVersion,jdbcType=INTEGER},
       </if>
       <if test="downloadLink != null">
         #{downloadLink,jdbcType=VARCHAR},
@@ -157,7 +157,7 @@
         order_qty = #{orderQty,jdbcType=INTEGER},
       </if>
       <if test="lastVersion != null">
-        last_version = #{lastVersion,jdbcType=VARCHAR},
+        last_version = #{lastVersion,jdbcType=INTEGER},
       </if>
       <if test="downloadLink != null">
         download_link = #{downloadLink,jdbcType=VARCHAR},
@@ -184,7 +184,7 @@
       dealer_code = #{dealerCode,jdbcType=CHAR},
       hardware_code = #{hardwareCode,jdbcType=CHAR},
       order_qty = #{orderQty,jdbcType=INTEGER},
-      last_version = #{lastVersion,jdbcType=VARCHAR},
+      last_version = #{lastVersion,jdbcType=INTEGER},
       download_link = #{downloadLink,jdbcType=VARCHAR},
       create_date = #{createDate,jdbcType=TIMESTAMP},
       modify_date = #{modifyDate,jdbcType=TIMESTAMP},
@@ -199,7 +199,7 @@
       dealer_code = #{dealerCode,jdbcType=CHAR},
       hardware_code = #{hardwareCode,jdbcType=CHAR},
       order_qty = #{orderQty,jdbcType=INTEGER},
-      last_version = #{lastVersion,jdbcType=VARCHAR},
+      last_version = #{lastVersion,jdbcType=INTEGER},
       download_link = #{downloadLink,jdbcType=VARCHAR},
       create_date = #{createDate,jdbcType=TIMESTAMP},
       modify_date = #{modifyDate,jdbcType=TIMESTAMP},

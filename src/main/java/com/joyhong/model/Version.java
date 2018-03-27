@@ -7,7 +7,7 @@ public class Version {
 
     private String name;
 
-    private String lastVersion;
+    private Integer lastVersion;
 
     private String downloadLink;
 
@@ -35,12 +35,12 @@ public class Version {
         this.name = name == null ? null : name.trim();
     }
 
-    public String getLastVersion() {
+    public Integer getLastVersion() {
         return lastVersion;
     }
 
-    public void setLastVersion(String lastVersion) {
-        this.lastVersion = lastVersion == null ? null : lastVersion.trim();
+    public void setLastVersion(Integer lastVersion) {
+        this.lastVersion = lastVersion;
     }
 
     public String getDownloadLink() {
