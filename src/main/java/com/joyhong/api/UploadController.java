@@ -612,6 +612,7 @@ public class UploadController {
 	        	Upload existsFile = uploadService.selectByNameAndMD5(user_id, file_MD5);
 		        if( existsFile != null ){
 		        	existsFile.setDescription(file_desc);
+		        	fileName = existsFile.getName();
 		        	if( uploadService.updateByPrimaryKey(existsFile) == 1 ){
 		        		/*
 		        		 * 推送在下
