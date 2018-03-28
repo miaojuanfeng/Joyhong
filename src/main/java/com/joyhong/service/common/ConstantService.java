@@ -2,7 +2,7 @@ package com.joyhong.service.common;
 
 public class ConstantService {
 	
-	public static final String baseUrl = "http://47.75.40.129";
+	public static final String baseUrl = "http://47.75.164.38:8080";
 	
 	/*
 	 *  Device controller error
