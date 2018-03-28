@@ -66,9 +66,9 @@ public class TwitterController {
 	private static String accessTokenSecret = "KYRHnzRutnJ25MobjBxsCgTPVq6GUjzk0IDf1Cro1S1C4";
 	
 	private static String twitterImagePath = "/home/wwwroot/default/twitter/attachments/image/";
-	private static String twitterImageUrl = "http://47.75.40.129/twitter/attachments/image/";
+	private static String twitterImageUrl = ConstantService.baseUrl + "/twitter/attachments/image/";
 	private static String twitterVideoPath = "/home/wwwroot/default/twitter/attachments/video/";
-	private static String twitterVideoUrl = "http://47.75.40.129/twitter/attachments/video/";
+	private static String twitterVideoUrl = ConstantService.baseUrl + "/twitter/attachments/video/";
 	
 	private TwitterStream twitterStream = null;
 	
@@ -299,7 +299,7 @@ public class TwitterController {
 			String filePath = "/home/wwwroot/default/twitter/attachments/users/" + String.valueOf(userId) + "/";
 			String fileName = "";
 			// 用户头像url
-			String fileUrl = "http://47.75.40.129/twitter/attachments/users/" + String.valueOf(userId) + "/";
+			String fileUrl = ConstantService.baseUrl + "/twitter/attachments/users/" + String.valueOf(userId) + "/";
 			
 			try{
 		        User user = this.twitter.showUser(userId);

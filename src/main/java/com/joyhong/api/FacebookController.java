@@ -28,6 +28,7 @@ import com.joyhong.model.UserDevice;
 import com.joyhong.service.DeviceService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
+import com.joyhong.service.common.ConstantService;
 import com.joyhong.service.common.FileService;
 import com.joyhong.service.common.PushService;
 
@@ -140,11 +141,11 @@ public class FacebookController {
 				        String filePath = "/home/wwwroot/default/facebook/attachments/" + type + "/";   
 				        fileService.saveUrlAs(fileUrl, filePath, fileName);
 				        
-				        postdata = postdata.replace(oldUrl, "http://47.75.40.129/facebook/attachments/" + type + fileName);
+				        postdata = postdata.replace(oldUrl, ConstantService.baseUrl + "/facebook/attachments/" + type + fileName);
 				        if( type.equals("image") ){
-				        	image_url = "http://47.75.40.129/facebook/attachments/" + type + "/" + fileName;
+				        	image_url = ConstantService.baseUrl + "/facebook/attachments/" + type + "/" + fileName;
 				        }else if( type.equals("video") ){
-				        	video_url = "http://47.75.40.129/facebook/attachments/" + type + "/" + fileName;
+				        	video_url = ConstantService.baseUrl + "/facebook/attachments/" + type + "/" + fileName;
 				        }
 					}
 					
@@ -281,7 +282,7 @@ public class FacebookController {
 		
 		String filePath = "/home/wwwroot/default/facebook/attachments/users/" + userId + "/";
 		String fileName = "";
-		String fileUrl = "http://47.75.40.129/facebook/attachments/users/" + userId + "/";
+		String fileUrl = ConstantService.baseUrl + "/facebook/attachments/users/" + userId + "/";
 		
 		try{
 			CloseableHttpClient httpclient = HttpClients.createDefault();
