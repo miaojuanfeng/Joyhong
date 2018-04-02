@@ -10,7 +10,7 @@
         http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">  
   
   	<!-- 开启自动扫包 -->
-    <context:component-scan base-package="com.joyhong.api,com.joyhong.cms,com.joyhong.service" />
+    <context:component-scan base-package="com.joyhong.api,com.joyhong.cms,com.joyhong.service,com.joyhong.filter" />
     
     <!-- 文件上传 -->
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
