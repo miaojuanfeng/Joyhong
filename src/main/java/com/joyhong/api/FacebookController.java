@@ -40,7 +40,7 @@ import net.sf.json.JSONObject;
  * @author Michael.Miao
  */
 @Controller
-@RequestMapping("/facebook")
+@RequestMapping(value="/facebook", produces="text/html;charset=UTF-8")
 public class FacebookController {
 	
 	private Logger logger = Logger.getLogger(this.getClass());

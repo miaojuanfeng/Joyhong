@@ -1,9 +1,20 @@
 package com.joyhong.api;
 
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.Date;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,6 +35,7 @@ import com.joyhong.service.UploadService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
 import com.joyhong.service.common.FileService;
+import com.joyhong.service.common.MD5Service;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -33,7 +45,7 @@ import net.sf.json.JSONObject;
  * @author user
  */
 @Controller
-@RequestMapping(value="/upload")
+@RequestMapping(value="/upload", produces="text/html;charset=UTF-8")
 public class UploadController {
 	
 	private Logger logger = Logger.getLogger(this.getClass());
@@ -55,6 +67,9 @@ public class UploadController {
 	
 	@Autowired
 	private PushService pushService;
+	
+	@Autowired
+	private MD5Service md5Service;
 	
 	private String tempPath = "/home/wwwroot/default/upload/temp/";
 	private String filePath = "/home/wwwroot/default/upload/";
@@ -373,6 +388,70 @@ public class UploadController {
 				retval.put("data", temp);
 			}	
         }
+		
+		return retval.toString();
+	}
+	
+	
+	@RequestMapping(value="/tencent", method = RequestMethod.POST)
+	@ResponseBody
+	public String tencent(){
+		JSONObject retval = new JSONObject();
+		
+//		String protocol = "http://";
+//		String host = "openapi.xg.qq.com/v2/push/single_device";
+//		String url = protocol + host;
+//		String access_id = "2100281324";
+//		String device_token = "661883cd4b39e66a7a76ac71eff360a45bd43332";
+//		String message_type = "1";
+//		JSONObject messageObj = new JSONObject();
+//		messageObj.put("content", "来自Dreamover测试推送消息");
+//		messageObj.put("title", "测试推送消息");
+//		messageObj.put("vibrate", 1);
+////		String message = "{\"title\":\"测试消息\",\"content\":\"来自restapi的单推接口测试消息\"}";
+//		String message = messageObj.toString();
+//		Long timestamp = new Date().getTime()/1000;
+//		String secret_key = "4a7df2bc9e53627c764eec7ae9b46716";
+//		String sign = md5Service.encryptMD5("GET"+host+"access_id="+access_id+"device_token="+device_token+"message="+message+"message_type="+message_type+"timestamp="+timestamp+secret_key);
+//		
+//		System.out.println("GET"+host+"access_id="+access_id+"device_token="+device_token+"message="+message+"message_type="+message_type+"timestamp="+timestamp+secret_key);
+//		System.out.println(sign);
+//		
+//		try{
+//			String postJsonData = "access_id="+access_id+"&device_token="+device_token+"&message="+URLEncoder.encode(message, "utf-8")+"&message_type="+message_type+"&timestamp="+timestamp+"&sign="+sign;
+//			
+//			CloseableHttpClient httpclient = HttpClients.createDefault();
+//			HttpGet httpget = new HttpGet(url+"?"+postJsonData);
+//			
+//			System.out.println(url+"?"+postJsonData);
+//
+//			CloseableHttpResponse response = httpclient.execute(httpget);
+//			if (response.getStatusLine().getStatusCode() == 200) {
+//                String str = EntityUtils.toString(response.getEntity());
+//                
+////                JSONObject json_obj = JSONObject.fromObject(str);
+//                
+//                retval.put("status", true);
+//                retval.put("data", str);
+//			}
+//		} catch (Exception e) {
+//			System.out.println(e.getMessage());
+//	        logger.info(e.getMessage());
+//	    }
+		
+		pushService.push(
+				2,
+				"中文名称", 
+				3, 
+				"英文名称", 
+				"661883cd4b39e66a7a76ac71eff360a45bd43332", 
+				"文件描述", 
+				"", 
+				"webUrl + fileName", 
+				"video", 
+				"app", 
+				"Receive a message from App", 
+				"测试车事故");
 		
 		return retval.toString();
 	}
