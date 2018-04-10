@@ -30,7 +30,7 @@ import net.sf.json.JSONObject;
  * @author Michael.Miao
  */
 @Controller
-@RequestMapping(value="/weather", produces="text/html;charset=UTF-8")
+@RequestMapping(value="/weather", produces="application/json;charset=UTF-8")
 public class WeatherController {
 	
 	private Logger logger = Logger.getLogger(this.getClass());

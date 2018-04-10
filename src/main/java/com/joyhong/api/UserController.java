@@ -18,7 +18,6 @@ import com.joyhong.service.DeviceService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
 import com.joyhong.service.VersionService;
-import com.joyhong.service.common.FuncService;
 import com.joyhong.service.common.ConstantService;
 
 import net.sf.json.JSONArray;
@@ -30,7 +29,7 @@ import net.sf.json.JSONObject;
  * @author Michael.Miao
  */
 @Controller
-@RequestMapping(value="/user", produces="text/html;charset=UTF-8")
+@RequestMapping(value="/user", produces="application/json;charset=UTF-8")
 public class UserController {
 	
 //	private Logger logger = Logger.getLogger(this.getClass());

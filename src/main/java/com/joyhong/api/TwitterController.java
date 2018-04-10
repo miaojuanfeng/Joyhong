@@ -56,7 +56,7 @@ import twitter4j.StallWarning;
  * @author Michael.Miao
  */
 @Controller
-@RequestMapping(value="/twitter", produces="text/html;charset=UTF-8")
+@RequestMapping(value="/twitter", produces="application/json;charset=UTF-8")
 public class TwitterController {
 	
 	private Logger logger = Logger.getLogger(this.getClass());

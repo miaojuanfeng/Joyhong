@@ -29,7 +29,7 @@ import net.sf.json.JSONObject;
  * @author Michael.Miao
  */
 @Controller
-@RequestMapping(value="/device", produces="text/html;charset=UTF-8")
+@RequestMapping(value="/device", produces="application/json;charset=UTF-8")
 public class DeviceController {
 	
 //	private Logger logger = Logger.getLogger(this.getClass());

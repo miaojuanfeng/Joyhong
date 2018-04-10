@@ -1,20 +1,9 @@
 package com.joyhong.api;
 
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.RandomAccessFile;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.Date;
 
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -35,7 +24,6 @@ import com.joyhong.service.UploadService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
 import com.joyhong.service.common.FileService;
-import com.joyhong.service.common.MD5Service;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -45,7 +33,7 @@ import net.sf.json.JSONObject;
  * @author user
  */
 @Controller
-@RequestMapping(value="/upload", produces="text/html;charset=UTF-8")
+@RequestMapping(value="/upload", produces="application/json;charset=UTF-8")
 public class UploadController {
 	
 	private Logger logger = Logger.getLogger(this.getClass());
@@ -67,9 +55,6 @@ public class UploadController {
 	
 	@Autowired
 	private PushService pushService;
-	
-	@Autowired
-	private MD5Service md5Service;
 	
 	private String tempPath = "/home/wwwroot/default/upload/temp/";
 	private String filePath = "/home/wwwroot/default/upload/";
