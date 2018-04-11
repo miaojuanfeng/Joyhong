@@ -36,7 +36,7 @@
     </filter>
     <filter-mapping>
 	    <filter-name>LoginFilter</filter-name>
-	    <url-pattern>/*</url-pattern>
+	    <url-pattern>/cms/*</url-pattern>
 	</filter-mapping>
     
     <context-param>

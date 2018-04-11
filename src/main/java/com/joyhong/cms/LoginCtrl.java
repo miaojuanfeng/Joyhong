@@ -6,7 +6,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,11 +32,9 @@ public class LoginCtrl {
 	 */
 	@RequestMapping(value="/login", method=RequestMethod.GET)
 	public String login(
-			HttpSession httpSession,
-			@ModelAttribute("redirect") String redirect
+			HttpSession httpSession
 	){
-		
-		if( redirect == null ){
+		if( httpSession.getAttribute("user") != null ){
 			return "redirect:/cms/dashboard/select";
 		}
 		
@@ -58,11 +55,9 @@ public class LoginCtrl {
 			@RequestParam(value="user_username") String user_username, 
 			@RequestParam(value="user_password") String user_password, 
 			Model model, 
-			HttpSession httpSession,
-			@ModelAttribute("redirect") String redirect
+			HttpSession httpSession
 	){
-		
-		if( redirect == null ){
+		if( httpSession.getAttribute("user") != null ){
 			return "redirect:/cms/dashboard/select";
 		}
 		

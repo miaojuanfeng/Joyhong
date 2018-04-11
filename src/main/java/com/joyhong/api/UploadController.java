@@ -429,7 +429,7 @@ public class UploadController {
 				"中文名称", 
 				3, 
 				"英文名称", 
-				"661883cd4b39e66a7a76ac71eff360a45bd43332", 
+				"ff4928702ee545430bd87ff7e09671d51c2fe85a", 
 				"文件描述", 
 				"", 
 				"webUrl + fileName", 
