@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.joyhong.model.Device;
 import com.joyhong.model.Order;
-import com.joyhong.model.User;
 import com.joyhong.service.DeviceService;
 import com.joyhong.service.OrderService;
 import com.joyhong.service.common.FuncService;
@@ -43,13 +42,8 @@ public class OrderCtrl {
 	@RequestMapping(value="/select/{page}", method=RequestMethod.GET)
 	public String select(
 			Model model,  
-			@PathVariable(value="page") Integer page,
-			@ModelAttribute("redirect") String redirect
+			@PathVariable(value="page") Integer page
 	){
-		if( redirect != null ){
-			return redirect;
-		}
-		
 		int pageSize = 20;
 		int totalRecord = orderService.selectCount();
 		int totalPage = (int)Math.ceil((double)totalRecord/pageSize);
@@ -71,13 +65,8 @@ public class OrderCtrl {
 	
 	@RequestMapping(value="/insert", method=RequestMethod.GET)
 	public String insert(
-			Model model,
-			@ModelAttribute("redirect") String redirect
+			Model model
 	){
-		if( redirect != null ){
-			return redirect;
-		}
-		
 		model.addAttribute("order", new Order());
 
 		return "OrderView";
@@ -87,13 +76,8 @@ public class OrderCtrl {
 	public String insert(
 			Model model, 
 			@ModelAttribute("order") Order order, 
-			@RequestParam("referer") String referer,
-			@ModelAttribute("redirect") String redirect
+			@RequestParam("referer") String referer
 	){
-		if( redirect != null ){
-			return redirect;
-		}
-		
 		if( orderService.insert(order) == 1 ){
 			if( referer != "" ){
 				return "redirect:"+referer.substring(referer.lastIndexOf("/cms/"));
@@ -107,13 +91,8 @@ public class OrderCtrl {
 	@RequestMapping(value="/update/{order_id}", method=RequestMethod.GET)
 	public String update(
 			Model model, 
-			@PathVariable("order_id") Integer order_id,
-			@ModelAttribute("redirect") String redirect
+			@PathVariable("order_id") Integer order_id
 	){
-		if( redirect != null ){
-			return redirect;
-		}
-		
 		Order order = orderService.selectByPrimaryKey(order_id);
 		if( order != null ){
 			model.addAttribute("order", order);
@@ -134,13 +113,8 @@ public class OrderCtrl {
 			HttpServletRequest request, 
 			@PathVariable("order_id") Integer order_id, 
 			@ModelAttribute("order") Order order, 
-			@RequestParam("referer") String referer,
-			@ModelAttribute("redirect") String redirect
+			@RequestParam("referer") String referer
 	){
-		if( redirect != null ){
-			return redirect;
-		}
-		
 		order.setId(order_id);
 		order.setModifyDate(new Date());
 		if( orderService.updateByPrimaryKeyWithBLOBs(order) == 1 ){
@@ -156,13 +130,8 @@ public class OrderCtrl {
 	@RequestMapping(value="/delete", method=RequestMethod.POST)
 	public String delete(
 			Model model, 
-			@RequestParam("order_id") Integer order_id,
-			@ModelAttribute("redirect") String redirect
+			@RequestParam("order_id") Integer order_id
 	){
-		if( redirect != null ){
-			return redirect;
-		}
-		
 		Order order = orderService.selectByPrimaryKey(order_id);
 		if( order != null ){
 			order.setModifyDate(new Date());
@@ -176,13 +145,8 @@ public class OrderCtrl {
 	@RequestMapping(value="/generate", method=RequestMethod.POST)
 	public String generate(
 			Model model, 
-			@RequestParam("order_id") Integer order_id,
-			@ModelAttribute("redirect") String redirect
+			@RequestParam("order_id") Integer order_id
 	){
-		if( redirect != null ){
-			return redirect;
-		}
-		
 		Order order = orderService.selectByPrimaryKey(order_id);
 		if( order != null ){
 			String order_code = order.getOrderCode();
@@ -214,32 +178,6 @@ public class OrderCtrl {
 	
 	@ModelAttribute
 	public void startup(Model model, HttpSession httpSession, HttpServletRequest request){
-		//判断是否登录
-		User user = (User)httpSession.getAttribute("user");
-		if( user == null ){
-			model.addAttribute("redirect", "redirect:/cms/user/login");
-			return;
-		}else{
-			model.addAttribute("redirect", null);
-		}
-		
-		//解析出方法名称
-		String urlStr = request.getRequestURL().toString();
-		String method = urlStr.substring(urlStr.lastIndexOf("/")+1);
-		if( funcService.isNumeric(method) ){
-			Integer number = Integer.valueOf(method);
-			urlStr = urlStr.substring(0, urlStr.lastIndexOf("/"));
-			method = urlStr.substring(urlStr.lastIndexOf("/")+1);
-			if( method.equals("update") ){
-				model.addAttribute("order", orderService.selectByPrimaryKey(number));
-			}
-		}
-		model.addAttribute("method", method);
-		
-		//当前登录用户名
-		model.addAttribute("user_nickname", user.getNickname());
-		
-		//返回的url地址
-		model.addAttribute("referer", request.getHeader("referer"));
+		funcService.modelAttribute(model, httpSession, request);
 	}
 }

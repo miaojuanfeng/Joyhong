@@ -47,13 +47,8 @@ public class DeviceCtrl {
 	public String select(
 			Model model,  
 			@PathVariable(value="page") Integer page,
-			@ModelAttribute("redirect") String redirect,
 			@ModelAttribute("platform") String platform
 	){
-		if( redirect != null ){
-			return redirect;
-		}
-		
 		int pageSize = 20;
 		int totalRecord = deviceService.selectCount();
 		int totalPage = (int)Math.ceil((double)totalRecord/pageSize);
@@ -76,13 +71,8 @@ public class DeviceCtrl {
 	@RequestMapping(value="/update/{device_id}", method=RequestMethod.GET)
 	public String update(
 			Model model, 
-			@PathVariable("device_id") Integer device_id,
-			@ModelAttribute("redirect") String redirect
+			@PathVariable("device_id") Integer device_id
 	){
-		if( redirect != null ){
-			return redirect;
-		}
-		
 		Device device = deviceService.selectByPrimaryKey(device_id);
 		if( device != null ){
 			model.addAttribute("device", device);
@@ -105,32 +95,6 @@ public class DeviceCtrl {
 	
 	@ModelAttribute
 	public void startup(Model model, HttpSession httpSession, HttpServletRequest request){
-		//判断是否登录
-		User user = (User)httpSession.getAttribute("user");
-		if( user == null ){
-			model.addAttribute("redirect", "redirect:/cms/user/login");
-			return;
-		}else{
-			model.addAttribute("redirect", null);
-		}
-		
-		//解析出方法名称
-		String urlStr = request.getRequestURL().toString();
-		String method = urlStr.substring(urlStr.lastIndexOf("/")+1);
-		if( funcService.isNumeric(method) ){
-			Integer number = Integer.valueOf(method);
-			urlStr = urlStr.substring(0, urlStr.lastIndexOf("/"));
-			method = urlStr.substring(urlStr.lastIndexOf("/")+1);
-			if( method.equals("update") ){
-				model.addAttribute("device", deviceService.selectByPrimaryKey(number));
-			}
-		}
-		model.addAttribute("method", method);
-		
-		//当前登录用户名
-		model.addAttribute("user_nickname", user.getNickname());
-		
-		//返回的url地址
-		model.addAttribute("referer", request.getHeader("referer"));
+		funcService.modelAttribute(model, httpSession, request);
 	}
 }

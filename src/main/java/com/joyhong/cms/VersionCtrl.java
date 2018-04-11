@@ -15,10 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.joyhong.model.Device;
 import com.joyhong.model.Version;
-import com.joyhong.model.User;
-import com.joyhong.service.DeviceService;
 import com.joyhong.service.VersionService;
 import com.joyhong.service.common.FuncService;
 
@@ -40,13 +37,8 @@ public class VersionCtrl {
 	@RequestMapping(value="/select/{page}", method=RequestMethod.GET)
 	public String select(
 			Model model,  
-			@PathVariable(value="page") Integer page,
-			@ModelAttribute("redirect") String redirect
+			@PathVariable(value="page") Integer page
 	){
-		if( redirect != null ){
-			return redirect;
-		}
-		
 		int pageSize = 20;
 		int totalRecord = versionService.selectCount();
 		int totalPage = (int)Math.ceil((double)totalRecord/pageSize);
@@ -68,13 +60,8 @@ public class VersionCtrl {
 	
 	@RequestMapping(value="/insert", method=RequestMethod.GET)
 	public String insert(
-			Model model,
-			@ModelAttribute("redirect") String redirect
+			Model model
 	){
-		if( redirect != null ){
-			return redirect;
-		}
-		
 		model.addAttribute("version", new Version());
 
 		return "VersionView";
@@ -84,13 +71,8 @@ public class VersionCtrl {
 	public String insert(
 			Model model, 
 			@ModelAttribute("version") Version version, 
-			@RequestParam("referer") String referer,
-			@ModelAttribute("redirect") String redirect
+			@RequestParam("referer") String referer
 	){
-		if( redirect != null ){
-			return redirect;
-		}
-		
 		if( versionService.insert(version) == 1 ){
 			if( referer != "" ){
 				return "redirect:"+referer.substring(referer.lastIndexOf("/cms/"));
@@ -104,13 +86,8 @@ public class VersionCtrl {
 	@RequestMapping(value="/update/{version_id}", method=RequestMethod.GET)
 	public String update(
 			Model model, 
-			@PathVariable("version_id") Integer version_id,
-			@ModelAttribute("redirect") String redirect
+			@PathVariable("version_id") Integer version_id
 	){
-		if( redirect != null ){
-			return redirect;
-		}
-		
 		Version version = versionService.selectByPrimaryKey(version_id);
 		if( version != null ){
 			model.addAttribute("version", version);
@@ -131,13 +108,8 @@ public class VersionCtrl {
 			HttpServletRequest request, 
 			@PathVariable("version_id") Integer version_id, 
 			@ModelAttribute("version") Version version, 
-			@RequestParam("referer") String referer,
-			@ModelAttribute("redirect") String redirect
+			@RequestParam("referer") String referer
 	){
-		if( redirect != null ){
-			return redirect;
-		}
-		
 		version.setId(version_id);
 		version.setModifyDate(new Date());
 		if( versionService.updateByPrimaryKeyWithBLOBs(version) == 1 ){
@@ -153,13 +125,8 @@ public class VersionCtrl {
 	@RequestMapping(value="/delete", method=RequestMethod.POST)
 	public String delete(
 			Model model, 
-			@RequestParam("version_id") Integer version_id,
-			@ModelAttribute("redirect") String redirect
-	){
-		if( redirect != null ){
-			return redirect;
-		}
-		
+			@RequestParam("version_id") Integer version_id
+	){	
 		Version version = versionService.selectByPrimaryKey(version_id);
 		if( version != null ){
 			version.setModifyDate(new Date());
@@ -172,32 +139,6 @@ public class VersionCtrl {
 	
 	@ModelAttribute
 	public void startup(Model model, HttpSession httpSession, HttpServletRequest request){
-		//判断是否登录
-		User user = (User)httpSession.getAttribute("user");
-		if( user == null ){
-			model.addAttribute("redirect", "redirect:/cms/user/login");
-			return;
-		}else{
-			model.addAttribute("redirect", null);
-		}
-		
-		//解析出方法名称
-		String urlStr = request.getRequestURL().toString();
-		String method = urlStr.substring(urlStr.lastIndexOf("/")+1);
-		if( funcService.isNumeric(method) ){
-			Integer number = Integer.valueOf(method);
-			urlStr = urlStr.substring(0, urlStr.lastIndexOf("/"));
-			method = urlStr.substring(urlStr.lastIndexOf("/")+1);
-			if( method.equals("update") ){
-				model.addAttribute("version", versionService.selectByPrimaryKey(number));
-			}
-		}
-		model.addAttribute("method", method);
-		
-		//当前登录用户名
-		model.addAttribute("user_nickname", user.getNickname());
-		
-		//返回的url地址
-		model.addAttribute("referer", request.getHeader("referer"));
+		funcService.modelAttribute(model, httpSession, request);
 	}
 }

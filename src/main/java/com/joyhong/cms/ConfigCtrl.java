@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.joyhong.model.Config;
-import com.joyhong.model.User;
 import com.joyhong.service.ConfigService;
 import com.joyhong.service.common.FuncService;
 
@@ -31,13 +30,8 @@ public class ConfigCtrl {
 	
 	@RequestMapping(value="/update", method=RequestMethod.GET)
 	public String update(
-			Model model, 
-			@ModelAttribute("redirect") String redirect
-	){
-		if( redirect != null ){
-			return redirect;
-		}
-		
+			Model model
+	){	
 		Config administrator = configService.selectByTitle("Administrator");
 		JSONObject administratorObj = JSONObject.fromObject(administrator.getValue());
 		model.addAttribute("username", administratorObj.getString("username"));
@@ -47,14 +41,9 @@ public class ConfigCtrl {
 	
 	@RequestMapping(value="/update", method=RequestMethod.POST)
 	public String update(
-			@ModelAttribute("redirect") String redirect,
 			@RequestParam("username") String username,
 			@RequestParam("password") String password
 	){
-		if( redirect != null ){
-			return redirect;
-		}
-		
 		Config config = new Config();
 		/*
 		 * update administrator
@@ -77,29 +66,7 @@ public class ConfigCtrl {
 	
 	@ModelAttribute
 	public void startup(Model model, HttpSession httpSession, HttpServletRequest request){
-		//判断是否登录
-		User user = (User)httpSession.getAttribute("user");
-		if( user == null ){
-			model.addAttribute("redirect", "redirect:/cms/user/login");
-			return;
-		}else{
-			model.addAttribute("redirect", null);
-		}
-		
-		//解析出方法名称
-		String urlStr = request.getRequestURL().toString();
-		String method = urlStr.substring(urlStr.lastIndexOf("/")+1);
-		if( funcService.isNumeric(method) ){
-			urlStr = urlStr.substring(0, urlStr.lastIndexOf("/"));
-			method = urlStr.substring(urlStr.lastIndexOf("/")+1);
-		}
-		model.addAttribute("method", method);
-		
-		//当前登录用户名
-		model.addAttribute("user_nickname", user.getNickname());
-		
-		//返回的url地址
-		model.addAttribute("referer", request.getHeader("referer"));
+		funcService.modelAttribute(model, httpSession, request);
 	}
 	
 }

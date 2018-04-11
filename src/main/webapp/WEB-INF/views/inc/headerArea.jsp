@@ -51,6 +51,6 @@
 				<i class="glyphicon glyphicon-user"> ${user_nickname}</i>
 			</a>
 			<ul class="dropdown-menu dropdown-menu-right" role="menu">
-				<li><a href="<c:url value="/cms/user/logout"></c:url>">Logout: ${user_nickname}</a></li>
+				<li><a href="<c:url value="/cms/logout"></c:url>">Logout: ${user_nickname}</a></li>
 			</ul>
 		</div>
