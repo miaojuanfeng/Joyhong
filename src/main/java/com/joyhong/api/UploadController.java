@@ -377,67 +377,25 @@ public class UploadController {
 		return retval.toString();
 	}
 	
-	
-	@RequestMapping(value="/tencent", method = RequestMethod.POST)
-	@ResponseBody
-	public String tencent(){
-		JSONObject retval = new JSONObject();
-		
-//		String protocol = "http://";
-//		String host = "openapi.xg.qq.com/v2/push/single_device";
-//		String url = protocol + host;
-//		String access_id = "2100281324";
-//		String device_token = "661883cd4b39e66a7a76ac71eff360a45bd43332";
-//		String message_type = "1";
-//		JSONObject messageObj = new JSONObject();
-//		messageObj.put("content", "来自Dreamover测试推送消息");
-//		messageObj.put("title", "测试推送消息");
-//		messageObj.put("vibrate", 1);
-////		String message = "{\"title\":\"测试消息\",\"content\":\"来自restapi的单推接口测试消息\"}";
-//		String message = messageObj.toString();
-//		Long timestamp = new Date().getTime()/1000;
-//		String secret_key = "4a7df2bc9e53627c764eec7ae9b46716";
-//		String sign = md5Service.encryptMD5("GET"+host+"access_id="+access_id+"device_token="+device_token+"message="+message+"message_type="+message_type+"timestamp="+timestamp+secret_key);
+//	@RequestMapping(value="/tencent", method = RequestMethod.POST)
+//	@ResponseBody
+//	public String tencent(){
+//		JSONObject retval = new JSONObject();
 //		
-//		System.out.println("GET"+host+"access_id="+access_id+"device_token="+device_token+"message="+message+"message_type="+message_type+"timestamp="+timestamp+secret_key);
-//		System.out.println(sign);
+//		pushService.push(
+//				2,
+//				"中文名称", 
+//				3, 
+//				"英文名称", 
+//				"ff4928702ee545430bd87ff7e09671d51c2fe85a", 
+//				"文件描述", 
+//				"", 
+//				"webUrl + fileName", 
+//				"video", 
+//				"app", 
+//				"测试推送消息", 
+//				"来自信鸽的测试推送消息");
 //		
-//		try{
-//			String postJsonData = "access_id="+access_id+"&device_token="+device_token+"&message="+URLEncoder.encode(message, "utf-8")+"&message_type="+message_type+"&timestamp="+timestamp+"&sign="+sign;
-//			
-//			CloseableHttpClient httpclient = HttpClients.createDefault();
-//			HttpGet httpget = new HttpGet(url+"?"+postJsonData);
-//			
-//			System.out.println(url+"?"+postJsonData);
-//
-//			CloseableHttpResponse response = httpclient.execute(httpget);
-//			if (response.getStatusLine().getStatusCode() == 200) {
-//                String str = EntityUtils.toString(response.getEntity());
-//                
-////                JSONObject json_obj = JSONObject.fromObject(str);
-//                
-//                retval.put("status", true);
-//                retval.put("data", str);
-//			}
-//		} catch (Exception e) {
-//			System.out.println(e.getMessage());
-//	        logger.info(e.getMessage());
-//	    }
-		
-		pushService.push(
-				2,
-				"中文名称", 
-				3, 
-				"英文名称", 
-				"ff4928702ee545430bd87ff7e09671d51c2fe85a", 
-				"文件描述", 
-				"", 
-				"webUrl + fileName", 
-				"video", 
-				"app", 
-				"Receive a message from App", 
-				"测试车事故");
-		
-		return retval.toString();
-	}
+//		return retval.toString();
+//	}
 }

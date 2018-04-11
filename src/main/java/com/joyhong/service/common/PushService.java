@@ -1,9 +1,5 @@
 package com.joyhong.service.common;
 
-import java.io.DataOutputStream;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Date;
 
@@ -169,7 +165,7 @@ public class PushService {
 		String sign = null;
 		String postJsonData = null;
 		
-		String message_type = "1";
+		String message_type = "2";
 		
 		JSONObject messageObj = new JSONObject();
 		messageObj.put("content", body);
@@ -204,31 +200,32 @@ public class PushService {
 			notification.setPlatform(platform);
 			/*
 			 * 查询该Token是否已注册
+			 * 经过测试发现这个方法是无效的，腾讯垃圾
 			 */
-			host = "openapi.xg.qq.com/v2/application/get_app_token_info";
-			url = protocol + host;
-			String signCode = md5Service.encryptMD5("GET"+host+"access_id="+access_id+"device_token="+device_token+"timestamp="+timestamp+secret_key);
-			postJsonData = "access_id="+access_id+"&device_token="+device_token+"&timestamp="+timestamp+"&sign="+signCode;
-			
-			httpclient = HttpClients.createDefault();
-			httpget = new HttpGet(url+"?"+postJsonData);
-			
-			System.out.println(url+"?"+postJsonData);
-
-			response = httpclient.execute(httpget);
-			if (response.getStatusLine().getStatusCode() == 200) {
-				String result = EntityUtils.toString(response.getEntity());
-                JSONObject resultJson = JSONObject.fromObject(result).getJSONObject("result");
-                /*
-                 * 如果未注册，写入数据库后返回
-                 */
-                if( resultJson.getString("isReg").equals("0") ){
-					notification.setReceived("0");
-					notification.setFailedReason("MissingRegistration");
-					notificationService.insert(notification);
-					return 0;
-				}
-			}
+//			host = "openapi.xg.qq.com/v2/application/get_app_token_info";
+//			url = protocol + host;
+//			String signCode = md5Service.encryptMD5("GET"+host+"access_id="+access_id+"device_token="+device_token+"timestamp="+timestamp+secret_key);
+//			postJsonData = "access_id="+access_id+"&device_token="+device_token+"&timestamp="+timestamp+"&sign="+signCode;
+//			
+//			httpclient = HttpClients.createDefault();
+//			httpget = new HttpGet(url+"?"+postJsonData);
+//			
+//			System.out.println(url+"?"+postJsonData);
+//
+//			response = httpclient.execute(httpget);
+//			if (response.getStatusLine().getStatusCode() == 200) {
+//				String result = EntityUtils.toString(response.getEntity());
+//                JSONObject resultJson = JSONObject.fromObject(result).getJSONObject("result");
+//                /*
+//                 * 如果未注册，写入数据库后返回
+//                 */
+//                if( resultJson.getString("isReg").equals("0") ){
+//					notification.setReceived("0");
+//					notification.setFailedReason("MissingRegistration");
+//					notificationService.insert(notification);
+//					return 0;
+//				}
+//			}
 			/*
 			 * 推送消息
 			 */
@@ -240,7 +237,7 @@ public class PushService {
 			httpclient = HttpClients.createDefault();
 			httpget = new HttpGet(url+"?"+postJsonData);
 			
-//			System.out.println(url+"?"+postJsonData);
+			System.out.println(url+"?"+postJsonData);
 
 			response = httpclient.execute(httpget);
 			if (response.getStatusLine().getStatusCode() == 200) {
