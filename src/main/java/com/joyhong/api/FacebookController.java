@@ -239,7 +239,7 @@ public class FacebookController {
 										type, 
 										"facebook", 
 										"Receive a message from Facebook", 
-										body.toString().replace("\"", "\\\""));
+										body.toString());
 							}
 						}
 					}

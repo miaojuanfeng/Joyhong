@@ -237,7 +237,7 @@ public class PushService {
 			httpclient = HttpClients.createDefault();
 			httpget = new HttpGet(url+"?"+postJsonData);
 			
-			System.out.println(url+"?"+postJsonData);
+//			logger.info(url+"?"+postJsonData);
 
 			response = httpclient.execute(httpget);
 			if (response.getStatusLine().getStatusCode() == 200) {

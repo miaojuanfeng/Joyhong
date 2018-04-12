@@ -3,6 +3,8 @@ package com.joyhong.api;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.RandomAccessFile;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -148,7 +150,7 @@ public class UploadController {
 							"image", 
 							"app", 
 							"Receive a message from App", 
-							body.toString().replace("\"", "\\\""));
+							body.toString());
 				}
 			}
 		}
@@ -240,7 +242,7 @@ public class UploadController {
 											"video", 
 											"app", 
 											"Receive a message from App", 
-											body.toString().replace("\"", "\\\""));
+											body.toString());
 								}
 							}
 						}
@@ -348,7 +350,7 @@ public class UploadController {
 											"video", 
 											"app", 
 											"Receive a message from App", 
-											body.toString().replace("\"", "\\\""));
+											body.toString());
 								}
 							}
 						}
@@ -379,8 +381,18 @@ public class UploadController {
 	
 //	@RequestMapping(value="/tencent", method = RequestMethod.POST)
 //	@ResponseBody
-//	public String tencent(){
+//	public String tencent() throws Exception{
 //		JSONObject retval = new JSONObject();
+//		
+//		JSONObject body = new JSONObject();
+//		body.put("sender_id", 22);
+//		body.put("sender_name", "http://file.bsimb.cn:8080/upload/UID_39/1523524437941209.jpg");
+//		
+//		JSONObject t = new JSONObject();
+//		t.put("t", body.toString());
+//		
+//		System.out.println(URLDecoder.decode(URLEncoder.encode(t.toString(), "utf-8"), "utf-8"));
+//		
 //		
 //		pushService.push(
 //				2,
@@ -394,7 +406,7 @@ public class UploadController {
 //				"video", 
 //				"app", 
 //				"测试推送消息", 
-//				"来自信鸽的测试推送消息");
+//				t.toString());
 //		
 //		return retval.toString();
 //	}

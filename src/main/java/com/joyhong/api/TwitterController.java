@@ -480,7 +480,7 @@ public class TwitterController {
 									type, 
 									"twitter", 
 									"Receive a message from Twitter", 
-									body.toString().replace("\"", "\\\""));
+									body.toString());
 						}
 					}
 					/*
