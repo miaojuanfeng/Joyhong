@@ -1,8 +1,17 @@
 package com.joyhong.api;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,7 +41,7 @@ import net.sf.json.JSONObject;
 @RequestMapping(value="/device", produces="application/json;charset=UTF-8")
 public class DeviceController {
 	
-//	private Logger logger = Logger.getLogger(this.getClass());
+	private Logger logger = Logger.getLogger(this.getClass());
 	
 	@Autowired
 	private DeviceService deviceService;
@@ -347,6 +356,85 @@ public class DeviceController {
 			retval.put("status", ConstantService.statusCode_101);
 		}
 		
+		return retval.toString();
+	}
+	
+	/**
+	 * 根据城市名搜索得到经纬度等信息
+	 * @param city_name
+	 * @return
+	 */
+	@RequestMapping(value="/place", method=RequestMethod.POST)
+	@ResponseBody
+	public String place(@RequestParam("city_name") String city_name){
+		JSONObject retval = new JSONObject();
+		
+		String[] keyArr = {
+				"AIzaSyBGpcn9Q31LBNaJqRLALz4XS523NgDcKkA", 
+				"AIzaSyDpxi5Oozr1yFW0xj96hUEzsN_veRwTOiA", 
+				"AIzaSyDZqUytGU8R-fmrr6zZidCvGSv7Kz6EBzQ", 
+				"AIzaSyA42VWexikFUtarRUwCxOrhiAE5rdt3MP0", 
+				"AIzaSyD_RpZNX0DigiGe8fArePk0Zz-n8HMqFvI"};
+		
+		for(int k=0;k<keyArr.length;k++){
+			try{
+				String key = keyArr[k];
+				String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?query="+URLEncoder.encode(city_name, "utf-8")+"&key="+key+"&language=cn";
+				
+				CloseableHttpClient httpclient = HttpClients.createDefault();
+				HttpGet httpget = new HttpGet(url);
+	
+				CloseableHttpResponse response = httpclient.execute(httpget);
+				if (response.getStatusLine().getStatusCode() == 200) {
+	                String result = EntityUtils.toString(response.getEntity());
+	                JSONObject resultJson = JSONObject.fromObject(result);
+					
+	                System.out.println(resultJson.toString());
+	                
+	                if( resultJson.getString("status").equals("OK") ){
+	                	retval.put("status", ConstantService.statusCode_200);
+	                	//
+	                	JSONArray results = resultJson.getJSONArray("results");
+	                	JSONArray temp = new JSONArray();
+	                	for(int i=0;i<results.size();i++){
+	                		JSONObject city = results.getJSONObject(i);
+		                	JSONObject location = city.getJSONObject("geometry").getJSONObject("location");
+		                	JSONObject t = new JSONObject();
+		                	t.put("name", city.getString("name"));
+		                	t.put("formatted_address", city.getString("formatted_address"));
+		                	t.put("lat", location.getString("lat"));
+		                	t.put("lng", location.getString("lng"));
+		                	temp.add(t);
+	                	}
+	                	retval.put("data", temp);
+	                	return retval.toString();
+	                }else if( resultJson.getString("status").equals("ZERO_RESULTS") ){
+	                	retval.put("status", ConstantService.statusCode_113);
+	                	return retval.toString(); 
+	                }else if( resultJson.getString("status").equals("OVER_QUERY_LIMIT") ){
+	                	if( k == keyArr.length-1 ){
+	                		logger.info("Google place exhausted the key: " + city_name);
+	                	}
+	                	continue;
+	                }else if( resultJson.getString("status").equals("REQUEST_DENIED") ){
+	                	retval.put("status", ConstantService.statusCode_114);
+	                	return retval.toString(); 
+	                }else if( resultJson.getString("status").equals("INVALID_REQUEST") ){
+	                	retval.put("status", ConstantService.statusCode_115);
+	                	return retval.toString(); 
+	                }else{
+	                	logger.info("Google place unkonw status: " + resultJson.toString());
+	                	break;
+	                }
+				}else{
+					logger.info("Google place network error: " + city_name);
+				}
+			}catch(Exception e){
+				logger.info(e.getMessage());
+			}
+		}
+		
+		retval.put("status", ConstantService.statusCode_116);
 		return retval.toString();
 	}
 }

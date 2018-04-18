@@ -201,7 +201,20 @@ public class WeatherController {
 				if( !retObj.has("now") && datetime.compareTo(todayDatetime) > 0 ){
 					// 纠正时区
 					timeStamp.put("dt_txt", datetime);
-					retObj.put("now", timeStamp);
+					//
+					JSONObject temp = new JSONObject();
+					JSONObject main = new JSONObject();
+					main.put("temp", timeStamp.getJSONObject("main").getDouble("temp"));
+					main.put("temp_min", timeStamp.getJSONObject("main").getDouble("temp_min"));
+					main.put("temp_max", timeStamp.getJSONObject("main").getDouble("temp_max"));
+					main.put("humidity", timeStamp.getJSONObject("main").getDouble("humidity"));
+					main.put("temp_kf", timeStamp.getJSONObject("main").getDouble("temp_kf"));
+					
+					temp.put("dt", timeStamp.getLong("dt"));
+					temp.put("main", main);
+					temp.put("weather", timeStamp.getJSONArray("weather"));
+					temp.put("wind", timeStamp.getJSONObject("wind"));
+					retObj.put("now", temp);
 				}
 				/*
 				 * 未来时间的最高温和最低温
@@ -225,6 +238,47 @@ public class WeatherController {
 						timeStamp.put("dt_txt", datetime);
 						day_temp.put("max", timeStamp);
 					}
+					
+					JSONObject min_timeStamp = day_temp.getJSONObject("min");
+					JSONObject max_timeStamp = day_temp.getJSONObject("max");
+					
+					JSONObject temp = null;
+					JSONObject main = null;
+					
+					temp = new JSONObject();
+					main = new JSONObject();
+					
+					main.put("temp", min_timeStamp.getJSONObject("main").getDouble("temp"));
+					main.put("temp_min", min_timeStamp.getJSONObject("main").getDouble("temp_min"));
+					main.put("temp_max", min_timeStamp.getJSONObject("main").getDouble("temp_max"));
+					main.put("humidity", min_timeStamp.getJSONObject("main").getDouble("humidity"));
+					main.put("temp_kf", min_timeStamp.getJSONObject("main").getDouble("temp_kf"));
+					
+					temp.put("dt", min_timeStamp.getLong("dt"));
+					temp.put("main", main);
+					temp.put("weather", min_timeStamp.getJSONArray("weather"));
+					temp.put("wind", min_timeStamp.getJSONObject("wind"));
+					
+					day_temp.put("min", temp);
+					
+					//
+					
+					temp = new JSONObject();
+					main = new JSONObject();
+					
+					main.put("temp", max_timeStamp.getJSONObject("main").getDouble("temp"));
+					main.put("temp_min", max_timeStamp.getJSONObject("main").getDouble("temp_min"));
+					main.put("temp_max", max_timeStamp.getJSONObject("main").getDouble("temp_max"));
+					main.put("humidity", max_timeStamp.getJSONObject("main").getDouble("humidity"));
+					main.put("temp_kf", max_timeStamp.getJSONObject("main").getDouble("temp_kf"));
+					
+					temp.put("dt", max_timeStamp.getLong("dt"));
+					temp.put("main", main);
+					temp.put("weather", max_timeStamp.getJSONArray("weather"));
+					temp.put("wind", max_timeStamp.getJSONObject("wind"));
+					
+					day_temp.put("max", temp);
+					
 					retObj.put(date, day_temp);
 				}
 			}catch(Exception e){
@@ -234,21 +288,26 @@ public class WeatherController {
 		
 		Iterator<?> iterator = retObj.keys();
 		String key;
-		String value;
+		JSONObject value;
 		JSONObject retval = new JSONObject();
 		JSONArray retArr = new JSONArray();
 		
+		retval.put("id", jsonResult.getJSONObject("city").getString("id"));
+		retval.put("name", jsonResult.getJSONObject("city").getString("name"));
+		retval.put("coord", jsonResult.getJSONObject("city").getJSONObject("coord"));
+		retval.put("country", jsonResult.getJSONObject("city").getString("country"));
+		
 		while(iterator.hasNext()){
 			key = (String) iterator.next();
-			value = retObj.getString(key);
+			value = retObj.getJSONObject(key);
 			if( key.equals("now") ){
 				retval.put("cur_data", value);
 			}else{
 				retArr.add(value);
 			}
 		}
+		
 		retval.put("days_data", retArr);
-		retval.put("city", jsonResult.getJSONObject("city"));
 		
 		if( isSave ){
 			if( weather == null ){
@@ -275,7 +334,7 @@ public class WeatherController {
 		Weather weather = this.fetch_weather(city_id);
 		if( weather != null && this.invalid_time(weather) ){
 			retval.put("status", ConstantService.statusCode_200);
-			retval.put("time", weather.getTime().getTime()/1000);
+//			retval.put("time", weather.getTime().getTime()/1000);
 			retval.put("data", weather.getData());
 		}else{
 			try{
@@ -291,7 +350,7 @@ public class WeatherController {
 					result = weather_data(null, time, weather, jsonResult, true);
 					
 					retval.put("status", ConstantService.statusCode_200);
-					retval.put("time", time.getTime()/1000);
+//					retval.put("time", time.getTime()/1000);
 					retval.put("data", result);
 				}else{
 					retval.put("status", ConstantService.statusCode_500);
@@ -320,7 +379,7 @@ public class WeatherController {
 		Weather weather = this.fetch_weather(city_name, null);
 		if( weather != null && this.invalid_time(weather) ){
 			retval.put("status", ConstantService.statusCode_200);
-			retval.put("time", weather.getTime().getTime()/1000);
+//			retval.put("time", weather.getTime().getTime()/1000);
 			retval.put("data", weather.getData());
 		}else{
 			try{
@@ -336,7 +395,7 @@ public class WeatherController {
 					result = weather_data(null, time, weather, jsonResult, true);
 					
 					retval.put("status", ConstantService.statusCode_200);
-					retval.put("time", time.getTime()/1000);
+//					retval.put("time", time.getTime()/1000);
 					retval.put("data", result);
 				}else{
 					retval.put("status", ConstantService.statusCode_500);
@@ -377,7 +436,7 @@ public class WeatherController {
 				result = weather_data(null, time, null, jsonResult, false);
 				
 				retval.put("status", ConstantService.statusCode_200);
-				retval.put("time", time.getTime()/1000);
+//				retval.put("time", time.getTime()/1000);
 				retval.put("data", result);
 			}else{
 				retval.put("status", ConstantService.statusCode_500);
@@ -407,7 +466,7 @@ public class WeatherController {
 		Weather weather = this.fetch_weather(null, zip_code);
 		if( weather != null && this.invalid_time(weather) ){
 			retval.put("status", ConstantService.statusCode_200);
-			retval.put("time", weather.getTime().getTime()/1000);
+//			retval.put("time", weather.getTime().getTime()/1000);
 			retval.put("data", weather.getData());
 		}else{
 			try{
@@ -423,7 +482,7 @@ public class WeatherController {
 					result = weather_data(zip_code, time, weather, jsonResult, true);
 					
 					retval.put("status", ConstantService.statusCode_200);
-					retval.put("time", time.getTime()/1000);
+//					retval.put("time", time.getTime()/1000);
 					retval.put("data", result);
 				}else{
 					retval.put("status", ConstantService.statusCode_500);

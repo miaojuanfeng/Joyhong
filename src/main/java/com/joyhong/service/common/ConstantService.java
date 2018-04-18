@@ -19,6 +19,10 @@ public class ConstantService {
 	public static final int statusCode_110 = 110;		// Update device name failed, please try again later
 	public static final int statusCode_111 = 111;		// Update device status failed, please try again later
 	public static final int statusCode_112 = 112;		// Unable to find the order by device_id
+	public static final int statusCode_113 = 113;		// Search place ZERO_RESULTS
+	public static final int statusCode_114 = 114;		// Search place REQUEST_DENIED
+	public static final int statusCode_115 = 115;		// Search place INVALID_REQUEST
+	public static final int statusCode_116 = 116;		// Search place UNKNOW
 	/*
 	 *  Success
 	 */
