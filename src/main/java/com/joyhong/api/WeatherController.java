@@ -1,8 +1,10 @@
 package com.joyhong.api;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.TimeZone;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -142,18 +144,40 @@ public class WeatherController {
      * 时间戳转换成日期格式字符串 
      * @param seconds 精确到秒的字符串 
      * @param formatStr 
+     * @param timeZone
      * @return 
      */  
-    private String timeStamp2Date(String seconds, String format) {  
+    private String timeStamp2Date(String seconds, String format, String timeZone) {  
         if(seconds == null || seconds.isEmpty() || seconds.equals("null")){  
             return "";  
         }  
         if(format == null || format.isEmpty()){
             format = "yyyy-MM-dd HH:mm:ss";
-        }   
-        SimpleDateFormat sdf = new SimpleDateFormat(format);  
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
+        sdf.setTimeZone(TimeZone.getTimeZone(timeZone));
         return sdf.format(new Date(Long.valueOf(seconds+"000")));  
     }
+    
+//    /**
+//     * 日期格式字符串转换成时间戳
+//     * @param date
+//     * @return
+//     */
+//    private Long date2TimeStamp(String date, String timeZone) {  
+//    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//    	sdf.setTimeZone(TimeZone.getTimeZone(timeZone));
+//		Long time = 0L;
+//		try {
+//			Date d;
+//			d = sdf.parse(date);
+//			time = d.getTime();
+//		} catch (ParseException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} 
+//		return time;
+//    }
 	
     /**
      * 处理天气数据
@@ -164,7 +188,7 @@ public class WeatherController {
      * @param isSave
      * @return
      */
-	private String weather_data(String zip_code, Date time, Weather weather, JSONObject jsonResult, boolean isSave){
+	private String weather_data(String zip_code, Date time, Weather weather, JSONObject jsonResult, boolean isSave, String timeZone){
 		JSONObject retObj = new JSONObject();
 		
 		String country = jsonResult.getJSONObject("city").getString("country");
@@ -180,8 +204,8 @@ public class WeatherController {
 		}
 		JSONArray list = jsonResult.getJSONArray("list");
 		Integer i;
-		String todayDate = timeStamp2Date(String.valueOf(new Date().getTime()/1000), "yyyy-MM-dd");
-		String todayDatetime = timeStamp2Date(String.valueOf(new Date().getTime()/1000), "yyyy-MM-dd HH:mm:ss");
+		String todayDate = timeStamp2Date(String.valueOf(new Date().getTime()/1000), "yyyy-MM-dd", timeZone);
+		String todayDatetime = timeStamp2Date(String.valueOf(new Date().getTime()/1000), "yyyy-MM-dd HH:mm:ss", timeZone);
 		Float temp_min = 99999999.0F;
 		Float temp_max = 0.0F;
 		JSONObject day_temp = null;
@@ -192,8 +216,8 @@ public class WeatherController {
 //				String date = timeStamp.getString("dt_txt").substring(0, 10);
 //				String datetime = timeStamp.getString("dt_txt");
 				// 纠正时区
-				String date = timeStamp2Date(timeStamp.getString("dt"), "yyyy-MM-dd");
-				String datetime = timeStamp2Date(timeStamp.getString("dt"), "yyyy-MM-dd HH:mm:ss");
+				String date = timeStamp2Date(timeStamp.getString("dt"), "yyyy-MM-dd", timeZone);
+				String datetime = timeStamp2Date(timeStamp.getString("dt"), "yyyy-MM-dd HH:mm:ss", timeZone);
 				
 				/*
 				 * 当前时间
@@ -229,13 +253,13 @@ public class WeatherController {
 					if( Float.valueOf(timeStamp.getJSONObject("main").getString("temp_min")) < temp_min ){
 						temp_min = Float.valueOf(timeStamp.getJSONObject("main").getString("temp_min"));
 						// 纠正时区
-						timeStamp.put("dt_txt", datetime);
+//						timeStamp.put("dt_txt", datetime);
 						day_temp.put("min", timeStamp);
 					}
 					if( Float.valueOf(timeStamp.getJSONObject("main").getString("temp_min")) > temp_max ){
 						temp_max = Float.valueOf(timeStamp.getJSONObject("main").getString("temp_min"));
 						// 纠正时区
-						timeStamp.put("dt_txt", datetime);
+//						timeStamp.put("dt_txt", datetime);
 						day_temp.put("max", timeStamp);
 					}
 					
@@ -324,11 +348,12 @@ public class WeatherController {
 	 * 根据city id获取天气信息
 	 * @url {base_url}/weather/city_id?city_id={city_id}
 	 * @param city_id
+	 * @param time_zone
 	 * @return json
 	 */
 	@RequestMapping(value="/city_id", method=RequestMethod.GET)
 	@ResponseBody
-	public String city_id(@RequestParam("city_id") Integer city_id){
+	public String city_id(@RequestParam("city_id") Integer city_id, @RequestParam("time_zone") String time_zone){
 		JSONObject retval = new JSONObject();
 		
 		Weather weather = this.fetch_weather(city_id);
@@ -347,7 +372,7 @@ public class WeatherController {
 					JSONObject jsonResult = JSONObject.fromObject(result);
 					
 					Date time = new Date();
-					result = weather_data(null, time, weather, jsonResult, true);
+					result = weather_data(null, time, weather, jsonResult, true, time_zone);
 					
 					retval.put("status", ConstantService.statusCode_200);
 //					retval.put("time", time.getTime()/1000);
@@ -369,11 +394,12 @@ public class WeatherController {
 	 * 根据city name获取天气信息
 	 * @url {base_url}/weather/city_name?city_name={city_name}
 	 * @param city_name
+	 * @param time_zone
 	 * @return json
 	 */
 	@RequestMapping(value="/city_name", method=RequestMethod.GET)
 	@ResponseBody
-	public String city_name(@RequestParam("city_name") String city_name){
+	public String city_name(@RequestParam("city_name") String city_name, @RequestParam("time_zone") String time_zone){
 		JSONObject retval = new JSONObject();
 		
 		Weather weather = this.fetch_weather(city_name, null);
@@ -392,7 +418,7 @@ public class WeatherController {
 					JSONObject jsonResult = JSONObject.fromObject(result);
 					
 					Date time = new Date();
-					result = weather_data(null, time, weather, jsonResult, true);
+					result = weather_data(null, time, weather, jsonResult, true, time_zone);
 					
 					retval.put("status", ConstantService.statusCode_200);
 //					retval.put("time", time.getTime()/1000);
@@ -415,11 +441,12 @@ public class WeatherController {
 	 * @url {base_url}/weather/lat_lon?lat={lat}&lon={lon}
 	 * @param lat
 	 * @param lon
+	 * @param time_zone
 	 * @return json
 	 */
 	@RequestMapping(value="/lat_lon", method=RequestMethod.GET)
 	@ResponseBody
-	public String lat_lon(@RequestParam("lat") Float lat, @RequestParam("lon") Float lon){
+	public String lat_lon(@RequestParam("lat") Float lat, @RequestParam("lon") Float lon, @RequestParam("time_zone") String time_zone){
 		JSONObject retval = new JSONObject();
 		
 		// 根据经纬度查询的天气信息不缓存
@@ -433,7 +460,7 @@ public class WeatherController {
 				JSONObject jsonResult = JSONObject.fromObject(result);
 				
 				Date time = new Date();
-				result = weather_data(null, time, null, jsonResult, false);
+				result = weather_data(null, time, null, jsonResult, false, time_zone);
 				
 				retval.put("status", ConstantService.statusCode_200);
 //				retval.put("time", time.getTime()/1000);
@@ -456,11 +483,12 @@ public class WeatherController {
 	 * @url {base_url}/weather/zip_code?zip_code={zip_code}&country={country}
 	 * @param zip_code
 	 * @param country
+	 * @param time_zone
 	 * @return json
 	 */
 	@RequestMapping(value="/zip_code", method=RequestMethod.GET)
 	@ResponseBody
-	public String zip_code(@RequestParam("zip_code") String zip_code, @RequestParam("country") String country){
+	public String zip_code(@RequestParam("zip_code") String zip_code, @RequestParam("country") String country, @RequestParam("time_zone") String time_zone){
 		JSONObject retval = new JSONObject();
 		
 		Weather weather = this.fetch_weather(null, zip_code);
@@ -479,7 +507,7 @@ public class WeatherController {
 					JSONObject jsonResult = JSONObject.fromObject(result);
 					
 					Date time = new Date();
-					result = weather_data(zip_code, time, weather, jsonResult, true);
+					result = weather_data(zip_code, time, weather, jsonResult, true, time_zone);
 					
 					retval.put("status", ConstantService.statusCode_200);
 //					retval.put("time", time.getTime()/1000);
