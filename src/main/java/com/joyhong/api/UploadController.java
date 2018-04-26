@@ -128,7 +128,16 @@ public class UploadController {
 					JSONObject body = new JSONObject();
 					body.put("sender_id", user.getId());
 					body.put("sender_name", user.getNickname());
-					body.put("sender_account", user.getNumber());
+					//
+					JSONObject ut = new JSONObject();
+					ut.put("username", user.getUsername());
+					ut.put("account", user.getNumber());
+					ut.put("nickname", user.getNickname());
+					ut.put("avatar", user.getProfileImage());
+					ut.put("platform", user.getPlatform());
+					ut.put("accepted", user.getAccepted());
+					body.put("sender_user", ut);
+					//
 					body.put("receive_id", device.getId());
 					body.put("receive_name", userDevice.getDeviceName());
 					body.put("to_fcm_token", device.getDeviceFcmToken());
@@ -220,7 +229,16 @@ public class UploadController {
 									JSONObject body = new JSONObject();
 									body.put("sender_id", user.getId());
 									body.put("sender_name", user.getNickname());
-									body.put("sender_account", user.getNumber());
+									//
+									JSONObject ut = new JSONObject();
+									ut.put("username", user.getUsername());
+									ut.put("account", user.getNumber());
+									ut.put("nickname", user.getNickname());
+									ut.put("avatar", user.getProfileImage());
+									ut.put("platform", user.getPlatform());
+									ut.put("accepted", user.getAccepted());
+									body.put("sender_user", ut);
+									//
 									body.put("receive_id", device.getId());
 									body.put("receive_name", userDevice.getDeviceName());
 									body.put("to_fcm_token", device.getDeviceFcmToken());
@@ -328,7 +346,16 @@ public class UploadController {
 									JSONObject body = new JSONObject();
 									body.put("sender_id", user.getId());
 									body.put("sender_name", user.getNickname());
-									body.put("sender_account", user.getNumber());
+									//
+									JSONObject ut = new JSONObject();
+									ut.put("username", user.getUsername());
+									ut.put("account", user.getNumber());
+									ut.put("nickname", user.getNickname());
+									ut.put("avatar", user.getProfileImage());
+									ut.put("platform", user.getPlatform());
+									ut.put("accepted", user.getAccepted());
+									body.put("sender_user", ut);
+									//
 									body.put("receive_id", device.getId());
 									body.put("receive_name", userDevice.getDeviceName());
 									body.put("to_fcm_token", device.getDeviceFcmToken());
