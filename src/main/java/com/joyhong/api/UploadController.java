@@ -3,8 +3,7 @@ package com.joyhong.api;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.RandomAccessFile;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
+import java.util.Date;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +19,12 @@ import com.joyhong.model.Upload;
 import com.joyhong.model.User;
 import com.joyhong.model.UserDevice;
 import com.joyhong.service.DeviceService;
-import com.joyhong.service.common.PushService;
-import com.joyhong.service.common.ConstantService;
 import com.joyhong.service.UploadService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
+import com.joyhong.service.common.ConstantService;
 import com.joyhong.service.common.FileService;
+import com.joyhong.service.common.PushService;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -134,10 +133,10 @@ public class UploadController {
 					body.put("receive_name", userDevice.getDeviceName());
 					body.put("to_fcm_token", device.getDeviceFcmToken());
 					body.put("text", desc_temp.toString());
-					body.put("image_url", temp.toString());
-					body.put("video_url", "");
+					body.put("url", temp.toString());
 					body.put("type", "image");
 					body.put("platform", "app");
+					body.put("time", (new Date()).getTime()/1000);
 					pushService.push(
 							user.getId(),
 							user.getNickname(), 
@@ -226,10 +225,10 @@ public class UploadController {
 									body.put("receive_name", userDevice.getDeviceName());
 									body.put("to_fcm_token", device.getDeviceFcmToken());
 									body.put("text", file_desc);
-									body.put("image_url", "");
-									body.put("video_url", webUrl + fileName);
+									body.put("url", webUrl + fileName);
 									body.put("type", "video");
 									body.put("platform", "app");
+									body.put("time", (new Date()).getTime()/1000);
 									pushService.push(
 											user.getId(),
 											user.getNickname(), 
@@ -334,10 +333,10 @@ public class UploadController {
 									body.put("receive_name", userDevice.getDeviceName());
 									body.put("to_fcm_token", device.getDeviceFcmToken());
 									body.put("text", file_desc);
-									body.put("image_url", "");
-									body.put("video_url", webUrl + fileName);
+									body.put("url", webUrl + fileName);
 									body.put("type", "video");
 									body.put("platform", "app");
+									body.put("time", (new Date()).getTime()/1000);
 									pushService.push(
 											user.getId(),
 											user.getNickname(), 

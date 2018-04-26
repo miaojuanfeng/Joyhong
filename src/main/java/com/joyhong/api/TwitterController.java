@@ -451,23 +451,27 @@ public class TwitterController {
 							String image_url = "";
 							String video_url = "";
 							String type = "";
+							String finalUrl = "";
 							if( retval.has("video") ){
 								image_url = "";
 								video_url = retval.get("video").toString();
 								type = "video";
+								finalUrl = video_url;
 							}else if( img.size() > 0 ){
 								image_url = img.toString();
 								video_url = "";
 								type = "image";
+								finalUrl = image_url;
 							}else{
 								image_url = "";
 								video_url = "";
 								type = "text";
+								finalUrl = "";
 							}
-							body.put("image_url", image_url);
-							body.put("video_url", video_url);
+							body.put("url", finalUrl);
 							body.put("type", type);
 							body.put("platform", "twitter");
+							body.put("time", (new Date()).getTime()/1000);
 							pushService.push(
 									user.getId(),
 									user.getNickname(), 

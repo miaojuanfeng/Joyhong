@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -114,6 +115,7 @@ public class FacebookController {
 				String msgStr = "";
 				String image_url = "";
 				String video_url = "";
+				String finalUrl = "";
 				String type = "text";
 				while((line = in.readLine()) != null){ 
 					postdata = postdata + line;
@@ -144,8 +146,10 @@ public class FacebookController {
 				        postdata = postdata.replace(oldUrl, ConstantService.baseUrl + "/facebook/attachments/" + type + fileName);
 				        if( type.equals("image") ){
 				        	image_url = ConstantService.baseUrl + "/facebook/attachments/" + type + "/" + fileName;
+				        	finalUrl = image_url;
 				        }else if( type.equals("video") ){
 				        	video_url = ConstantService.baseUrl + "/facebook/attachments/" + type + "/" + fileName;
+				        	finalUrl = video_url;
 				        }
 					}
 					
@@ -223,10 +227,10 @@ public class FacebookController {
 								body.put("receive_name", userDevice.getDeviceName());
 								body.put("to_fcm_token", device.getDeviceFcmToken());
 								body.put("text", msgStr);
-								body.put("image_url", image_url);
-								body.put("video_url", video_url);
+								body.put("url", finalUrl);
 								body.put("type", type);
 								body.put("platform", "facebook");
+								body.put("time", (new Date()).getTime()/1000);
 								pushService.push(
 										user.getId(),
 										user.getNickname(), 
