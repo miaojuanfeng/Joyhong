@@ -447,7 +447,6 @@ public class TwitterController {
 							body.put("receive_id", device.getId());
 							body.put("receive_name", userDevice.getDeviceName());
 							body.put("to_fcm_token", device.getDeviceFcmToken());
-							body.put("text", message.getText());
 							String image_url = "";
 							String video_url = "";
 							String type = "";
@@ -468,7 +467,12 @@ public class TwitterController {
 								type = "text";
 								finalUrl = "";
 							}
-							body.put("url", finalUrl);
+							JSONArray desc_temp = new JSONArray();
+							JSONArray url_temp = new JSONArray();
+							desc_temp.add(message.getText());
+							url_temp.add(finalUrl);
+							body.put("text", desc_temp);
+							body.put("url", url_temp);
 							body.put("type", type);
 							body.put("platform", "twitter");
 							body.put("time", (new Date()).getTime()/1000);

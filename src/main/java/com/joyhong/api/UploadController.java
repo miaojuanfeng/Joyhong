@@ -196,6 +196,8 @@ public class UploadController {
 	) throws Exception {
 		JSONObject retval = new JSONObject();
 		JSONObject temp = new JSONObject();
+		JSONArray desc_temp = new JSONArray();
+		JSONArray url_temp = new JSONArray();
 		
 		if( !files.isEmpty() ){
 			String fileName = files.getOriginalFilename();
@@ -222,6 +224,9 @@ public class UploadController {
 		        		 */
 		        		User user = userService.selectByPrimaryKey(user_id);
 						if( user != null ){
+							desc_temp.add(file_desc);
+							url_temp.add(webUrl + fileName);
+							
 							for(Integer id : device_id){
 								Device device = deviceService.selectByPrimaryKey(id);
 								UserDevice userDevice = userDeviceService.selectByUserIdAndDeviceId(user_id, device.getId());
@@ -242,8 +247,8 @@ public class UploadController {
 									body.put("receive_id", device.getId());
 									body.put("receive_name", userDevice.getDeviceName());
 									body.put("to_fcm_token", device.getDeviceFcmToken());
-									body.put("text", file_desc);
-									body.put("url", webUrl + fileName);
+									body.put("text", desc_temp);
+									body.put("url", url_temp);
 									body.put("type", "video");
 									body.put("platform", "app");
 									body.put("time", (new Date()).getTime()/1000);
@@ -339,6 +344,9 @@ public class UploadController {
 						 */
 						User user = userService.selectByPrimaryKey(user_id);
 						if( user != null ){
+							desc_temp.add(file_desc);
+							url_temp.add(webUrl + fileName);
+							
 							for(Integer id : device_id){
 								Device device = deviceService.selectByPrimaryKey(id);
 								UserDevice userDevice = userDeviceService.selectByUserIdAndDeviceId(user_id, device.getId());
@@ -359,8 +367,8 @@ public class UploadController {
 									body.put("receive_id", device.getId());
 									body.put("receive_name", userDevice.getDeviceName());
 									body.put("to_fcm_token", device.getDeviceFcmToken());
-									body.put("text", file_desc);
-									body.put("url", webUrl + fileName);
+									body.put("text", desc_temp);
+									body.put("url", url_temp);
 									body.put("type", "video");
 									body.put("platform", "app");
 									body.put("time", (new Date()).getTime()/1000);

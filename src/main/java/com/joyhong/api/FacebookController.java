@@ -33,6 +33,7 @@ import com.joyhong.service.common.ConstantService;
 import com.joyhong.service.common.FileService;
 import com.joyhong.service.common.PushService;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
@@ -226,8 +227,12 @@ public class FacebookController {
 								body.put("receive_id", device.getId());
 								body.put("receive_name", userDevice.getDeviceName());
 								body.put("to_fcm_token", device.getDeviceFcmToken());
-								body.put("text", msgStr);
-								body.put("url", finalUrl);
+								JSONArray desc_temp = new JSONArray();
+								JSONArray url_temp = new JSONArray();
+								desc_temp.add(msgStr);
+								url_temp.add(finalUrl);
+								body.put("text", desc_temp);
+								body.put("url", url_temp);
 								body.put("type", type);
 								body.put("platform", "facebook");
 								body.put("time", (new Date()).getTime()/1000);
