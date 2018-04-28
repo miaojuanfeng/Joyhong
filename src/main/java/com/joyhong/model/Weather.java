@@ -1,9 +1,13 @@
 package com.joyhong.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Weather {
-    private Integer id;
+public class Weather implements Serializable{
+	
+	private static final long serialVersionUID = 4676864624261881473L;
+
+	private Integer id;
 
     private Date time;
     

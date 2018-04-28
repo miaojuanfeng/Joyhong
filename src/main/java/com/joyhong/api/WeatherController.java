@@ -1,6 +1,5 @@
 package com.joyhong.api;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
@@ -22,6 +21,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.joyhong.model.Weather;
 import com.joyhong.service.WeatherService;
 import com.joyhong.service.common.ConstantService;
+import com.joyhong.service.common.FileService;
+import com.joyhong.service.common.RedisService;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -42,12 +43,26 @@ public class WeatherController {
 	@Autowired
 	private WeatherService weatherService;
 	
+	@Autowired
+	private RedisService redisService;
+	
+	@Autowired
+	private FileService fileService;
+	
+	private final String weatherCityId = "weather_city_id";
+	private final String weatherCityName = "weather_city_name";
+	private final String weatherZipCode = "weather_zip_code";
+	
 	/**
 	 * 从mysql查询天气缓存信息
 	 * @param city_id
 	 * @return Weather
 	 */
 	private Weather fetch_weather(Integer city_id){
+		String redisResult = redisService.hget(this.weatherCityId, String.valueOf(city_id));
+		if( redisResult != null ){
+			return (Weather)fileService.unserialize(redisResult);
+		}
 		return this.weatherService.selectByCityId(city_id);
 	}
 	
@@ -58,8 +73,16 @@ public class WeatherController {
 	 */
 	private Weather fetch_weather(String city_name, String zip_code){
 		if( city_name != null ){
+			String redisResult = redisService.hget(this.weatherCityName, city_name);
+			if( redisResult != null ){
+				return (Weather)fileService.unserialize(redisResult);
+			}
 			return this.weatherService.selectByCityName(city_name);
 		}else if( zip_code != null ){
+			String redisResult = redisService.hget(this.weatherZipCode, zip_code);
+			if( redisResult != null ){
+				return (Weather)fileService.unserialize(redisResult);
+			}
 			return this.weatherService.selectByZipCode(zip_code);
 		}
 		return null;
@@ -83,9 +106,9 @@ public class WeatherController {
 	 * @param lat
 	 * @param zipCode
 	 * @param data
-	 * @return bool
+	 * @return Object
 	 */
-	private int cache_weather(Date time, String country, Integer cityId, String cityName, Float lon, Float lat, String zipCode, String data){
+	private Weather cache_weather(Date time, String country, Integer cityId, String cityName, Float lon, Float lat, String zipCode, String data){
 		Weather weather = new Weather();
 		weather.setTime(time);
 		weather.setCountry(country);
@@ -99,11 +122,11 @@ public class WeatherController {
 		weather.setModifyDate(new Date());
 		weather.setDeleted(0);
 		
-		Integer retval = this.weatherService.insert(weather);
-		if( retval != 1 ){
+		if( this.weatherService.insert(weather) != 1 ){
 			logger.info("Save weather to database failed: " + data);
+			return null;
 		}
-		return retval;
+		return weather;
 	}
 	
 	/**
@@ -116,9 +139,9 @@ public class WeatherController {
 	 * @param lat
 	 * @param zipCode
 	 * @param data
-	 * @return
+	 * @return Object
 	 */
-	private int update_weather(Integer id, Date time, String country, Integer cityId, String cityName, Float lon, Float lat, String zipCode, String data, Date createDate){
+	private Weather update_weather(Integer id, Date time, String country, Integer cityId, String cityName, Float lon, Float lat, String zipCode, String data, Date createDate){
 		Weather weather = new Weather();
 		weather.setId(id);
 		weather.setTime(time);
@@ -133,11 +156,11 @@ public class WeatherController {
 		weather.setModifyDate(new Date());
 		weather.setDeleted(0);
 		
-		Integer retval = this.weatherService.updateByPrimaryKey(weather);
-		if( retval != 1 ){
+		if( this.weatherService.updateByPrimaryKey(weather) != 1 ){
 			logger.info("Update weather from database failed: " + data);
+			return null;
 		}
-		return retval;
+		return weather;
 	}
 	
 	/** 
@@ -188,7 +211,7 @@ public class WeatherController {
      * @param isSave
      * @return
      */
-	private String weather_data(String zip_code, Date time, Weather weather, JSONObject jsonResult, boolean isSave, String timeZone){
+	private String weather_data(String zip_code, Date time, Weather weather, JSONObject jsonResult, boolean isSave, String timeZone, String hashTableName, String hashTableKey){
 		JSONObject retObj = new JSONObject();
 		
 		String country = jsonResult.getJSONObject("city").getString("country");
@@ -335,9 +358,13 @@ public class WeatherController {
 		
 		if( isSave ){
 			if( weather == null ){
-				this.cache_weather(time, country, cityId, cityName, lon, lat, zipCode, retval.toString());
+				weather = this.cache_weather(time, country, cityId, cityName, lon, lat, zipCode, retval.toString());
 			}else{
-				this.update_weather(weather.getId(), time, country, cityId, cityName, lon, lat, zipCode, retval.toString(), weather.getCreateDate());
+				weather = this.update_weather(weather.getId(), time, country, cityId, cityName, lon, lat, zipCode, retval.toString(), weather.getCreateDate());
+			}
+			// 同步redis
+			if( weather != null && hashTableName != null && hashTableKey != null ){
+				redisService.hset(hashTableName, hashTableKey, fileService.serialize(weather));
 			}
 		}
 		
@@ -372,7 +399,7 @@ public class WeatherController {
 					JSONObject jsonResult = JSONObject.fromObject(result);
 					
 					Date time = new Date();
-					result = weather_data(null, time, weather, jsonResult, true, time_zone);
+					result = weather_data(null, time, weather, jsonResult, true, time_zone, this.weatherCityId, String.valueOf(city_id));
 					
 					retval.put("status", ConstantService.statusCode_200);
 //					retval.put("time", time.getTime()/1000);
@@ -418,7 +445,7 @@ public class WeatherController {
 					JSONObject jsonResult = JSONObject.fromObject(result);
 					
 					Date time = new Date();
-					result = weather_data(null, time, weather, jsonResult, true, time_zone);
+					result = weather_data(null, time, weather, jsonResult, true, time_zone, this.weatherCityName, city_name);
 					
 					retval.put("status", ConstantService.statusCode_200);
 //					retval.put("time", time.getTime()/1000);
@@ -460,7 +487,7 @@ public class WeatherController {
 				JSONObject jsonResult = JSONObject.fromObject(result);
 				
 				Date time = new Date();
-				result = weather_data(null, time, null, jsonResult, false, time_zone);
+				result = weather_data(null, time, null, jsonResult, false, time_zone, null, null);
 				
 				retval.put("status", ConstantService.statusCode_200);
 //				retval.put("time", time.getTime()/1000);
@@ -507,7 +534,7 @@ public class WeatherController {
 					JSONObject jsonResult = JSONObject.fromObject(result);
 					
 					Date time = new Date();
-					result = weather_data(zip_code, time, weather, jsonResult, true, time_zone);
+					result = weather_data(zip_code, time, weather, jsonResult, true, time_zone, this.weatherZipCode, zip_code);
 					
 					retval.put("status", ConstantService.statusCode_200);
 //					retval.put("time", time.getTime()/1000);

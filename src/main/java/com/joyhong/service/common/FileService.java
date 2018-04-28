@@ -2,11 +2,15 @@ package com.joyhong.service.common;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -200,5 +204,40 @@ public class FileService {
 	        }
 		}
 		existsPath.delete();
+	}
+	
+	/**
+	 * 序列化对象
+	 * @param object
+	 * @return
+	 */
+	public String serialize(Object object){
+		try {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ObjectOutputStream  oos = new ObjectOutputStream(baos);
+			oos.writeObject(object);
+			return baos.toString("ISO-8859-1");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * 反序列化对象
+	 * @param bytes
+	 * @return
+	 */
+	public Object unserialize(String string){
+		try {
+			ByteArrayInputStream bais = new ByteArrayInputStream(string.getBytes("ISO-8859-1"));
+			ObjectInputStream ois = new ObjectInputStream(bais);
+			return ois.readObject();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 }
