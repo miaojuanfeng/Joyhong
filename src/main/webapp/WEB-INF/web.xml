@@ -2,16 +2,18 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
       xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"  
       version="3.0">  
-    <servlet>  
-        <servlet-name>joyhong</servlet-name>  
-        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-        <!-- <load-on-startup>1</load-on-startup>  -->
-    </servlet>  
-  
-    <servlet-mapping>  
-        <servlet-name>joyhong</servlet-name>  
-        <url-pattern>/</url-pattern>  
-    </servlet-mapping>
+    
+    <context-param>
+	    <param-name>log4jConfigLocation</param-name>
+	    <param-value>classpath:/log4j.properties</param-value>
+	</context-param>
+	
+	<listener>
+	    <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>com.joyhong.listener.TwitterListener</listener-class>
+	</listener>
     
     <filter>
     	<filter-name>CharacterEncodingFilter</filter-name>
@@ -38,12 +40,15 @@
 	    <filter-name>LoginFilter</filter-name>
 	    <url-pattern>/cms/*</url-pattern>
 	</filter-mapping>
-    
-    <context-param>
-	    <param-name>log4jConfigLocation</param-name>
-	    <param-value>classpath:/log4j.properties</param-value>
-	</context-param>
-	<listener>
-	    <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
-	</listener>
+	
+	<servlet>  
+        <servlet-name>joyhong</servlet-name>  
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <!-- <load-on-startup>1</load-on-startup> -->
+    </servlet>  
+  
+    <servlet-mapping>  
+        <servlet-name>joyhong</servlet-name>  
+        <url-pattern>/</url-pattern>  
+    </servlet-mapping>
 </web-app>

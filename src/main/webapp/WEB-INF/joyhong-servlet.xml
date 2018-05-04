@@ -10,7 +10,7 @@
         http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">  
   
   	<!-- 开启自动扫包 -->
-    <context:component-scan base-package="com.joyhong.api,com.joyhong.cms,com.joyhong.service,com.joyhong.filter" />
+    <context:component-scan base-package="com.joyhong.api,com.joyhong.cms,com.joyhong.service" />
     
     <!-- 文件上传 -->
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
@@ -49,12 +49,12 @@
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">  
 	    <property name="configLocation" value="classpath:mybatis-config.xml" />
 	    <property name="dataSource" ref="dataSource" />  
-	</bean>  
+	</bean>
 	
 	<!-- 配置事务管理器 -->
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">  
 	    <property name="dataSource" ref="dataSource" />  
-	</bean>  
+	</bean>
 	    
 	<bean id="weatherMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">  
 	    <property name="mapperInterface" value="com.joyhong.dao.WeatherMapper" />  
