@@ -193,7 +193,7 @@ public class TwitterController {
 	
 	private String imageUrl(String url){
 		byte[] fileByte = getFileBytes(url);
-		String fileName = url.substring(url.lastIndexOf("/"));
+		String fileName = url.substring(url.lastIndexOf("/")+1);
 		
 		try{
 			FileOutputStream fileOut = new FileOutputStream(twitterImagePath+fileName);  
@@ -468,11 +468,11 @@ public class TwitterController {
 								finalUrl = "";
 							}
 							JSONArray desc_temp = new JSONArray();
-							JSONArray url_temp = new JSONArray();
+//							JSONArray url_temp = new JSONArray();
 							desc_temp.add(message.getText());
-							url_temp.add(finalUrl);
+//							url_temp.add(finalUrl);
 							body.put("text", desc_temp);
-							body.put("url", url_temp);
+							body.put("url", finalUrl);
 							body.put("type", type);
 							body.put("platform", "twitter");
 							body.put("time", (new Date()).getTime()/1000);

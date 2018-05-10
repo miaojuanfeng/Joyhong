@@ -19,8 +19,8 @@ public class TwitterListener implements ServletContextListener{
 		 * 此时DispatcherServlet还未启动，无法使用Autowired自动注入
 		 * 所以需要手动创建对象
 		 */
-		TwitterController twitterController = new TwitterController();
-		twitterController.listener();
+//		TwitterController twitterController = new TwitterController();
+//		twitterController.listener();
 	}
 
 	public void contextDestroyed(ServletContextEvent sce) {
