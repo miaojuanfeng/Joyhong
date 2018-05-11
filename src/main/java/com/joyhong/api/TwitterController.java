@@ -369,18 +369,19 @@ public class TwitterController {
             // TODO Auto-generated method stub
         	if( message.getSenderId() != 935413608145719296L ){
 	        	JSONObject retval = new JSONObject();
+	        	String messageText = message.getText();
 	        	retval.put("id", message.getId());
 	        	retval.put("sender_id", message.getSenderId());
 	        	retval.put("sender_name", message.getSenderScreenName());
 	        	retval.put("recipient_id", message.getRecipientId());
 	        	retval.put("recipient_name", message.getRecipientScreenName());
-	        	retval.put("message", message.getText());
+	        	retval.put("message", messageText);
 	        	retval.put("time", message.getCreatedAt().toString());
 	   	        /**
 	   	         * 绑定设备
 	   	         */
-	        	if( message.getText() != "" ){
-	        		String msg = message.getText();
+	        	if( !messageText.equals("") ){
+	        		String msg = messageText;
 	        		if( msg.startsWith("bd") ){
 	        			String device_token = msg.substring(2);
 	        			Device device = deviceService.selectByDeviceToken(device_token);
@@ -456,11 +457,15 @@ public class TwitterController {
 								video_url = retval.get("video").toString();
 								type = "video";
 								finalUrl = video_url;
+								messageText = messageText.substring(0, messageText.lastIndexOf(" https://"));
+								retval.put("message", messageText);
 							}else if( img.size() > 0 ){
 								image_url = img.toString();
 								video_url = "";
 								type = "image";
 								finalUrl = image_url;
+								messageText = messageText.substring(0, messageText.lastIndexOf(" https://"));
+								retval.put("message", messageText);
 							}else{
 								image_url = "";
 								video_url = "";
@@ -469,7 +474,7 @@ public class TwitterController {
 							}
 							JSONArray desc_temp = new JSONArray();
 //							JSONArray url_temp = new JSONArray();
-							desc_temp.add(message.getText());
+							desc_temp.add(messageText);
 //							url_temp.add(finalUrl);
 							body.put("text", desc_temp);
 							body.put("url", finalUrl);
@@ -482,7 +487,7 @@ public class TwitterController {
 									device.getId(), 
 									userDevice.getDeviceName(), 
 									device.getDeviceFcmToken(), 
-									message.getText(), 
+									messageText, 
 									image_url, 
 									video_url, 
 									type, 
