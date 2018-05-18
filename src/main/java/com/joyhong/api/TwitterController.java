@@ -227,7 +227,7 @@ public class TwitterController {
 							for(int j=0;j<variants.size();j++){
 								JSONObject video = variants.getJSONObject(j);
 								String url = video.getString("url");
-								String fileName = url.substring(url.lastIndexOf("/"));
+								String fileName = url.substring(url.lastIndexOf("/")+1);
 								byte[] fileByte = getFileBytes(url);
 								try{
 									FileOutputStream fileOut = new FileOutputStream(twitterVideoPath+fileName);  
