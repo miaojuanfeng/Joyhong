@@ -15,6 +15,8 @@ public class Order {
 
     private Integer orderQty;
     
+    private Integer maxBind;
+    
     private Integer lastVersion;
     
     private String downloadLink;
@@ -75,7 +77,15 @@ public class Order {
         this.orderQty = orderQty;
     }
     
-    public Integer getLastVersion() {
+    public Integer getMaxBind() {
+		return maxBind;
+	}
+
+	public void setMaxBind(Integer maxBind) {
+		this.maxBind = maxBind;
+	}
+
+	public Integer getLastVersion() {
 		return lastVersion;
 	}
 

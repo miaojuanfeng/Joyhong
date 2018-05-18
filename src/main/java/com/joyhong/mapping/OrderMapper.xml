@@ -8,6 +8,7 @@
     <result column="dealer_code" jdbcType="CHAR" property="dealerCode" />
     <result column="hardware_code" jdbcType="CHAR" property="hardwareCode" />
     <result column="order_qty" jdbcType="INTEGER" property="orderQty" />
+    <result column="max_bind" jdbcType="INTEGER" property="maxBind" />
     <result column="last_version" jdbcType="INTEGER" property="lastVersion" />
     <result column="download_link" jdbcType="VARCHAR" property="downloadLink" />
     <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
@@ -18,7 +19,7 @@
     <result column="version_desc" jdbcType="LONGVARCHAR" property="versionDesc" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, order_code, machine_code, dealer_code, hardware_code, order_qty, last_version, download_link, create_date, 
+    id, order_code, machine_code, dealer_code, hardware_code, order_qty, max_bind, last_version, download_link, create_date, 
     modify_date, deleted
   </sql>
   <sql id="Blob_Column_List">
@@ -50,11 +51,11 @@
   </delete>
   <insert id="insert" parameterType="com.joyhong.model.Order">
     insert into jh_order (id, order_code, machine_code, 
-      dealer_code, hardware_code, order_qty, last_version, download_link, 
+      dealer_code, hardware_code, order_qty, max_bind, last_version, download_link, 
       create_date, modify_date, deleted, version_desc
       )
     values (#{id,jdbcType=INTEGER}, #{orderCode,jdbcType=CHAR}, #{machineCode,jdbcType=CHAR}, 
-      #{dealerCode,jdbcType=CHAR}, #{hardwareCode,jdbcType=CHAR}, #{orderQty,jdbcType=INTEGER}, 
+      #{dealerCode,jdbcType=CHAR}, #{hardwareCode,jdbcType=CHAR}, #{orderQty,jdbcType=INTEGER}, #{maxBind,jdbcType=INTEGER},
       #{lastVersion,jdbcType=INTEGER}, #{downloadLink,jdbcType=VARCHAR},
       #{createDate,jdbcType=TIMESTAMP}, #{modifyDate,jdbcType=TIMESTAMP}, #{deleted,jdbcType=INTEGER}, #{versionDesc,jdbcType=LONGVARCHAR}
       )
@@ -79,6 +80,9 @@
       </if>
       <if test="orderQty != null">
         order_qty,
+      </if>
+      <if test="maxBind != null">
+        max_bind,
       </if>
       <if test="lastVersion != null">
         last_version,
@@ -118,6 +122,9 @@
       <if test="orderQty != null">
         #{orderQty,jdbcType=INTEGER},
       </if>
+      <if test="maxBind != null">
+        #{maxBind,jdbcType=INTEGER},
+      </if>
       <if test="lastVersion != null">
         #{lastVersion,jdbcType=INTEGER},
       </if>
@@ -156,6 +163,9 @@
       <if test="orderQty != null">
         order_qty = #{orderQty,jdbcType=INTEGER},
       </if>
+      <if test="maxBind != null">
+        max_bind = #{maxBind,jdbcType=INTEGER},
+      </if>
       <if test="lastVersion != null">
         last_version = #{lastVersion,jdbcType=INTEGER},
       </if>
@@ -184,11 +194,10 @@
       dealer_code = #{dealerCode,jdbcType=CHAR},
       hardware_code = #{hardwareCode,jdbcType=CHAR},
       order_qty = #{orderQty,jdbcType=INTEGER},
+      max_bind = #{maxBind,jdbcType=INTEGER},
       last_version = #{lastVersion,jdbcType=INTEGER},
       download_link = #{downloadLink,jdbcType=VARCHAR},
-      create_date = #{createDate,jdbcType=TIMESTAMP},
       modify_date = #{modifyDate,jdbcType=TIMESTAMP},
-      deleted = #{deleted,jdbcType=INTEGER},
       version_desc = #{versionDesc,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -199,11 +208,10 @@
       dealer_code = #{dealerCode,jdbcType=CHAR},
       hardware_code = #{hardwareCode,jdbcType=CHAR},
       order_qty = #{orderQty,jdbcType=INTEGER},
+      max_bind = #{maxBind,jdbcType=INTEGER},
       last_version = #{lastVersion,jdbcType=INTEGER},
       download_link = #{downloadLink,jdbcType=VARCHAR},
-      create_date = #{createDate,jdbcType=TIMESTAMP},
       modify_date = #{modifyDate,jdbcType=TIMESTAMP},
-      deleted = #{deleted,jdbcType=INTEGER}
     where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

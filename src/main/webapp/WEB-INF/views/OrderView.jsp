@@ -113,6 +113,10 @@
 											<form:input id="order_qty" path="orderQty" type="number" min="0" class="form-control input-sm required" placeholder="Order qty" />
 										</p>
 										<p class="form-group">
+											<label for="max_bind">Max bind <span class="highlight">*</span></label>
+											<form:input id="max_bind" path="maxBind" type="number" min="0" class="form-control input-sm required" placeholder="Max bind" />
+										</p>
+										<p class="form-group">
 											<label for="last_version">Last version <span class="highlight"></span></label>
 											<form:input id="last_version" path="lastVersion" type="number" min="0" class="form-control input-sm" placeholder="Last version" />
 										</p>

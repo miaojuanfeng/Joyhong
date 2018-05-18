@@ -230,7 +230,9 @@ public class DeviceController {
 				/*
 				 * 检查绑定的设备数量，不能超过20个
 				 */
-				
+//				Order order = orderService
+//				List<UserDevice> userDevice = userDeviceService.selectByDeviceId(device.getId());
+//				if( userDevice.size() )
 				/*
 				 * 检查绑定的设备数量，不能超过20个
 				 */

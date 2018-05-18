@@ -23,6 +23,12 @@ public class OrderServiceImpl implements OrderService {
 
 	public int insert(Order record) {
 		// TODO Auto-generated method stub
+		if( record.getLastVersion() == null ){
+			record.setLastVersion(0);
+		}
+		if( record.getVersionDesc() == null ){
+			record.setVersionDesc("");
+		}
 		record.setCreateDate(new Date());
 		record.setModifyDate(new Date());
 		record.setDeleted(0);
