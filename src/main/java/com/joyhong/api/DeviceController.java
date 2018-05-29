@@ -28,6 +28,7 @@ import com.joyhong.service.OrderService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
 import com.joyhong.service.common.ConstantService;
+import com.joyhong.service.common.PushService;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -54,6 +55,9 @@ public class DeviceController {
 	
 	@Autowired
 	private UserDeviceService userDeviceService;
+	
+	@Autowired
+	private PushService pushService;
 	
 	/**
 	 * 注册device id与fcm token
@@ -228,34 +232,81 @@ public class DeviceController {
 			Device device = deviceService.selectByDeviceToken(device_token);
 			if( device != null ){
 				/*
-				 * 检查绑定的设备数量，不能超过20个
+				 * 检查绑定的设备数量，不能超过order限制
 				 */
-//				Order order = orderService
-//				List<UserDevice> userDevice = userDeviceService.selectByDeviceId(device.getId());
-//				if( userDevice.size() )
-				/*
-				 * 检查绑定的设备数量，不能超过20个
-				 */
-				if( userDeviceService.selectByUserIdAndDeviceId(user_id, device.getId()) == null ){
-					UserDevice ud = new UserDevice();
-					ud.setUserId(user_id);
-					ud.setDeviceId(device.getId());
-					ud.setDeviceName(device_name);
-					if( userDeviceService.insert(ud) == 1 ){
-						retval.put("status", ConstantService.statusCode_200);
-						JSONObject temp = new JSONObject();
-						temp.put("device_id", device.getId());
-						temp.put("device_token", device.getDeviceToken());
-						temp.put("device_fcm_token", device.getDeviceFcmToken());
-						temp.put("device_name", device_name);
-						temp.put("create_date", device.getCreateDate().getTime());
-						temp.put("modify_date", device.getModifyDate().getTime());
-						retval.put("data", temp);
+				Order order = orderService.selectByPrimaryKey(device.getOrderId());
+				if( order != null ){
+					List<UserDevice> userDevice = userDeviceService.selectByDeviceId(device.getId());
+					if( userDevice.size() < order.getMaxBind() ){
+						/*
+						 * 绑定设备
+						 */
+						if( userDeviceService.selectByUserIdAndDeviceId(user_id, device.getId()) == null ){
+							UserDevice ud = new UserDevice();
+							ud.setUserId(user_id);
+							ud.setDeviceId(device.getId());
+							ud.setDeviceName(device_name);
+							if( userDeviceService.insert(ud) == 1 ){
+								retval.put("status", ConstantService.statusCode_200);
+								JSONObject temp = new JSONObject();
+								temp.put("device_id", device.getId());
+								temp.put("device_token", device.getDeviceToken());
+								temp.put("device_fcm_token", device.getDeviceFcmToken());
+								temp.put("device_name", device_name);
+								temp.put("create_date", device.getCreateDate().getTime());
+								temp.put("modify_date", device.getModifyDate().getTime());
+								retval.put("data", temp);
+								/*
+								 * 推送绑定消息
+								 */
+								JSONObject body = new JSONObject();
+								JSONArray desc_temp = new JSONArray();
+								desc_temp.add("new user");
+								JSONArray url_temp = new JSONArray();
+								body.put("sender_id", user.getId());
+								body.put("sender_name", user.getNickname());
+								//
+								JSONObject ut = new JSONObject();
+								ut.put("username", user.getUsername());
+								ut.put("account", user.getNumber());
+								ut.put("nickname", user.getNickname());
+								ut.put("avatar", user.getProfileImage());
+								ut.put("platform", user.getPlatform());
+								ut.put("accepted", user.getAccepted());
+								body.put("sender_user", ut);
+								//
+								body.put("receive_id", device.getId());
+								body.put("receive_name", device_name);
+								body.put("to_fcm_token", device.getDeviceFcmToken());
+								body.put("text", desc_temp);
+								body.put("url", url_temp);
+								body.put("type", "text");
+								body.put("platform", "app");
+								body.put("time", (new Date()).getTime()/1000);
+								pushService.push(
+										user.getId(),
+										user.getNickname(), 
+										device.getId(), 
+										device_name, 
+										device.getDeviceFcmToken(), 
+										"new user", 
+										"", 
+										"", 
+										"text", 
+										"app", 
+										"Receive a message from App", 
+										body.toString());
+							}else{
+								retval.put("status", ConstantService.statusCode_107);
+							}
+						}else{
+							retval.put("status", ConstantService.statusCode_108);
+						}
 					}else{
-						retval.put("status", ConstantService.statusCode_107);
+						retval.put("status", ConstantService.statusCode_117);
 					}
 				}else{
-					retval.put("status", ConstantService.statusCode_108);
+					retval.put("status", ConstantService.statusCode_112);
 				}
 			}else{
 				retval.put("status", ConstantService.statusCode_101);
@@ -391,7 +442,7 @@ public class DeviceController {
 	                String result = EntityUtils.toString(response.getEntity());
 	                JSONObject resultJson = JSONObject.fromObject(result);
 					
-	                System.out.println(resultJson.toString());
+//	                System.out.println(resultJson.toString());
 	                
 	                if( resultJson.getString("status").equals("OK") ){
 	                	retval.put("status", ConstantService.statusCode_200);

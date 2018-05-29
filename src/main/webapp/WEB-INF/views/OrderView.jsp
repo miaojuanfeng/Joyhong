@@ -86,7 +86,7 @@
 
 					<div class="col-sm-12">
 						<form:form name="update" method="post" modelAttribute="order">
-							<%-- <input type="hidden" name="order_id" value="${order.id}" /> --%>
+							<input type="hidden" name="order_id" value="${order.id}" />
 							<input type="hidden" name="referer" value="${referer}" />
 							<div class="fieldset">
 								<div class="row form-group">

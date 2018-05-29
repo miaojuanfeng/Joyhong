@@ -24,8 +24,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.joyhong.model.Device;
+import com.joyhong.model.Order;
 import com.joyhong.model.UserDevice;
 import com.joyhong.service.DeviceService;
+import com.joyhong.service.OrderService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
 import com.joyhong.service.common.FileService;
@@ -71,6 +73,9 @@ public class TwitterController {
 	private static String twitterVideoUrl = ConstantService.baseUrl + "/twitter/attachments/video/";
 	
 	private TwitterStream twitterStream = null;
+	
+	@Autowired
+	private OrderService orderService;
 	
 	@Autowired
 	private DeviceService deviceService;
@@ -351,15 +356,71 @@ public class TwitterController {
 		 * @param deviceId
 		 * @return Integer
 		 */
-		public Integer insertUserDeviceAfterDelete(Integer userId, Integer deviceId){
+		private boolean insertUserDeviceAfterDelete(Integer userId, Integer deviceId, Integer orderId){
 			userDeviceService.deleteByUserId(userId);
 			
-			UserDevice userDevice = new UserDevice();
-			userDevice.setUserId(userId);
-			userDevice.setDeviceId(deviceId);
-			userDevice.setDeviceName("");
+			Order order = orderService.selectByPrimaryKey(orderId);
+			if( order != null ){
+				List<UserDevice> userDevice = userDeviceService.selectByDeviceId(deviceId);
+				if( userDevice.size() < order.getMaxBind() ){
+					/*
+					 * 绑定设备
+					 */
+					UserDevice newUserDevice = new UserDevice();
+					newUserDevice.setUserId(userId);
+					newUserDevice.setDeviceId(deviceId);
+					newUserDevice.setDeviceName("");
+					
+					if( userDeviceService.insert(newUserDevice) == 1 ){
+						com.joyhong.model.User user = userService.selectByPrimaryKey(userId);
+						Device device = deviceService.selectByPrimaryKey(deviceId);
+						/*
+						 * 推送绑定消息
+						 */
+						JSONObject body = new JSONObject();
+						JSONArray desc_temp = new JSONArray();
+						desc_temp.add("new user");
+						JSONArray url_temp = new JSONArray();
+						body.put("sender_id", user.getId());
+						body.put("sender_name", user.getNickname());
+						//
+						JSONObject ut = new JSONObject();
+						ut.put("username", user.getUsername());
+						ut.put("account", user.getNumber());
+						ut.put("nickname", user.getNickname());
+						ut.put("avatar", user.getProfileImage());
+						ut.put("platform", user.getPlatform());
+						ut.put("accepted", user.getAccepted());
+						body.put("sender_user", ut);
+						//
+						body.put("receive_id", device.getId());
+						body.put("receive_name", "");
+						body.put("to_fcm_token", device.getDeviceFcmToken());
+						body.put("text", desc_temp);
+						body.put("url", url_temp);
+						body.put("type", "text");
+						body.put("platform", "app");
+						body.put("time", (new Date()).getTime()/1000);
+						pushService.push(
+								user.getId(),
+								user.getNickname(), 
+								device.getId(), 
+								"", 
+								device.getDeviceFcmToken(), 
+								"new user", 
+								"", 
+								"", 
+								"text", 
+								"app", 
+								"Receive a message from App", 
+								body.toString());
+						
+						return true;
+					}
+				}
+			}
 			
-			return userDeviceService.insert(userDevice);
+			return false;
 		}
 		
 		/**
@@ -388,15 +449,22 @@ public class TwitterController {
 	        			init();
 	        			if( device != null ){
 	        				Integer user_id = this.insertUserIfNotExist(message);
-	        				insertUserDeviceAfterDelete(user_id, device.getId());
-	        				try{
-	        					this.twitter.sendDirectMessage(message.getSenderId(), "Successful Binding!");
-	        				}catch(Exception e){
-	        					logger.info(e.getMessage());
+	        				if( insertUserDeviceAfterDelete(user_id, device.getId(), device.getOrderId()) ){
+	        					try{
+		        					this.twitter.sendDirectMessage(message.getSenderId(), "Successful Binding!");
+		        				}catch(Exception e){
+		        					logger.info(e.getMessage());
+		        				}
+	        				}else{
+	        					try{
+		        					this.twitter.sendDirectMessage(message.getSenderId(), "The number of bound users exceeds the limit.");
+		        				}catch(Exception e){
+		        					logger.info(e.getMessage());
+		        				}
 	        				}
 	        			}else{
 	        				try{
-	        					this.twitter.sendDirectMessage(message.getSenderId(), "Sorry, the device token is not yet registered");
+	        					this.twitter.sendDirectMessage(message.getSenderId(), "Sorry, the device token is not yet registered.");
 	        				}catch(Exception e){
 	        					logger.info(e.getMessage());
 	        				}

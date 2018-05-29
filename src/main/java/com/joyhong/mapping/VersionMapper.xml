@@ -146,7 +146,6 @@
     set name = #{name,jdbcType=VARCHAR},
       last_version = #{lastVersion,jdbcType=INTEGER},
       download_link = #{downloadLink,jdbcType=VARCHAR},
-      create_date = #{createDate,jdbcType=TIMESTAMP},
       modify_date = #{modifyDate,jdbcType=TIMESTAMP},
       deleted = #{deleted,jdbcType=INTEGER},
       version_desc = #{versionDesc,jdbcType=LONGVARCHAR}
@@ -157,7 +156,6 @@
     set name = #{name,jdbcType=VARCHAR},
       last_version = #{lastVersion,jdbcType=INTEGER},
       download_link = #{downloadLink,jdbcType=VARCHAR},
-      create_date = #{createDate,jdbcType=TIMESTAMP},
       modify_date = #{modifyDate,jdbcType=TIMESTAMP},
       deleted = #{deleted,jdbcType=INTEGER}
     where deleted = 0 and id = #{id,jdbcType=INTEGER}

@@ -198,7 +198,8 @@
       last_version = #{lastVersion,jdbcType=INTEGER},
       download_link = #{downloadLink,jdbcType=VARCHAR},
       modify_date = #{modifyDate,jdbcType=TIMESTAMP},
-      version_desc = #{versionDesc,jdbcType=LONGVARCHAR}
+      version_desc = #{versionDesc,jdbcType=LONGVARCHAR},
+      deleted = #{deleted,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.joyhong.model.Order">
@@ -212,6 +213,7 @@
       last_version = #{lastVersion,jdbcType=INTEGER},
       download_link = #{downloadLink,jdbcType=VARCHAR},
       modify_date = #{modifyDate,jdbcType=TIMESTAMP},
+      deleted = #{deleted,jdbcType=INTEGER}
     where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

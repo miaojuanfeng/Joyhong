@@ -23,6 +23,7 @@ public class ConstantService {
 	public static final int statusCode_114 = 114;		// Search place REQUEST_DENIED
 	public static final int statusCode_115 = 115;		// Search place INVALID_REQUEST
 	public static final int statusCode_116 = 116;		// Search place UNKNOW
+	public static final int statusCode_117 = 117;		// The number of bound users exceeds the limit
 	/*
 	 *  Success
 	 */
