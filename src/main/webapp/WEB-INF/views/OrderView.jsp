@@ -94,19 +94,19 @@
 										<h4 class="corpcolor-font">Basic information</h4>
 										<p class="form-group">
 											<label for="order_code">Order code <span class="highlight">*</span></label>
-											<form:input id="order_code" path="orderCode" type="text" class="form-control input-sm required" placeholder="Order code" minlength="4" maxlength="4" />
+											<form:input id="order_code" path="orderCode" type="text" class="form-control input-sm required" placeholder="Order code" maxlength="255" />
 										</p>
 										<p class="form-group">
 											<label for="machine_code">Machine code <span class="highlight">*</span></label>
-											<form:input id="machine_code" path="machineCode" type="text" class="form-control input-sm required" placeholder="Machine code" minlength="2" maxlength="2" />
+											<form:input id="machine_code" path="machineCode" type="text" class="form-control input-sm required" placeholder="Machine code" maxlength="255" />
 										</p>
 										<p class="form-group">
 											<label for="dealer_code">Dealer code <span class="highlight">*</span></label>
-											<form:input id="dealer_code" path="dealerCode" type="text" class="form-control input-sm required" placeholder="Dealer code" minlength="2" maxlength="2" />
+											<form:input id="dealer_code" path="dealerCode" type="text" class="form-control input-sm required" placeholder="Dealer code" maxlength="255" />
 										</p>
 										<p class="form-group">
-											<label for="hardware_code">Hardware code <span class="highlight">*</span></label>
-											<form:input id="hardware_code" path="hardwareCode" type="text" class="form-control input-sm required" placeholder="Hardware code" minlength="2" maxlength="2" />
+											<label for="key_code">Key code <span class="highlight">*</span></label>
+											<form:input id="key_code" path="keyCode" type="text" class="form-control input-sm required" placeholder="Hardware code" minlength="6" maxlength="6" />
 										</p>
 										<p class="form-group">
 											<label for="order_qty">Order qty <span class="highlight">*</span></label>
@@ -291,7 +291,7 @@
 												<th>Order code</th>
 												<th>Machine code</th>
 												<th>Dealer code</th>
-												<th>Hardware code</th>
+												<th>Key code</th>
 												<th>Order qty</th>
 												<th>Create</th>
 												<th>Modify</th>
@@ -308,7 +308,7 @@
 												<td class="expandable">${item.orderCode}</td>
 												<td class="expandable">${item.machineCode}</td>
 												<td class="expandable">${item.dealerCode}</td>
-												<td class="expandable">${item.hardwareCode}</td>
+												<td class="expandable">${item.keyCode}</td>
 												<td class="expandable">${item.orderQty}</td>
 												<td class="expandable"><fmt:formatDate  value="${item.createDate}"  pattern="yyyy-MM-dd" /></td>
 												<td class="expandable"><fmt:formatDate  value="${item.modifyDate}"  pattern="yyyy-MM-dd" /></td>

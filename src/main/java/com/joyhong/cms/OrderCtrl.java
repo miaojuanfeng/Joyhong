@@ -150,13 +150,13 @@ public class OrderCtrl {
 	){
 		Order order = orderService.selectByPrimaryKey(order_id);
 		if( order != null ){
-			String order_code = order.getOrderCode();
+			String key_code = order.getKeyCode();
 			int order_qty = order.getOrderQty();
 			List<String> exist_device = deviceService.selectByOrderIdReturnDeviceToken(order_id);
 			int i = 0;
 			for(i=0; i<order_qty; i++){
 				int random_number = (int)((Math.random()*9+1)*100000);
-				String device_token = order_code + random_number;
+				String device_token = key_code + random_number;
 				//判断是否已经存在该device_token;
 				if( exist_device != null && exist_device.contains(device_token) ){
 					i--;

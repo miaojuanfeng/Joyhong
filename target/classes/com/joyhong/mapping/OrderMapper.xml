@@ -6,7 +6,7 @@
     <result column="order_code" jdbcType="CHAR" property="orderCode" />
     <result column="machine_code" jdbcType="CHAR" property="machineCode" />
     <result column="dealer_code" jdbcType="CHAR" property="dealerCode" />
-    <result column="hardware_code" jdbcType="CHAR" property="hardwareCode" />
+    <result column="key_code" jdbcType="CHAR" property="keyCode" />
     <result column="order_qty" jdbcType="INTEGER" property="orderQty" />
     <result column="max_bind" jdbcType="INTEGER" property="maxBind" />
     <result column="last_version" jdbcType="INTEGER" property="lastVersion" />
@@ -19,7 +19,7 @@
     <result column="version_desc" jdbcType="LONGVARCHAR" property="versionDesc" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, order_code, machine_code, dealer_code, hardware_code, order_qty, max_bind, last_version, download_link, create_date, 
+    id, order_code, machine_code, dealer_code, key_code, order_qty, max_bind, last_version, download_link, create_date, 
     modify_date, deleted
   </sql>
   <sql id="Blob_Column_List">
@@ -51,11 +51,11 @@
   </delete>
   <insert id="insert" parameterType="com.joyhong.model.Order">
     insert into jh_order (id, order_code, machine_code, 
-      dealer_code, hardware_code, order_qty, max_bind, last_version, download_link, 
+      dealer_code, key_code, order_qty, max_bind, last_version, download_link, 
       create_date, modify_date, deleted, version_desc
       )
     values (#{id,jdbcType=INTEGER}, #{orderCode,jdbcType=CHAR}, #{machineCode,jdbcType=CHAR}, 
-      #{dealerCode,jdbcType=CHAR}, #{hardwareCode,jdbcType=CHAR}, #{orderQty,jdbcType=INTEGER}, #{maxBind,jdbcType=INTEGER},
+      #{dealerCode,jdbcType=CHAR}, #{keyCode,jdbcType=CHAR}, #{orderQty,jdbcType=INTEGER}, #{maxBind,jdbcType=INTEGER},
       #{lastVersion,jdbcType=INTEGER}, #{downloadLink,jdbcType=VARCHAR},
       #{createDate,jdbcType=TIMESTAMP}, #{modifyDate,jdbcType=TIMESTAMP}, #{deleted,jdbcType=INTEGER}, #{versionDesc,jdbcType=LONGVARCHAR}
       )
@@ -75,8 +75,8 @@
       <if test="dealerCode != null">
         dealer_code,
       </if>
-      <if test="hardwareCode != null">
-        hardware_code,
+      <if test="keyCode != null">
+        key_code,
       </if>
       <if test="orderQty != null">
         order_qty,
@@ -116,8 +116,8 @@
       <if test="dealerCode != null">
         #{dealerCode,jdbcType=CHAR},
       </if>
-      <if test="hardwareCode != null">
-        #{hardwareCode,jdbcType=CHAR},
+      <if test="keyCode != null">
+        #{keyCode,jdbcType=CHAR},
       </if>
       <if test="orderQty != null">
         #{orderQty,jdbcType=INTEGER},
@@ -157,8 +157,8 @@
       <if test="dealerCode != null">
         dealer_code = #{dealerCode,jdbcType=CHAR},
       </if>
-      <if test="hardwareCode != null">
-        hardware_code = #{hardwareCode,jdbcType=CHAR},
+      <if test="keyCode != null">
+        key_code = #{keyCode,jdbcType=CHAR},
       </if>
       <if test="orderQty != null">
         order_qty = #{orderQty,jdbcType=INTEGER},
@@ -192,7 +192,7 @@
     set order_code = #{orderCode,jdbcType=CHAR},
       machine_code = #{machineCode,jdbcType=CHAR},
       dealer_code = #{dealerCode,jdbcType=CHAR},
-      hardware_code = #{hardwareCode,jdbcType=CHAR},
+      key_code = #{keyCode,jdbcType=CHAR},
       order_qty = #{orderQty,jdbcType=INTEGER},
       max_bind = #{maxBind,jdbcType=INTEGER},
       last_version = #{lastVersion,jdbcType=INTEGER},
@@ -207,7 +207,7 @@
     set order_code = #{orderCode,jdbcType=CHAR},
       machine_code = #{machineCode,jdbcType=CHAR},
       dealer_code = #{dealerCode,jdbcType=CHAR},
-      hardware_code = #{hardwareCode,jdbcType=CHAR},
+      key_code = #{keyCode,jdbcType=CHAR},
       order_qty = #{orderQty,jdbcType=INTEGER},
       max_bind = #{maxBind,jdbcType=INTEGER},
       last_version = #{lastVersion,jdbcType=INTEGER},

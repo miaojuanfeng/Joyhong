@@ -11,7 +11,7 @@ public class Order {
 
     private String dealerCode;
 
-    private String hardwareCode;
+    private String keyCode;
 
     private Integer orderQty;
     
@@ -61,12 +61,12 @@ public class Order {
         this.dealerCode = dealerCode == null ? null : dealerCode.trim();
     }
 
-    public String getHardwareCode() {
-        return hardwareCode;
+    public String getKeyCode() {
+        return keyCode;
     }
 
-    public void setHardwareCode(String hardwareCode) {
-        this.hardwareCode = hardwareCode == null ? null : hardwareCode.trim();
+    public void setKeyCode(String keyCode) {
+        this.keyCode = keyCode == null ? null : keyCode.trim();
     }
 
     public Integer getOrderQty() {
