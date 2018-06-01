@@ -156,11 +156,53 @@ public class DeviceController {
 		JSONObject retval = new JSONObject();
 		
 		if( status.equals("unbind") ){
-			if( userDeviceService.deleteByUserIdAndDeviceId(user_id, device_id) == 1 ){
-				retval.put("status", ConstantService.statusCode_200);
-			}else{
-				retval.put("status", ConstantService.statusCode_103);
+			User user = userService.selectByPrimaryKey(user_id);
+			Device device = deviceService.selectByPrimaryKey(device_id);
+			UserDevice userDevice = userDeviceService.selectByUserIdAndDeviceId(user_id, device_id);
+			if( user != null && device != null && userDevice != null ){
+				/*
+				 * 推送解绑消息
+				 */
+				JSONObject body = new JSONObject();
+				JSONArray desc_temp = new JSONArray();
+				desc_temp.add("unbind user");
+				JSONArray url_temp = new JSONArray();
+				body.put("sender_id", user.getId());
+				body.put("sender_name", user.getNickname());
+				//
+				JSONObject ut = new JSONObject();
+				ut.put("username", user.getUsername());
+				ut.put("account", user.getNumber());
+				ut.put("nickname", user.getNickname());
+				ut.put("avatar", user.getProfileImage());
+				ut.put("platform", user.getPlatform());
+				ut.put("accepted", user.getAccepted());
+				body.put("sender_user", ut);
+				//
+				body.put("receive_id", device.getId());
+				body.put("receive_name", userDevice.getDeviceName());
+				body.put("to_fcm_token", device.getDeviceFcmToken());
+				body.put("text", desc_temp);
+				body.put("url", url_temp);
+				body.put("type", "text");
+				body.put("platform", "app");
+				body.put("time", (new Date()).getTime()/1000);
+				pushService.push(
+						user.getId(),
+						user.getNickname(), 
+						device.getId(), 
+						userDevice.getDeviceName(), 
+						device.getDeviceFcmToken(), 
+						"unbind user", 
+						"", 
+						"", 
+						"text", 
+						"app", 
+						"Receive a message from App", 
+						body.toString());
+				userDeviceService.deleteByUserIdAndDeviceId(user_id, device_id);
 			}
+			retval.put("status", ConstantService.statusCode_200);
 		}else if( status.equals("lock") ){
 			// 检查设备与用户是否已关联
 			UserDevice user_device = userDeviceService.selectByUserIdAndDeviceId(user_id, device_id);
