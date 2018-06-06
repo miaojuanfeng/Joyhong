@@ -132,34 +132,12 @@ public class FacebookController {
 				JSONObject json_obj = JSONObject.fromObject(postdata);
 				JSONObject message = json_obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("message");
 				String sender_id = json_obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("sender").getString("id");
-				User user = userService.selectByUsername(sender_id);
 				
-				if( !sender_id.equals("867139310126070") && user != null ){
-					if( message.has("attachments") ){
-						
-						JSONObject attachments = message.getJSONArray("attachments").getJSONObject(0);
-						
-						type = attachments.getString("type");
-						String url = attachments.getJSONObject("payload").getString("url");
-						String oldUrl = url.replace("/", "\\/");
-						String fileUrl = url.replace("\\", "");
-						                     
-				        String fileName = fileUrl.substring(fileUrl.lastIndexOf("/")+1);
-				        fileName = fileName.substring(0, fileName.lastIndexOf("?"));
-	  
-				        String filePath = "/home/wwwroot/default/facebook/attachments/" + type + "/";   
-				        fileService.saveUrlAs(fileUrl, filePath, fileName);
-				        
-				        postdata = postdata.replace(oldUrl, ConstantService.baseUrl + "/facebook/attachments/" + type + fileName);
-				        if( type.equals("image") ){
-				        	image_url = ConstantService.baseUrl + "/facebook/attachments/" + type + "/" + fileName;
-				        	finalUrl = image_url;
-				        }else if( type.equals("video") ){
-				        	video_url = ConstantService.baseUrl + "/facebook/attachments/" + type + "/" + fileName;
-				        	finalUrl = video_url;
-				        }
-					}
-					
+				
+				if( !sender_id.equals("867139310126070") ){
+					/*
+					 * 回复给发送者的消息
+					 */
 					String postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'Sorry, I can not understand what you say.'}}";
 					if( message.has("text") ){
 						msgStr = message.getString("text");
@@ -183,6 +161,93 @@ public class FacebookController {
 			        		}
 						}
 					}
+					
+					/*
+					 * 判断用户是否已注册
+					 */
+					User user = userService.selectByUsername(sender_id);
+					if( user != null ){
+						if( message.has("attachments") ){
+							
+							JSONObject attachments = message.getJSONArray("attachments").getJSONObject(0);
+							
+							type = attachments.getString("type");
+							String url = attachments.getJSONObject("payload").getString("url");
+							String oldUrl = url.replace("/", "\\/");
+							String fileUrl = url.replace("\\", "");
+							                     
+					        String fileName = fileUrl.substring(fileUrl.lastIndexOf("/")+1);
+					        fileName = fileName.substring(0, fileName.lastIndexOf("?"));
+		  
+					        String filePath = "/home/wwwroot/default/facebook/attachments/" + type + "/";   
+					        fileService.saveUrlAs(fileUrl, filePath, fileName);
+					        
+					        postdata = postdata.replace(oldUrl, ConstantService.baseUrl + "/facebook/attachments/" + type + fileName);
+					        if( type.equals("image") ){
+					        	image_url = ConstantService.baseUrl + "/facebook/attachments/" + type + "/" + fileName;
+					        	finalUrl = image_url;
+					        }else if( type.equals("video") ){
+					        	video_url = ConstantService.baseUrl + "/facebook/attachments/" + type + "/" + fileName;
+					        	finalUrl = video_url;
+					        }
+						}
+						
+						/*
+						 * 推送在下
+						 */
+						if( type.equals("image") || type.equals("video") ){
+							List<UserDevice> ud = userDeviceService.selectByUserId(user.getId());
+							if( ud != null ){
+								UserDevice userDevice = ud.get(0);
+								Device device = deviceService.selectByPrimaryKey(userDevice.getDeviceId());
+								JSONObject body = new JSONObject();
+								body.put("sender_id", user.getId());
+								body.put("sender_name", user.getNickname());
+								//
+								JSONObject temp = new JSONObject();
+								temp.put("username", user.getUsername());
+								temp.put("account", user.getNumber());
+								temp.put("nickname", user.getNickname());
+								temp.put("avatar", user.getProfileImage());
+								temp.put("platform", user.getPlatform());
+								temp.put("accepted", user.getAccepted());
+								body.put("sender_user", temp);
+								//
+								body.put("receive_id", device.getId());
+								body.put("receive_name", userDevice.getDeviceName());
+								body.put("to_fcm_token", device.getDeviceFcmToken());
+								JSONArray desc_temp = new JSONArray();
+								JSONArray url_temp = new JSONArray();
+								desc_temp.add(msgStr);
+								url_temp.add(finalUrl);
+								body.put("text", desc_temp);
+								body.put("url", url_temp);
+								body.put("type", type);
+								body.put("platform", "facebook");
+								body.put("time", (new Date()).getTime()/1000);
+								pushService.push(
+										user.getId(),
+										user.getNickname(), 
+										device.getId(), 
+										userDevice.getDeviceName(), 
+										device.getDeviceFcmToken(), 
+										msgStr, 
+										image_url, 
+										video_url, 
+										type, 
+										"facebook", 
+										"Receive a message from Facebook", 
+										body.toString());
+							}
+						}
+						/*
+						 * 推送在上
+						 */
+					}
+					
+					/*
+					 * 回复消息
+					 */
 					String url = "https://graph.facebook.com/v2.6/me/messages?access_token=EAAHaDouAxh4BAF6hma0v5b7bisZCgLywns3ZAEQiOyqESAV8VRVDFRJo8YKZCm1cW2gIDWvqNITmcYGkWPuJlvMdcHUNgu3VohFg8B4IqzSwzBi7zYnCxK6PKETBCSretaZCt1ys3dQOruI5lElY35nlDd2THSbD2GHZBKbSBhEHSr1kO7lHY";
 					URL obj = new URL(url);
 					HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -209,58 +274,6 @@ public class FacebookController {
 //					System.out.println("nSending 'POST' request to URL : " + url);
 //					System.out.println("Post Data : " + con.getResponseMessage());
 //					System.out.println("Response Code : " + responseCode);
-					
-					/*
-					 * 推送在下
-					 */
-					if( type.equals("image") || type.equals("video") ){
-						List<UserDevice> ud = userDeviceService.selectByUserId(user.getId());
-						if( ud != null ){
-							UserDevice userDevice = ud.get(0);
-							Device device = deviceService.selectByPrimaryKey(userDevice.getDeviceId());
-							JSONObject body = new JSONObject();
-							body.put("sender_id", user.getId());
-							body.put("sender_name", user.getNickname());
-							//
-							JSONObject temp = new JSONObject();
-							temp.put("username", user.getUsername());
-							temp.put("account", user.getNumber());
-							temp.put("nickname", user.getNickname());
-							temp.put("avatar", user.getProfileImage());
-							temp.put("platform", user.getPlatform());
-							temp.put("accepted", user.getAccepted());
-							body.put("sender_user", temp);
-							//
-							body.put("receive_id", device.getId());
-							body.put("receive_name", userDevice.getDeviceName());
-							body.put("to_fcm_token", device.getDeviceFcmToken());
-							JSONArray desc_temp = new JSONArray();
-							JSONArray url_temp = new JSONArray();
-							desc_temp.add(msgStr);
-							url_temp.add(finalUrl);
-							body.put("text", desc_temp);
-							body.put("url", url_temp);
-							body.put("type", type);
-							body.put("platform", "facebook");
-							body.put("time", (new Date()).getTime()/1000);
-							pushService.push(
-									user.getId(),
-									user.getNickname(), 
-									device.getId(), 
-									userDevice.getDeviceName(), 
-									device.getDeviceFcmToken(), 
-									msgStr, 
-									image_url, 
-									video_url, 
-									type, 
-									"facebook", 
-									"Receive a message from Facebook", 
-									body.toString());
-						}
-					}
-					/*
-					 * 推送在上
-					 */
 					
 					fileService.savePostData("/usr/local/tomcat/apache-tomcat-8.5.23/webapps/files/facebook.txt", postdata);
 				}
@@ -319,7 +332,7 @@ public class FacebookController {
 					body.put("text", desc_temp);
 					body.put("url", url_temp);
 					body.put("type", "text");
-					body.put("platform", "app");
+					body.put("platform", "facebook");
 					body.put("time", (new Date()).getTime()/1000);
 					pushService.push(
 							user.getId(),
@@ -331,7 +344,7 @@ public class FacebookController {
 							"", 
 							"", 
 							"text", 
-							"app", 
+							"facebook", 
 							"Receive a message from App", 
 							body.toString());
 					

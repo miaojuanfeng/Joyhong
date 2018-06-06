@@ -62,10 +62,14 @@ import twitter4j.StallWarning;
 public class TwitterController {
 	
 	private Logger logger = Logger.getLogger(this.getClass());
-	private static String consumerKey = "pLekKldeX32b2g9PWSo8RK0N7";
-	private static String consumerSecret = "NSlNjDKudsc58MCTgVNOl3BNzVwH4Uhk7OOAVuMrOgbFJOAuCT";
-	private static String accessToken = "935413608145719296-urfIsaIgDpEbJrwzz5zgIWjVvXS9uXV";
-	private static String accessTokenSecret = "KYRHnzRutnJ25MobjBxsCgTPVq6GUjzk0IDf1Cro1S1C4";
+//	private static String consumerKey = "pLekKldeX32b2g9PWSo8RK0N7";
+//	private static String consumerSecret = "NSlNjDKudsc58MCTgVNOl3BNzVwH4Uhk7OOAVuMrOgbFJOAuCT";
+//	private static String accessToken = "935413608145719296-urfIsaIgDpEbJrwzz5zgIWjVvXS9uXV";
+//	private static String accessTokenSecret = "KYRHnzRutnJ25MobjBxsCgTPVq6GUjzk0IDf1Cro1S1C4";
+	private static String consumerKey = "CeR5EAwOERz2O3MeW8UwxZMKM";
+	private static String consumerSecret = "U8EMeP1HHn24NcwPp4ZESGBmOZ6LYv3ielgdwoqqQmGWpaLroV";
+	private static String accessToken = "1002026986229743619-WZ01a605vNryMkXztjqMIyHTiJdUel";
+	private static String accessTokenSecret = "sZdCDyrJWLQDnfXSIZXrKrGFsUMmxA3YPZO1YxX9OyYJf";
 	
 	private static String twitterImagePath = "/home/wwwroot/default/twitter/attachments/image/";
 	private static String twitterImageUrl = ConstantService.baseUrl + "/twitter/attachments/image/";
@@ -399,7 +403,7 @@ public class TwitterController {
 						body.put("text", desc_temp);
 						body.put("url", url_temp);
 						body.put("type", "text");
-						body.put("platform", "app");
+						body.put("platform", "twitter");
 						body.put("time", (new Date()).getTime()/1000);
 						pushService.push(
 								user.getId(),
@@ -411,7 +415,7 @@ public class TwitterController {
 								"", 
 								"", 
 								"text", 
-								"app", 
+								"twitter", 
 								"Receive a message from App", 
 								body.toString());
 						
@@ -471,31 +475,34 @@ public class TwitterController {
 	        			}
 	        		}
 	        	}
-	        	/**
-	        	 * 遍历所有附件
+	        	/*
+	        	 * 判断用户是否已注册
 	        	 */
-	   	        MediaEntity[] media = message.getMediaEntities();
-	   	        JSONArray img = new JSONArray();
-			    for(MediaEntity m : media){
-			    	/**
-			    	 *  同步图片
-			    	 */
-			    	img.add(imageUrl(m.getMediaURL()));
-				    /**
-			    	 *  同步视频
-			    	 */
-				    if( m.getType().equals("video") ){
-				    	retval.put("video", videoUrl(message.getId()));
+	        	com.joyhong.model.User user = userService.selectByUsername(String.valueOf(message.getSenderId()));
+				if( user != null ){
+		        	/**
+		        	 * 遍历所有附件
+		        	 */
+		   	        MediaEntity[] media = message.getMediaEntities();
+		   	        JSONArray img = new JSONArray();
+				    for(MediaEntity m : media){
+				    	/**
+				    	 *  同步图片
+				    	 */
+				    	img.add(imageUrl(m.getMediaURL()));
+					    /**
+				    	 *  同步视频
+				    	 */
+					    if( m.getType().equals("video") ){
+					    	retval.put("video", videoUrl(message.getId()));
+					    }
 				    }
-			    }
-			    retval.put("image", img);
-			    
-			    if( img.size() > 0 || retval.has("video") ){
-				    /*
-					 * 推送在下
-					 */
-				    com.joyhong.model.User user = userService.selectByUsername(String.valueOf(message.getSenderId()));
-					if( user != null ){
+				    retval.put("image", img);
+				    
+				    if( img.size() > 0 || retval.has("video") ){
+					    /*
+						 * 推送在下
+						 */
 						List<UserDevice> ud = userDeviceService.selectByUserId(user.getId());
 						if( ud != null ){
 							UserDevice userDevice = ud.get(0);
@@ -563,12 +570,11 @@ public class TwitterController {
 									"Receive a message from Twitter", 
 									body.toString());
 						}
+						/*
+						 * 推送在上
+						 */
 					}
-					/*
-					 * 推送在上
-					 */
-			    }
-	           
+				}
 				fileService.savePostData("/usr/local/tomcat/apache-tomcat-8.5.23/webapps/files/twitter.txt", retval.toString());
         	}
         }
