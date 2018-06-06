@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.google.gson.Gson;
 import com.joyhong.model.Device;
 import com.joyhong.model.Upload;
 import com.joyhong.model.User;
@@ -25,6 +26,13 @@ import com.joyhong.service.UserService;
 import com.joyhong.service.common.ConstantService;
 import com.joyhong.service.common.FileService;
 import com.joyhong.service.common.PushService;
+import com.qiniu.common.QiniuException;
+import com.qiniu.common.Zone;
+import com.qiniu.http.Response;
+import com.qiniu.storage.Configuration;
+import com.qiniu.storage.UploadManager;
+import com.qiniu.storage.model.DefaultPutRet;
+import com.qiniu.util.Auth;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -413,35 +421,55 @@ public class UploadController {
 		return retval.toString();
 	}
 	
-//	@RequestMapping(value="/tencent", method = RequestMethod.POST)
-//	@ResponseBody
-//	public String tencent() throws Exception{
-//		JSONObject retval = new JSONObject();
-//		
-//		JSONObject body = new JSONObject();
-//		body.put("sender_id", 22);
-//		body.put("sender_name", "http://file.bsimb.cn:8080/upload/UID_39/1523524437941209.jpg");
-//		
-//		JSONObject t = new JSONObject();
-//		t.put("t", body.toString());
-//		
-//		System.out.println(URLDecoder.decode(URLEncoder.encode(t.toString(), "utf-8"), "utf-8"));
-//		
-//		
-//		pushService.push(
-//				2,
-//				"中文名称", 
-//				3, 
-//				"英文名称", 
-//				"ff4928702ee545430bd87ff7e09671d51c2fe85a", 
-//				"文件描述", 
-//				"", 
-//				"webUrl + fileName", 
-//				"video", 
-//				"app", 
-//				"测试推送消息", 
-//				t.toString());
-//		
-//		return retval.toString();
-//	}
+	/**
+	 * 获取上传token
+	 * @param user_imei
+	 * @return
+	 */
+	@RequestMapping(value="/token", method = RequestMethod.POST)
+	@ResponseBody
+	public String token(@RequestParam("user_id") Integer user_id, @RequestParam("user_imei") String user_imei){
+		JSONObject retval = new JSONObject();
+		
+		User user = userService.selectByUsername(user_imei);
+		if( user != null && user_id.equals(user.getId()) ){
+			
+			String accessKey = "2LlH425zih5U1CpzSE_-gl3BtvDH0nlLX8cDnQ16";
+			String secretKey = "yw56scCKFK9sL0hK6W0gItPhezGO82zkB4XhjEkn";
+			String bucket = "photopartner";
+			
+			Auth auth = Auth.create(accessKey, secretKey);
+			String upToken = auth.uploadToken(bucket);
+			
+			//
+			try {
+				Configuration cfg = new Configuration(Zone.zoneNa0());
+				UploadManager uploadManager = new UploadManager(cfg);
+			    Response response = uploadManager.put("/Users/user/Desktop/image.jpg", "image.jpg", upToken);
+			    //解析上传成功的结果
+			    DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
+			    System.out.println(putRet.key);
+			    System.out.println(putRet.hash);
+			} catch (QiniuException ex) {
+			    Response r = ex.response;
+			    System.err.println(r.toString());
+			    try {
+			        System.err.println(r.bodyString());
+			    } catch (QiniuException ex2) {
+			        //ignore
+			    }
+			}
+			//
+			
+			JSONObject temp = new JSONObject();
+			temp.put("upToken", upToken);
+			
+			retval.put("status", ConstantService.statusCode_200);
+			retval.put("data", temp);
+		}else{
+			retval.put("status", ConstantService.statusCode_109);
+		}
+		
+		return retval.toString();
+	}
 }
