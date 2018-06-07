@@ -16,8 +16,8 @@
 						<div class="menu-column-area col-lg-3 col-md-3 col-sm-6 col-xs-6 col-ms-6">
 							<h3 class="corpcolor-font">Order / Device</h3>
 							<ul>
-								<li><a href="<c:url value="/cms/order/select"></c:url>">Order</a></li>
-								<li><a href="<c:url value="/cms/device/select"></c:url>">Device</a></li>
+								<li><a href="<c:url value="/cms/category/sample/select"></c:url>">Sample</a></li>
+								<li><a href="<c:url value="/cms/category/order/select"></c:url>">Order</a></li>
 							</ul>
 						</div>
 						

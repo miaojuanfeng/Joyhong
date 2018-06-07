@@ -3,6 +3,7 @@
 <mapper namespace="com.joyhong.dao.OrderMapper">
   <resultMap id="BaseResultMap" type="com.joyhong.model.Order">
     <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="category_id" jdbcType="INTEGER" property="categoryId" />
     <result column="order_code" jdbcType="CHAR" property="orderCode" />
     <result column="machine_code" jdbcType="CHAR" property="machineCode" />
     <result column="dealer_code" jdbcType="CHAR" property="dealerCode" />
@@ -19,7 +20,7 @@
     <result column="version_desc" jdbcType="LONGVARCHAR" property="versionDesc" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, order_code, machine_code, dealer_code, key_code, order_qty, max_bind, last_version, download_link, create_date, 
+    id, category_id, order_code, machine_code, dealer_code, key_code, order_qty, max_bind, last_version, download_link, create_date, 
     modify_date, deleted
   </sql>
   <sql id="Blob_Column_List">
@@ -50,11 +51,11 @@
     where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.joyhong.model.Order">
-    insert into jh_order (id, order_code, machine_code, 
+    insert into jh_order (id, category_id, order_code, machine_code, 
       dealer_code, key_code, order_qty, max_bind, last_version, download_link, 
       create_date, modify_date, deleted, version_desc
       )
-    values (#{id,jdbcType=INTEGER}, #{orderCode,jdbcType=CHAR}, #{machineCode,jdbcType=CHAR}, 
+    values (#{id,jdbcType=INTEGER}, #{categoryId,jdbcType=INTEGER}, #{orderCode,jdbcType=CHAR}, #{machineCode,jdbcType=CHAR}, 
       #{dealerCode,jdbcType=CHAR}, #{keyCode,jdbcType=CHAR}, #{orderQty,jdbcType=INTEGER}, #{maxBind,jdbcType=INTEGER},
       #{lastVersion,jdbcType=INTEGER}, #{downloadLink,jdbcType=VARCHAR},
       #{createDate,jdbcType=TIMESTAMP}, #{modifyDate,jdbcType=TIMESTAMP}, #{deleted,jdbcType=INTEGER}, #{versionDesc,jdbcType=LONGVARCHAR}
@@ -65,6 +66,9 @@
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
+      </if>
+      <if test="categoryId != null">
+        category_id,
       </if>
       <if test="orderCode != null">
         order_code,
@@ -107,6 +111,9 @@
       <if test="id != null">
         #{id,jdbcType=INTEGER},
       </if>
+      <if test="categoryId != null">
+        #{category_id,jdbcType=INTEGER},
+      </if>
       <if test="orderCode != null">
         #{orderCode,jdbcType=CHAR},
       </if>
@@ -148,6 +155,9 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.joyhong.model.Order">
     update jh_order
     <set>
+      <if test="categoryId != null">
+        category_id = #{categoryId,jdbcType=INTEGER},
+      </if>
       <if test="orderCode != null">
         order_code = #{orderCode,jdbcType=CHAR},
       </if>
@@ -189,7 +199,8 @@
   </update>
   <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.joyhong.model.Order">
     update jh_order
-    set order_code = #{orderCode,jdbcType=CHAR},
+    set category_id = #{categoryId,jdbcType=INTEGER},
+      order_code = #{orderCode,jdbcType=CHAR},
       machine_code = #{machineCode,jdbcType=CHAR},
       dealer_code = #{dealerCode,jdbcType=CHAR},
       key_code = #{keyCode,jdbcType=CHAR},
@@ -204,7 +215,8 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.joyhong.model.Order">
     update jh_order
-    set order_code = #{orderCode,jdbcType=CHAR},
+    set category_id = #{categoryId,jdbcType=INTEGER},
+      order_code = #{orderCode,jdbcType=CHAR},
       machine_code = #{machineCode,jdbcType=CHAR},
       dealer_code = #{dealerCode,jdbcType=CHAR},
       key_code = #{keyCode,jdbcType=CHAR},

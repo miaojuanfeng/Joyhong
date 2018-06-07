@@ -93,6 +93,15 @@
 									<div class="col-sm-4 col-xs-12">
 										<h4 class="corpcolor-font">Basic information</h4>
 										<p class="form-group">
+											<label for="category_id">Category <span class="highlight">*</span></label>
+											<form:select id="category_id" path="categoryId" data-placeholder="Category" class="chosen-select required">
+                                                <c:forEach items="${categorys}" var="item">
+                                                	<option value=""></option>
+	                                                <option value="${item.id}" <c:if test="${item.id == order.categoryId}">selected</c:if>>${item.type} - ${item.name}</option>
+										 		</c:forEach>
+										 	</form:select>
+										</p>
+										<p class="form-group">
 											<label for="order_code">Order code <span class="highlight">*</span></label>
 											<form:input id="order_code" path="orderCode" type="text" class="form-control input-sm required" placeholder="Order code" maxlength="255" />
 										</p>

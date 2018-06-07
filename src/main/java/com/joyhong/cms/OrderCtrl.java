@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.joyhong.model.Category;
 import com.joyhong.model.Device;
 import com.joyhong.model.Order;
+import com.joyhong.service.CategoryService;
 import com.joyhong.service.DeviceService;
 import com.joyhong.service.OrderService;
 import com.joyhong.service.common.FuncService;
@@ -30,6 +32,9 @@ public class OrderCtrl {
 	
 	@Autowired
 	private DeviceService deviceService;
+	
+	@Autowired
+	private CategoryService categoryService;
 	
 	@Autowired
 	private FuncService funcService;
@@ -68,6 +73,9 @@ public class OrderCtrl {
 			Model model
 	){
 		model.addAttribute("order", new Order());
+		
+		List<Category> categorys = categoryService.selectAll();
+		model.addAttribute("categorys", categorys);
 
 		return "OrderView";
 	}
@@ -96,6 +104,9 @@ public class OrderCtrl {
 		Order order = orderService.selectByPrimaryKey(order_id);
 		if( order != null ){
 			model.addAttribute("order", order);
+			
+			List<Category> categorys = categoryService.selectAll();
+			model.addAttribute("categorys", categorys);
 			
 			List<Device> device = deviceService.selectByOrderId(order.getId());
 			model.addAttribute("device", device);

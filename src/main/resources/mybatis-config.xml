@@ -11,6 +11,7 @@
         <typeAlias alias="Config" type="com.joyhong.model.Config"/>
         <typeAlias alias="Version" type="com.joyhong.model.Version"/>
         <typeAlias alias="UserDevice" type="com.joyhong.model.UserDevice"/>
+        <typeAlias alias="Category" type="com.joyhong.model.Category"/>
     </typeAliases>  
     <mappers>  
         <mapper resource="com/joyhong/mapping/WeatherMapper.xml" />
@@ -22,5 +23,6 @@
         <mapper resource="com/joyhong/mapping/ConfigMapper.xml" />
         <mapper resource="com/joyhong/mapping/VersionMapper.xml" />
         <mapper resource="com/joyhong/mapping/UserDeviceMapper.xml" />
+        <mapper resource="com/joyhong/mapping/CategoryMapper.xml" />
     </mappers>
 </configuration>

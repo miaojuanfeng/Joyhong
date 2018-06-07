@@ -100,4 +100,9 @@
 	    <property name="mapperInterface" value="com.joyhong.dao.UserDeviceMapper" />  
 	    <property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
+	
+	<bean id="categoryMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">  
+	    <property name="mapperInterface" value="com.joyhong.dao.CategoryMapper" />  
+	    <property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
 </beans>

@@ -4,6 +4,8 @@ import java.util.Date;
 
 public class Order {
     private Integer id;
+    
+    private Integer categoryId;
 
     private String orderCode;
 
@@ -37,7 +39,15 @@ public class Order {
         this.id = id;
     }
 
-    public String getOrderCode() {
+    public Integer getCategoryId() {
+		return categoryId;
+	}
+
+	public void setCategoryId(Integer categoryId) {
+		this.categoryId = categoryId;
+	}
+
+	public String getOrderCode() {
         return orderCode;
     }
 
