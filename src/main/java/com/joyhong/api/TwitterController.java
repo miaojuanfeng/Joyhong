@@ -13,6 +13,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -30,27 +31,26 @@ import com.joyhong.service.DeviceService;
 import com.joyhong.service.OrderService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
+import com.joyhong.service.common.ConstantService;
 import com.joyhong.service.common.FileService;
 import com.joyhong.service.common.PushService;
-import com.joyhong.service.common.ConstantService;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-
+import twitter4j.DirectMessage;
+import twitter4j.MediaEntity;
+import twitter4j.StallWarning;
 import twitter4j.Status;
-import twitter4j.conf.ConfigurationBuilder;
-import twitter4j.User;
-import twitter4j.TwitterStream;
-import twitter4j.TwitterStreamFactory;
-import twitter4j.UserStreamListener;
 import twitter4j.StatusDeletionNotice;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
+import twitter4j.TwitterStream;
+import twitter4j.TwitterStreamFactory;
+import twitter4j.User;
 import twitter4j.UserList;
-import twitter4j.DirectMessage;
-import twitter4j.MediaEntity;
-import twitter4j.StallWarning;
+import twitter4j.UserStreamListener;
+import twitter4j.conf.ConfigurationBuilder;
 
 /**
  * Twitter消息控制器
@@ -654,9 +654,46 @@ public class TwitterController {
 			
 		}
 
-		public void onFollow(User arg0, User arg1) {
+		public void onFollow(User source, User target) {
 			// TODO Auto-generated method stub
+			if( source.getId() != 1002026986229743619L ){
+				String param = "user_id=" + String.valueOf(source.getId());
+				String url = "https://api.twitter.com/1.1/friendships/create.json";
+				String httpUrl = url + "?" + param;
+				
+				try{
+					CloseableHttpClient httpclient = HttpClients.createDefault();
+					
+					String oauth_timestamp = String.valueOf(new Date().getTime()/1000);
+					oauth_timestamp = "1528343544";
+					String hmacSHA1Text = "POST&" + URLEncoder.encode(url, "UTF-8") + "&" + 
+										  URLEncoder.encode("oauth_consumer_key="+consumerKey+"&"+
+										  "oauth_nonce="+oauth_timestamp+"&"+
+										  "oauth_signature_method=HMAC-SHA1&"+
+										  "oauth_timestamp="+oauth_timestamp+"&"+
+										  "oauth_token="+accessToken+"&"+
+										  "oauth_version=1.0"+"&"+
+										  param, "UTF-8").replace("&", "%26");
 			
+					String hmacSHA1Key = consumerSecret + "&" + accessTokenSecret;
+					
+					String oauth_signature = URLEncoder.encode(new String(Base64.encodeBase64(HmacSHA1Encrypt(hmacSHA1Text, hmacSHA1Key))), "UTF-8");
+					
+					HttpPost httppost = new HttpPost(httpUrl);
+			
+					httppost.setHeader("Authorization", "OAuth oauth_consumer_key=\""+consumerKey+"\",oauth_token=\""+accessToken+"\",oauth_signature_method=\"HMAC-SHA1\",oauth_timestamp=\""+oauth_timestamp+"\",oauth_nonce=\""+oauth_timestamp+"\",oauth_version=\"1.0\",oauth_signature=\""+oauth_signature+"\"");
+					
+					CloseableHttpResponse response = httpclient.execute(httppost);
+					if (response.getStatusLine().getStatusCode() != 200) {
+						logger.info(EntityUtils.toString(response.getEntity()));
+					}
+	//				System.out.println("asd");
+	//				System.out.println(response.getStatusLine().getStatusCode());
+//					System.out.println(EntityUtils.toString(response.getEntity()));
+				}catch(Exception e){
+					logger.info(e.getMessage());
+				}
+			}
 		}
 
 		public void onFriendList(long[] arg0) {
