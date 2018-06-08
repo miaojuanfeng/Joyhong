@@ -423,6 +423,9 @@ public class UploadController {
 	
 	/**
 	 * 获取上传token
+	 * @url {base_url}/upload/token
+	 * @method POST
+	 * @param user_id
 	 * @param user_imei
 	 * @return
 	 */
@@ -442,23 +445,23 @@ public class UploadController {
 			String upToken = auth.uploadToken(bucket);
 			
 			//
-			try {
-				Configuration cfg = new Configuration(Zone.zoneNa0());
-				UploadManager uploadManager = new UploadManager(cfg);
-			    Response response = uploadManager.put("/Users/user/Desktop/image.jpg", "image.jpg", upToken);
-			    //解析上传成功的结果
-			    DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
-			    System.out.println(putRet.key);
-			    System.out.println(putRet.hash);
-			} catch (QiniuException ex) {
-			    Response r = ex.response;
-			    System.err.println(r.toString());
-			    try {
-			        System.err.println(r.bodyString());
-			    } catch (QiniuException ex2) {
-			        //ignore
-			    }
-			}
+//			try {
+//				Configuration cfg = new Configuration(Zone.zoneNa0());
+//				UploadManager uploadManager = new UploadManager(cfg);
+//			    Response response = uploadManager.put("/Users/user/Desktop/image.jpg", "image.jpg", upToken);
+//			    //解析上传成功的结果
+//			    DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
+//			    System.out.println(putRet.key);
+//			    System.out.println(putRet.hash);
+//			} catch (QiniuException ex) {
+//			    Response r = ex.response;
+//			    System.err.println(r.toString());
+//			    try {
+//			        System.err.println(r.bodyString());
+//			    } catch (QiniuException ex2) {
+//			        //ignore
+//			    }
+//			}
 			//
 			
 			JSONObject temp = new JSONObject();
