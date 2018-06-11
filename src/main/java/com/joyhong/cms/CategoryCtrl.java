@@ -29,17 +29,17 @@ public class CategoryCtrl {
 	@Autowired
 	private FuncService funcService;
 	
-	@RequestMapping(value="/sample/select", method=RequestMethod.GET)
+	@RequestMapping(value="select/sample", method=RequestMethod.GET)
 	public String selectSample(){
-		return "redirect:/cms/category/sample/select/1";
+		return "redirect:/cms/category/select/sample/1";
 	}
 	
-	@RequestMapping(value="/order/select", method=RequestMethod.GET)
+	@RequestMapping(value="select/order", method=RequestMethod.GET)
 	public String selectOrder(){
-		return "redirect:/cms/category/order/select/1";
+		return "redirect:/cms/category/select/order/1";
 	}
 	
-	@RequestMapping(value="/sample/select/{page}", method=RequestMethod.GET)
+	@RequestMapping(value="select/sample/{page}", method=RequestMethod.GET)
 	public String selectSample(
 			Model model,  
 			@PathVariable(value="page") Integer page
@@ -49,7 +49,7 @@ public class CategoryCtrl {
 		return "CategoryView";
 	}
 	
-	@RequestMapping(value="/order/select/{page}", method=RequestMethod.GET)
+	@RequestMapping(value="select/order/{page}", method=RequestMethod.GET)
 	public String selectOrder(
 			Model model,  
 			@PathVariable(value="page") Integer page
@@ -78,14 +78,14 @@ public class CategoryCtrl {
 		model.addAttribute("type", type);
 	}
 	
-	@RequestMapping(value="/sample/insert", method=RequestMethod.GET)
+	@RequestMapping(value="insert/sample", method=RequestMethod.GET)
 	public String insertSample(
 			Model model
 	){
 		return this.insert(model, "sample");
 	}
 	
-	@RequestMapping(value="/order/insert", method=RequestMethod.GET)
+	@RequestMapping(value="insert/order", method=RequestMethod.GET)
 	public String insertOrder(
 			Model model
 	){
@@ -99,7 +99,7 @@ public class CategoryCtrl {
 		return "CategoryView";
 	}
 	
-	@RequestMapping(value="/sample/insert", method=RequestMethod.POST)
+	@RequestMapping(value="insert/sample", method=RequestMethod.POST)
 	public String insertSample(
 			Model model, 
 			@ModelAttribute("category") Category category, 
@@ -108,7 +108,7 @@ public class CategoryCtrl {
 		return this.insert(category, referer);
 	}
 	
-	@RequestMapping(value="/order/insert", method=RequestMethod.POST)
+	@RequestMapping(value="insert/order", method=RequestMethod.POST)
 	public String insertOrder(
 			Model model, 
 			@ModelAttribute("category") Category category, 
@@ -122,13 +122,13 @@ public class CategoryCtrl {
 			if( referer != "" ){
 				return "redirect:"+referer.substring(referer.lastIndexOf("/cms/"));
 			}
-			return "redirect:/cms/category/"+category.getType()+"/select";
+			return "redirect:/cms/category/select/"+category.getType();
 		}
 		
 		return "CategoryView";
 	}
 	
-	@RequestMapping(value="/sample/update/{category_id}", method=RequestMethod.GET)
+	@RequestMapping(value="update/sample/{category_id}", method=RequestMethod.GET)
 	public String updateSample(
 			Model model, 
 			@PathVariable("category_id") Integer category_id
@@ -136,7 +136,7 @@ public class CategoryCtrl {
 		return this.update(model, "sample", category_id);
 	}
 	
-	@RequestMapping(value="/order/update/{category_id}", method=RequestMethod.GET)
+	@RequestMapping(value="update/order/{category_id}", method=RequestMethod.GET)
 	public String updateOrder(
 			Model model, 
 			@PathVariable("category_id") Integer category_id
@@ -152,10 +152,10 @@ public class CategoryCtrl {
 		
 			return "CategoryView";
 		}
-		return "redirect:/cms/category/all/select";
+		return "redirect:/cms/dashboard/select";
 	}
 	
-	@RequestMapping(value="/sample/update/{category_id}", method=RequestMethod.POST)
+	@RequestMapping(value="update/sample/{category_id}", method=RequestMethod.POST)
 	public String updateSample(
 			Model model, 
 			@PathVariable("category_id") Integer category_id,
@@ -165,7 +165,7 @@ public class CategoryCtrl {
 		return this.update(category_id, category, referer);
 	}
 	
-	@RequestMapping(value="/order/update/{category_id}", method=RequestMethod.POST)
+	@RequestMapping(value="update/order/{category_id}", method=RequestMethod.POST)
 	public String updateOrder(
 			Model model, 
 			@PathVariable("category_id") Integer category_id,
@@ -181,7 +181,7 @@ public class CategoryCtrl {
 			if( referer != "" ){
 				return "redirect:"+referer.substring(referer.lastIndexOf("/cms/"));
 			}
-			return "redirect:/cms/category/"+category.getType()+"/select";
+			return "redirect:/cms/category/select/"+category.getType();
 		}
 		
 		return "CategoryView";

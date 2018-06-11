@@ -16,18 +16,18 @@
 						<div class="menu-column-area col-lg-3 col-md-3 col-sm-6 col-xs-6 col-ms-6">
 							<h3 class="corpcolor-font">Order / Device</h3>
 							<ul>
-								<li><a href="<c:url value="/cms/category/sample/select"></c:url>">Sample</a></li>
-								<li><a href="<c:url value="/cms/category/order/select"></c:url>">Order</a></li>
+								<li><a href="<c:url value="/cms/category/select/sample"></c:url>">Sample</a></li>
+								<li><a href="<c:url value="/cms/category/select/order"></c:url>">Order</a></li>
 							</ul>
 						</div>
 						
 						<div class="menu-column-area col-lg-3 col-md-3 col-sm-6 col-xs-6 col-ms-6">
 							<h3 class="corpcolor-font">User</h3>
 							<ul>
-								<li><a href="<c:url value="/cms/user/all/select"></c:url>">All</a></li>
-								<li><a href="<c:url value="/cms/user/app/select"></c:url>">App</a></li>
-								<li><a href="<c:url value="/cms/user/facebook/select"></c:url>">Facebook</a></li>
-								<li><a href="<c:url value="/cms/user/twitter/select"></c:url>">Twitter</a></li>
+								<li><a href="<c:url value="/cms/user/select/all"></c:url>">All</a></li>
+								<li><a href="<c:url value="/cms/user/select/app"></c:url>">App</a></li>
+								<li><a href="<c:url value="/cms/user/select/facebook"></c:url>">Facebook</a></li>
+								<li><a href="<c:url value="/cms/user/select/twitter"></c:url>">Twitter</a></li>
 							</ul>
 						</div>
 						

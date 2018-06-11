@@ -34,11 +34,9 @@ public class FuncService {
 		
 		//解析出方法名称
 		String urlStr = request.getRequestURL().toString();
-		String method = urlStr.substring(urlStr.lastIndexOf("/")+1);
-		if( this.isNumeric(method) ){
-			urlStr = urlStr.substring(0, urlStr.lastIndexOf("/"));
-			method = urlStr.substring(urlStr.lastIndexOf("/")+1);
-		}
+		urlStr = urlStr.substring(urlStr.indexOf("cms")+4);
+		String[] urlArr = urlStr.split("/");
+		String method = urlArr[1];
 		model.addAttribute("method", method);
 		
 		//当前登录用户名

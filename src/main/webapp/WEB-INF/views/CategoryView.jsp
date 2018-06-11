@@ -221,8 +221,9 @@
 												<th>Create</th>
 												<th>Modify</th>
 												<th width="40"></th>
+												<th width="40"></th>
 												<th width="40" class="text-right">
-													<a href="<c:url value="/cms/category/${type}/insert"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Insert">
+													<a href="<c:url value="/cms/category/insert/${type}"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Insert">
 														<i class="glyphicon glyphicon-plus"></i>
 													</a>
 												</th>
@@ -235,7 +236,12 @@
 												<td class="expandable"><fmt:formatDate  value="${item.createDate}"  pattern="yyyy-MM-dd" /></td>
 												<td class="expandable"><fmt:formatDate  value="${item.modifyDate}"  pattern="yyyy-MM-dd" /></td>
 												<td class="text-right">
-													<a href="<c:url value="/cms/category/${type}/update/${item.id}"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Update">
+													<a href="<c:url value="/cms/order/select?category=${item.id}"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Order">
+														<i class="glyphicon glyphicon-shopping-cart"></i>
+													</a>
+												</td>
+												<td class="text-right">
+													<a href="<c:url value="/cms/category/update/${type}/${item.id}"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Update">
 														<i class="glyphicon glyphicon-pencil"></i>
 													</a>
 												</td>

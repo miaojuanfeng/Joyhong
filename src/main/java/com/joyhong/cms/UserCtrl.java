@@ -40,27 +40,27 @@ public class UserCtrl {
 	@Autowired
 	private FuncService funcService;
 	
-	@RequestMapping(value="/all/select", method=RequestMethod.GET)
+	@RequestMapping(value="select/all", method=RequestMethod.GET)
 	public String selectAll(){
-		return "redirect:/cms/user/all/select/1";
+		return "redirect:/cms/user/select/all/1";
 	}
 	
-	@RequestMapping(value="/facebook/select", method=RequestMethod.GET)
+	@RequestMapping(value="select/facebook", method=RequestMethod.GET)
 	public String selectFacebook(){
-		return "redirect:/cms/user/facebook/select/1";
+		return "redirect:/cms/user/select/facebook/1";
 	}
 	
-	@RequestMapping(value="/twitter/select", method=RequestMethod.GET)
+	@RequestMapping(value="select/twitter", method=RequestMethod.GET)
 	public String selectTwitter(){
-		return "redirect:/cms/user/twitter/select/1";
+		return "redirect:/cms/user/select/twitter/1";
 	}
 	
-	@RequestMapping(value="/app/select", method=RequestMethod.GET)
+	@RequestMapping(value="select/app", method=RequestMethod.GET)
 	public String selectApp(){
-		return "redirect:/cms/user/app/select/1";
+		return "redirect:/cms/user/select/app/1";
 	}
 	
-	@RequestMapping(value="/all/select/{page}", method=RequestMethod.GET)
+	@RequestMapping(value="select/all/{page}", method=RequestMethod.GET)
 	public String selectAll(
 			Model model,  
 			@PathVariable(value="page") Integer page
@@ -70,7 +70,7 @@ public class UserCtrl {
 		return "UserView";
 	}
 	
-	@RequestMapping(value="/facebook/select/{page}", method=RequestMethod.GET)
+	@RequestMapping(value="select/facebook/{page}", method=RequestMethod.GET)
 	public String selectFacebook(
 			Model model,  
 			@PathVariable(value="page") Integer page
@@ -80,7 +80,7 @@ public class UserCtrl {
 		return "UserView";
 	}
 	
-	@RequestMapping(value="/twitter/select/{page}", method=RequestMethod.GET)
+	@RequestMapping(value="select/twitter/{page}", method=RequestMethod.GET)
 	public String selectTwitter(
 			Model model,  
 			@PathVariable(value="page") Integer page
@@ -90,7 +90,7 @@ public class UserCtrl {
 		return "UserView";
 	}
 	
-	@RequestMapping(value="/app/select/{page}", method=RequestMethod.GET)
+	@RequestMapping(value="select/app/{page}", method=RequestMethod.GET)
 	public String selectApp(
 			Model model,  
 			@PathVariable(value="page") Integer page
@@ -118,8 +118,10 @@ public class UserCtrl {
 		List<User> user = null;
 		if( platform != null ){
 			user = userService.selectPlatformOffsetAndLimit(platform, offset, pageSize);
+			model.addAttribute("type", platform);
 		}else{
 			user = userService.selectOffsetAndLimit(offset, pageSize);
+			model.addAttribute("type", "all");
 		}
 		
 		model.addAttribute("page", page);
@@ -156,7 +158,7 @@ public class UserCtrl {
 		
 			return "UserView";
 		}
-		return "redirect:/cms/user/all/select";
+		return "redirect:/cms/user/select/all";
 	}
 	
 	@ModelAttribute

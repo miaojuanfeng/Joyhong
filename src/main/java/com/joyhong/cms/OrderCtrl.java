@@ -1,6 +1,7 @@
 package com.joyhong.cms;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,17 +40,28 @@ public class OrderCtrl {
 	@Autowired
 	private FuncService funcService;
 	
-	@RequestMapping(value="/select", method=RequestMethod.GET)
-	public String select(){
-		return "redirect:/cms/order/select/1";
+	@RequestMapping(value="select", method=RequestMethod.GET)
+	public String select(HttpServletRequest request){
+		String category = request.getParameter("category");
+		if( category == null ){
+			return "redirect:/cms/dashboard/select";
+		}
+		return "redirect:/cms/order/select/1?category="+category;
 	}
 	
-	@RequestMapping(value="/select/{page}", method=RequestMethod.GET)
+	@RequestMapping(value="select/{page}", method=RequestMethod.GET)
 	public String select(
-			Model model,  
+			Model model,
+			HttpServletRequest request, 
 			@PathVariable(value="page") Integer page
 	){
-		int pageSize = 20;
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("category", request.getParameter("category"));
+		if( param.get("category") == null ){
+			return "redirect:/cms/dashboard/select";
+		}
+		
+		int pageSize = 3;
 		int totalRecord = orderService.selectCount();
 		int totalPage = (int)Math.ceil((double)totalRecord/pageSize);
 		
@@ -64,11 +76,25 @@ public class OrderCtrl {
 		model.addAttribute("totalPage", totalPage);
 		model.addAttribute("totalRecord", totalRecord);
 		model.addAttribute("order", order);
+		model.addAttribute("param", getParam(param));
 		
 		return "OrderView";
 	}
 	
-	@RequestMapping(value="/insert", method=RequestMethod.GET)
+	private String getParam(HashMap<String, Object> param){
+		String retval = null;
+		
+		for( Object key : param.keySet() ){
+			if( retval == null ){
+				retval = "?" + key + "=" + param.get(key);
+			}else{
+				retval = "&" + key + "=" + param.get(key);
+			}
+		}
+		return retval;
+	}
+	
+	@RequestMapping(value="insert", method=RequestMethod.GET)
 	public String insert(
 			Model model
 	){
@@ -80,7 +106,7 @@ public class OrderCtrl {
 		return "OrderView";
 	}
 	
-	@RequestMapping(value="/insert", method=RequestMethod.POST)
+	@RequestMapping(value="insert", method=RequestMethod.POST)
 	public String insert(
 			Model model, 
 			@ModelAttribute("order") Order order, 
@@ -96,7 +122,7 @@ public class OrderCtrl {
 		return "OrderView";
 	}
 	
-	@RequestMapping(value="/update/{order_id}", method=RequestMethod.GET)
+	@RequestMapping(value="update/{order_id}", method=RequestMethod.GET)
 	public String update(
 			Model model, 
 			@PathVariable("order_id") Integer order_id
@@ -117,7 +143,7 @@ public class OrderCtrl {
 		return "redirect:/cms/order/select";
 	}
 	
-	@RequestMapping(value="/update/{order_id}", method=RequestMethod.POST)
+	@RequestMapping(value="update/{order_id}", method=RequestMethod.POST)
 	public String update(
 			Model model, 
 			HttpSession httpSession, 
@@ -139,7 +165,7 @@ public class OrderCtrl {
 		return "OrderView";
 	}
 	
-	@RequestMapping(value="/delete", method=RequestMethod.POST)
+	@RequestMapping(value="delete", method=RequestMethod.POST)
 	public String delete(
 			Model model, 
 			@RequestParam("order_id") Integer order_id
@@ -154,7 +180,7 @@ public class OrderCtrl {
 		return "redirect:/cms/order/select";
 	}
 	
-	@RequestMapping(value="/generate", method=RequestMethod.POST)
+	@RequestMapping(value="generate", method=RequestMethod.POST)
 	public String generate(
 			Model model, 
 			@RequestParam("order_id") Integer order_id
