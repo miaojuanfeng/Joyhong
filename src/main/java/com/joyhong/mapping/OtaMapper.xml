@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.joyhong.dao.OtaMapper">
+  <resultMap id="BaseResultMap" type="com.joyhong.model.Ota">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="order_id" jdbcType="INTEGER" property="orderId" />
+    <result column="last_version" jdbcType="INTEGER" property="lastVersion" />
+    <result column="download_link" jdbcType="VARCHAR" property="downloadLink" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="modify_date" jdbcType="TIMESTAMP" property="modifyDate" />
+    <result column="deleted" jdbcType="INTEGER" property="deleted" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.joyhong.model.Ota">
+    <result column="version_desc" jdbcType="LONGVARCHAR" property="versionDesc" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, order_id, last_version, download_link, create_date, modify_date, deleted
+  </sql>
+  <sql id="Blob_Column_List">
+    version_desc
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from jh_ota
+    where deleted = 0 and id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectCount" resultType="java.lang.Integer">
+    select count(id)
+    from jh_ota
+    where deleted = 0
+  </select>
+  <select id="selectOffsetAndLimit" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+	<include refid="Base_Column_List" />
+    from jh_ota
+    where deleted = 0 order by last_version desc
+    limit #{0},#{1}
+  </select>
+  <select id="selectOrderCount" resultType="java.lang.Integer">
+    select count(id)
+    from jh_ota 
+    where deleted = 0 and order_id = #{0}
+  </select>
+  <select id="selectOrderOffsetAndLimit" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+	<include refid="Base_Column_List" />
+    from jh_ota
+    where deleted = 0 and order_id = #{0} order by last_version desc
+    limit #{1},#{2}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from jh_ota
+    where deleted = 0 and id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.joyhong.model.Ota">
+    insert into jh_ota (id, order_id, last_version, 
+      download_link, create_date, modify_date, 
+      deleted, version_desc)
+    values (#{id,jdbcType=INTEGER}, #{orderId,jdbcType=INTEGER}, #{lastVersion,jdbcType=INTEGER}, 
+      #{downloadLink,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{modifyDate,jdbcType=TIMESTAMP}, 
+      #{deleted,jdbcType=INTEGER}, #{versionDesc,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.joyhong.model.Ota">
+    insert into jh_ota
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="lastVersion != null">
+        last_version,
+      </if>
+      <if test="downloadLink != null">
+        download_link,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+      <if test="modifyDate != null">
+        modify_date,
+      </if>
+      <if test="deleted != null">
+        deleted,
+      </if>
+      <if test="versionDesc != null">
+        version_desc,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="orderId != null">
+        #{orderId,jdbcType=INTEGER},
+      </if>
+      <if test="lastVersion != null">
+        #{lastVersion,jdbcType=INTEGER},
+      </if>
+      <if test="downloadLink != null">
+        #{downloadLink,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyDate != null">
+        #{modifyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleted != null">
+        #{deleted,jdbcType=INTEGER},
+      </if>
+      <if test="versionDesc != null">
+        #{versionDesc,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.joyhong.model.Ota">
+    update jh_ota
+    <set>
+      <if test="orderId != null">
+        order_id = #{orderId,jdbcType=INTEGER},
+      </if>
+      <if test="lastVersion != null">
+        last_version = #{lastVersion,jdbcType=INTEGER},
+      </if>
+      <if test="downloadLink != null">
+        download_link = #{downloadLink,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyDate != null">
+        modify_date = #{modifyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleted != null">
+        deleted = #{deleted,jdbcType=INTEGER},
+      </if>
+      <if test="versionDesc != null">
+        version_desc = #{versionDesc,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where deleted = 0 and id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.joyhong.model.Ota">
+    update jh_ota
+    set order_id = #{orderId,jdbcType=INTEGER},
+      last_version = #{lastVersion,jdbcType=INTEGER},
+      download_link = #{downloadLink,jdbcType=VARCHAR},
+      modify_date = #{modifyDate,jdbcType=TIMESTAMP},
+      deleted = #{deleted,jdbcType=INTEGER},
+      version_desc = #{versionDesc,jdbcType=LONGVARCHAR}
+    where deleted = 0 and id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.joyhong.model.Ota">
+    update jh_ota
+    set order_id = #{orderId,jdbcType=INTEGER},
+      last_version = #{lastVersion,jdbcType=INTEGER},
+      download_link = #{downloadLink,jdbcType=VARCHAR},
+      modify_date = #{modifyDate,jdbcType=TIMESTAMP},
+      deleted = #{deleted,jdbcType=INTEGER}
+    where deleted = 0 and id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

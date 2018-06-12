@@ -125,17 +125,17 @@
 											<label for="max_bind">Max bind <span class="highlight">*</span></label>
 											<form:input id="max_bind" path="maxBind" type="number" min="0" class="form-control input-sm required" placeholder="Max bind" />
 										</p>
-										<p class="form-group">
+										<p class="form-group" style="display:none;">
 											<label for="last_version">Last version <span class="highlight"></span></label>
 											<form:input id="last_version" path="lastVersion" type="number" min="0" class="form-control input-sm" placeholder="Last version" />
 										</p>
-										<p class="form-group">
+										<p class="form-group" style="display:none;">
 											<label for="download_link">Download link <span class="highlight"></span></label>
 											<form:input id="download_link" path="downloadLink" type="text" class="form-control input-sm" placeholder="Download link" />
 										</p>
-										<p class="form-group">
-											<label for="version_desc">Version Description <span class="highlight"></span></label>
-											<form:textarea id="version_desc" rows="10" path="versionDesc" class="form-control input-sm" placeholder="Version Description"></form:textarea>
+										<p class="form-group" style="display:none;">
+											<label for="version_desc">Version description <span class="highlight"></span></label>
+											<form:textarea id="version_desc" rows="10" path="versionDesc" class="form-control input-sm" placeholder="Version description"></form:textarea>
 										</p>
 									</div>
 									<div class="col-sm-8 col-xs-12 pull-right">
@@ -313,6 +313,7 @@
 												<th>Modify</th>
 												<th width="40"></th>
 												<th width="40"></th>
+												<th width="40"></th>
 												<th width="40" class="text-right">
 													<a href="<c:url value="/cms/order/insert"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Insert">
 														<i class="glyphicon glyphicon-plus"></i>
@@ -332,6 +333,11 @@
 												<td class="text-right">
 													<a href="<c:url value="/cms/device/select?order=${item.id}"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Device">
 														<i class="glyphicon glyphicon-hdd"></i>
+													</a>
+												</td>
+												<td class="text-right">
+													<a href="<c:url value="/cms/ota/select?order=${item.id}"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Version">
+														<i class="glyphicon glyphicon-open"></i>
 													</a>
 												</td>
 												<td class="text-right">

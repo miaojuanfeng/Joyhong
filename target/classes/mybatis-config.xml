@@ -12,6 +12,7 @@
         <typeAlias alias="Version" type="com.joyhong.model.Version"/>
         <typeAlias alias="UserDevice" type="com.joyhong.model.UserDevice"/>
         <typeAlias alias="Category" type="com.joyhong.model.Category"/>
+        <typeAlias alias="Ota" type="com.joyhong.model.Ota"/>
     </typeAliases>  
     <mappers>  
         <mapper resource="com/joyhong/mapping/WeatherMapper.xml" />
@@ -24,5 +25,6 @@
         <mapper resource="com/joyhong/mapping/VersionMapper.xml" />
         <mapper resource="com/joyhong/mapping/UserDeviceMapper.xml" />
         <mapper resource="com/joyhong/mapping/CategoryMapper.xml" />
+        <mapper resource="com/joyhong/mapping/OtaMapper.xml" />
     </mappers>
 </configuration>
