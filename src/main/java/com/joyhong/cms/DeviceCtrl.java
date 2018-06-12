@@ -39,18 +39,18 @@ public class DeviceCtrl {
 	private FuncService funcService;
 	
 	@RequestMapping(value="/select", method=RequestMethod.GET)
-	public String select(){
-		return "redirect:/cms/device/select/1";
+	public String select(HttpServletRequest request){
+		return "redirect:/cms/device/select/1"+funcService.requestParameters(request);
 	}
 	
 	@RequestMapping(value="/select/{page}", method=RequestMethod.GET)
 	public String select(
-			Model model,  
-			@PathVariable(value="page") Integer page,
-			@ModelAttribute("platform") String platform
+			Model model,
+			HttpServletRequest request,
+			@PathVariable(value="page") Integer page
 	){
 		int pageSize = 20;
-		int totalRecord = deviceService.selectCount();
+		int totalRecord = deviceService.selectOrderCount(request);
 		int totalPage = (int)Math.ceil((double)totalRecord/pageSize);
 		
 		if( page < 1 || page > totalPage ){
@@ -58,12 +58,13 @@ public class DeviceCtrl {
 		}
 		
 		Integer offset = (page-1)*pageSize;
-		List<Device> device = deviceService.selectOffsetAndLimit(offset, pageSize);
+		List<Device> device = deviceService.selectOrderOffsetAndLimit(request, offset, pageSize);
 		
 		model.addAttribute("page", page);
 		model.addAttribute("totalPage", totalPage);
 		model.addAttribute("totalRecord", totalRecord);
 		model.addAttribute("device", device);
+		model.addAttribute("parameters", funcService.requestParameters(request));
 		
 		return "DeviceView";
 	}

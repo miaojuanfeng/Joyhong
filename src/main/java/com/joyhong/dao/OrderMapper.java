@@ -16,6 +16,14 @@ public interface OrderMapper {
     int selectCount();
     
     List<Order> selectOffsetAndLimit(Integer offset, Integer limit);
+    
+    int selectCategoryCount(Integer categoryId);
+    
+    List<Order> selectCategoryOffsetAndLimit(Integer categoryId, Integer offset, Integer limit);
+    
+    int selectSearchCount(String orderCode, String machineCode, String dealerCode, String keyCode);
+    
+    List<Order> selectSearchOffsetAndLimit(String orderCode, String machineCode, String dealerCode, String keyCode, Integer offset, Integer limit);
 
     int updateByPrimaryKeySelective(Order record);
     

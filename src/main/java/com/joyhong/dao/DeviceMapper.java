@@ -24,6 +24,14 @@ public interface DeviceMapper {
     int selectCount();
     
     List<Device> selectOffsetAndLimit(Integer offset, Integer limit);
+    
+    int selectOrderCount(Integer order);
+    
+    List<Device> selectOrderOffsetAndLimit(Integer order, Integer offset, Integer limit);
+    
+    int selectSearchCount(String deviceToken, String deviceFcmToken);
+    
+    List<Device> selectSearchOffsetAndLimit(String deviceToken, String deviceFcmToken, Integer offset, Integer limit);
 
     int updateByPrimaryKeySelective(Device record);
 

@@ -34,7 +34,7 @@
     select 
 	<include refid="Base_Column_List" />
     from jh_category
-    where deleted = 0
+    where deleted = 0 order by type desc, id desc;
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from jh_category

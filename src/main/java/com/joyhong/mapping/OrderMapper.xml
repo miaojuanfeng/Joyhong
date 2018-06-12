@@ -46,6 +46,30 @@
     where deleted = 0 
     limit #{0},#{1}
   </select>
+  <select id="selectCategoryCount" resultType="java.lang.Integer">
+    select count(id)
+    from jh_order
+    where deleted = 0 and category_id = #{0}
+  </select>
+  <select id="selectCategoryOffsetAndLimit" resultMap="BaseResultMap">
+    select 
+	<include refid="Base_Column_List" />
+    from jh_order
+    where deleted = 0 and category_id = #{0}
+    limit #{1},#{2}
+  </select>
+  <select id="selectSearchCount" resultType="java.lang.Integer">
+    select count(id)
+    from jh_order
+    where deleted = 0 and order_code like #{0} and machine_code like #{1} and dealer_code like #{2} and key_code like #{3}
+  </select>
+  <select id="selectSearchOffsetAndLimit" resultMap="BaseResultMap">
+    select 
+	<include refid="Base_Column_List" />
+    from jh_order
+    where deleted = 0 and order_code like #{0} and machine_code like #{1} and dealer_code like #{2} and key_code like #{3}
+    limit #{4},#{5}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from jh_order
     where deleted = 0 and id = #{id,jdbcType=INTEGER}

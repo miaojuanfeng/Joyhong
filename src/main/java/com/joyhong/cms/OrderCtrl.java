@@ -42,11 +42,7 @@ public class OrderCtrl {
 	
 	@RequestMapping(value="select", method=RequestMethod.GET)
 	public String select(HttpServletRequest request){
-		String category = request.getParameter("category");
-		if( category == null ){
-			return "redirect:/cms/dashboard/select";
-		}
-		return "redirect:/cms/order/select/1?category="+category;
+		return "redirect:/cms/order/select/1"+funcService.requestParameters(request);
 	}
 	
 	@RequestMapping(value="select/{page}", method=RequestMethod.GET)
@@ -55,14 +51,8 @@ public class OrderCtrl {
 			HttpServletRequest request, 
 			@PathVariable(value="page") Integer page
 	){
-		HashMap<String, Object> param = new HashMap<String, Object>();
-		param.put("category", request.getParameter("category"));
-		if( param.get("category") == null ){
-			return "redirect:/cms/dashboard/select";
-		}
-		
-		int pageSize = 3;
-		int totalRecord = orderService.selectCount();
+		int pageSize = 20;
+		int totalRecord = orderService.selectCategoryCount(request);
 		int totalPage = (int)Math.ceil((double)totalRecord/pageSize);
 		
 		if( page < 1 || page > totalPage ){
@@ -70,28 +60,16 @@ public class OrderCtrl {
 		}
 		
 		Integer offset = (page-1)*pageSize;
-		List<Order> order = orderService.selectOffsetAndLimit(offset, pageSize);
+		List<Order> order = orderService.selectCategoryOffsetAndLimit(request, offset, pageSize);
 		
 		model.addAttribute("page", page);
 		model.addAttribute("totalPage", totalPage);
 		model.addAttribute("totalRecord", totalRecord);
 		model.addAttribute("order", order);
-		model.addAttribute("param", getParam(param));
+//		model.addAttribute("category", request.getParameter("category"));
+		model.addAttribute("parameters", funcService.requestParameters(request));
 		
 		return "OrderView";
-	}
-	
-	private String getParam(HashMap<String, Object> param){
-		String retval = null;
-		
-		for( Object key : param.keySet() ){
-			if( retval == null ){
-				retval = "?" + key + "=" + param.get(key);
-			}else{
-				retval = "&" + key + "=" + param.get(key);
-			}
-		}
-		return retval;
 	}
 	
 	@RequestMapping(value="insert", method=RequestMethod.GET)

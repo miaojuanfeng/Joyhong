@@ -89,19 +89,19 @@
 										<h4 class="corpcolor-font">Basic information</h4>
 										<p class="form-group">
 											<label for="device_token">Device token <span class="highlight">*</span></label>
-											<form:input id="device_token" path="deviceToken" type="text" class="form-control input-sm required" placeholder="Device token" />
+											<form:input id="device_token" path="deviceToken" type="text" class="form-control input-sm required" placeholder="Device token" readonly="true" />
 										</p>
 										<p class="form-group">
 											<label for="device_fcm_token">Device fcm token <span class="highlight"></span></label>
-											<form:input id="device_fcm_token" path="deviceFcmToken" type="text" class="form-control input-sm" placeholder="Device fcm token" />
+											<form:textarea id="device_fcm_token" path="deviceFcmToken" type="text" class="form-control input-sm" placeholder="Device fcm token" rows="8" readonly="true" /></textarea>
 										</p>
 										<p class="form-group">
 											<label for="login_time">Login time <span class="highlight"></span></label>
-											<input id="login_time" name="loginTime" type="text" class="form-control input-sm" placeholder="Login time" value="<fmt:formatDate  value="${device.loginTime}"  pattern="yyyy-MM-dd HH:mm:ss" />" />
+											<input id="login_time" name="loginTime" type="text" class="form-control input-sm" placeholder="Login time" value="<fmt:formatDate  value="${device.loginTime}"  pattern="yyyy-MM-dd HH:mm:ss" />" readonly="true" />
 										</p>
 										<p class="form-group">
 											<label for="heartbeat_time">Heartbeat time <span class="highlight"></span></label>
-											<input id="heartbeat_time" name="heartbeatTime" type="text" class="form-control input-sm" placeholder="Heartbeat time" value="<fmt:formatDate  value="${device.heartbeatTime}"  pattern="yyyy-MM-dd HH:mm:ss" />" />
+											<input id="heartbeat_time" name="heartbeatTime" type="text" class="form-control input-sm" placeholder="Heartbeat time" value="<fmt:formatDate  value="${device.heartbeatTime}"  pattern="yyyy-MM-dd HH:mm:ss" />" readonly="true" />
 										</p>
 									</div>
 									<div class="col-sm-8 col-xs-12 pull-right">
@@ -221,25 +221,28 @@
 
 					<div class="content-column-area col-md-12 col-sm-12">
 
-						<!--div class="fieldset left">
+						<div class="fieldset">
 							<div class="search-area">
 
 								<form role="form" method="get">
-									<input type="hidden" name="device_id" />
+									<!-- <input type="hidden" name="device_id" /> -->
 									<table>
 										<tbody>
 											<tr>
 												<td width="90%">
 													<div class="row">
-														<div class="col-sm-4">
-															<input type="text" name="device_id" class="form-control input-sm" placeholder="#" value="" />
+														<div class="col-sm-3">
+															<input type="text" name="device_token" class="form-control input-sm" placeholder="Device token" value="" />
 														</div>
-														<div class="col-sm-4"></div>
-														<div class="col-sm-4"></div>
+														<div class="col-sm-3">
+															<input type="text" name="device_fcm_token" class="form-control input-sm" placeholder="Device fcm token" value="" />
+														</div>
+														<div class="col-sm-3"></div>
+														<div class="col-sm-3"></div>
 													</div>
 												</td>
 												<td valign="top" width="10%" class="text-right">
-													<button type="submit" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Search">
+													<button type="submit" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Search" name="action" value="search">
 														<i class="glyphicon glyphicon-search"></i>
 													</button>
 												</td>
@@ -249,7 +252,7 @@
 								</form>
 
 							</div>
-						</div-->
+						</div>
 						<div class="fieldset full">
 
 							<div class="list-area">
@@ -260,7 +263,6 @@
 											<tr>
 												<th>#</th>
 												<th>Device token</th>
-												<th>Device Fcm token</th>
 												<th>Alive time / s</th>
 												<th>Create</th>
 												<th>Modify</th>
@@ -275,14 +277,13 @@
 											<tr id="<?=$value->device_id?>" class="list-row" onclick=""> <!-- the onclick="" is for fixing the iphone problem -->
 												<td title="${item.id}">${item.id}</td>
 												<td class="expandable">${item.deviceToken}</td>
-												<td class="expandable">${item.deviceFcmToken}</td>
 												<c:set var="aliveTime" value="${item.heartbeatTime.time - item.loginTime.time}"/>
 												<td class="expandable"><fmt:formatNumber value="${aliveTime/1000}" pattern="#0"/></td>
 												<td class="expandable"><fmt:formatDate  value="${item.createDate}"  pattern="yyyy-MM-dd" /></td>
 												<td class="expandable"><fmt:formatDate  value="${item.modifyDate}"  pattern="yyyy-MM-dd" /></td>
 												<td class="text-right">
 													<a href="<c:url value="/cms/device/update/${item.id}"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Detail">
-														<i class="glyphicon glyphicon glyphicon-hdd"></i>
+														<i class="glyphicon glyphicon glyphicon-menu-right"></i>
 													</a>
 												</td>
 												<%-- <td class="text-right">
@@ -306,23 +307,23 @@
 										<c:if test="${totalRecord > 0}">
 										<span class="pagination-area">
 											<c:if test="${page-1 > 1}">
-												<a href="<c:url value="/cms/device/select/1"></c:url>" class="btn btn-sm btn-primary">&lt;&lt;</a>
+												<a href="<c:url value="/cms/device/select/1${parameters}"></c:url>" class="btn btn-sm btn-primary">&lt;&lt;</a>
 											</c:if>
 											<c:if test="${page != 1}">
-												<a href="<c:url value="/cms/device/select/${page-1}"></c:url>" class="btn btn-sm btn-primary">&lt;</a>
+												<a href="<c:url value="/cms/device/select/${page-1}${parameters}"></c:url>" class="btn btn-sm btn-primary">&lt;</a>
 											</c:if>
 											<c:if test="${page-1 > 0}">
-												<a href="<c:url value="/cms/device/select/${page-1}"></c:url>" class="btn btn-sm btn-primary">${page-1}</a>
+												<a href="<c:url value="/cms/device/select/${page-1}${parameters}"></c:url>" class="btn btn-sm btn-primary">${page-1}</a>
 											</c:if>
-											<a href="<c:url value="/cms/device/select/${page}"></c:url>" class="btn btn-sm btn-primary disabled">${page}</a>
+											<a href="<c:url value="/cms/device/select/${page}${parameters}"></c:url>" class="btn btn-sm btn-primary disabled">${page}</a>
 											<c:if test="${page+1 <= totalPage}">
-												<a href="<c:url value="/cms/device/select/${page+1}"></c:url>" class="btn btn-sm btn-primary">${page+1}</a>
+												<a href="<c:url value="/cms/device/select/${page+1}${parameters}"></c:url>" class="btn btn-sm btn-primary">${page+1}</a>
 											</c:if>
 											<c:if test="${page != totalPage}">
-												<a href="<c:url value="/cms/device/select/${page+1}"></c:url>" class="btn btn-sm btn-primary">&gt;</a>
+												<a href="<c:url value="/cms/device/select/${page+1}${parameters}"></c:url>" class="btn btn-sm btn-primary">&gt;</a>
 											</c:if>
 											<c:if test="${page+1 < totalPage}">
-												<a href="<c:url value="/cms/device/select/${totalPage}"></c:url>" class="btn btn-sm btn-primary">&gt;&gt;</a>
+												<a href="<c:url value="/cms/device/select/${totalPage}${parameters}"></c:url>" class="btn btn-sm btn-primary">&gt;&gt;</a>
 											</c:if>
 										</span>
 										</c:if>

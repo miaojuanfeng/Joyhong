@@ -1,5 +1,6 @@
 package com.joyhong.service.common;
 
+import java.util.Enumeration;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
@@ -45,4 +46,44 @@ public class FuncService {
 		//返回的url地址
 		model.addAttribute("referer", request.getHeader("referer"));
 	}
+	
+	public String requestParameters(HttpServletRequest request){
+		String retval = "";
+		
+		Enumeration<String> em = request.getParameterNames();
+		while (em.hasMoreElements()) {
+		    String name = (String) em.nextElement();
+		    String value = request.getParameter(name);
+		    
+		    if( retval.equals("") ){
+				retval = "?" + name + "=" + value;
+			}else{
+				retval += "&" + name + "=" + value;
+			}
+		}
+		
+		return retval;
+	}
+	
+//	public String queryParameters(HttpServletRequest request){
+//		String retval = "1";
+//		
+//		if( request.getParameter("action") != null && request.getParameter("action").equals("search") ){
+//			Enumeration<String> em = request.getParameterNames();
+//			while (em.hasMoreElements()) {
+//			    String name = (String) em.nextElement();
+//			    if( !name.equals("action") && !name.equals("category") ){
+//				    String value = request.getParameter(name);
+//				    
+//				    if( retval.equals("") ){
+//						retval = " and " + name + " like '%" + value + "%'";
+//					}else{
+//						retval += " and " + name + " like '%" + value + "%'";
+//					}
+//			    }
+//			}
+//		}
+//		
+//		return retval;
+//	}
 }

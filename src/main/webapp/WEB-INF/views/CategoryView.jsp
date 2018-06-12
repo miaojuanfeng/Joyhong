@@ -73,7 +73,7 @@
 			<div class="container-fluid">
 				<div class="row">
 
-					<h2 class="col-sm-12"><a href="<c:url value="/cms/category/${type}/select"></c:url>">Category management</a> > ${type} > ${method} category</h2>
+					<h2 class="col-sm-12"><a href="<c:url value="/cms/category/select/${type}"></c:url>">Category management</a> > ${method} category</h2>
 
 					<div class="col-sm-12">
 						<form:form name="update" method="post" modelAttribute="category">
@@ -174,7 +174,7 @@
 			<div class="container-fluid">
 				<div class="row">
 
-					<h2 class="col-sm-12">Category management > ${type}</h2>
+					<h2 class="col-sm-12">Category management</h2>
 
 					<div class="content-column-area col-md-12 col-sm-12">
 

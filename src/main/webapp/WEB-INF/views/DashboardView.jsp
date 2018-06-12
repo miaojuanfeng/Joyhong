@@ -158,7 +158,7 @@
 										<div class="clearfix"></div>
 									</div>
 									<div class="dashboard-box-bottom">
-										<a href="<c:url value="/cms/user/all/select"></c:url>">
+										<a href="<c:url value="/cms/user/select/all"></c:url>">
 											<span class="pull-left">VIEW MORE</span>
 											<span class="pull-right"><i class="glyphicon glyphicon-chevron-right"></i></span>
 											<div class="clearfix"></div>

@@ -57,6 +57,30 @@
     where deleted = 0 
     limit #{0},#{1}
   </select>
+  <select id="selectOrderCount" resultType="java.lang.Integer">
+    select count(id)
+    from jh_device 
+    where deleted = 0 and order_id = #{0}
+  </select>
+  <select id="selectOrderOffsetAndLimit" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+	<include refid="Base_Column_List" />
+    from jh_device
+    where deleted = 0 and order_id = #{0}
+    limit #{1},#{2}
+  </select>
+  <select id="selectSearchCount" resultType="java.lang.Integer">
+    select count(id)
+    from jh_device 
+    where deleted = 0 and device_token like #{0} and device_fcm_token like #{1}
+  </select>
+  <select id="selectSearchOffsetAndLimit" resultMap="BaseResultMap">
+    select 
+	<include refid="Base_Column_List" />
+    from jh_device
+    where deleted = 0 and device_token like #{0} and device_fcm_token like #{1}
+    limit #{2},#{3}
+  </select>
   <!-- Michael.Miao -->
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from jh_device

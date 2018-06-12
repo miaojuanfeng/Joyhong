@@ -3,6 +3,8 @@ package com.joyhong.service.impl;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -82,6 +84,49 @@ public class DeviceServiceImpl implements DeviceService {
 	public List<String> selectByOrderIdReturnDeviceToken(Integer order_id) {
 		// TODO Auto-generated method stub
 		return deviceMapper.selectByOrderIdReturnDeviceToken(order_id);
+	}
+
+	public int selectOrderCount(HttpServletRequest request) {
+		// TODO Auto-generated method stub
+		String order = request.getParameter("order");
+		String action = request.getParameter("action");
+		if( order != null ){
+			Integer orderId = Integer.valueOf(order);
+			return deviceMapper.selectOrderCount(orderId);
+		}else if( action.equals("search") ){
+			String deviceToken = request.getParameter("device_token")!= null?"%"+request.getParameter("device_token")+"%":"%%";
+			String deviceFcmToken = request.getParameter("device_fcm_token")!= null?"%"+request.getParameter("device_fcm_token")+"%":"%%";
+			return this.selectSearchCount(deviceToken, deviceFcmToken);
+		}else{
+			return this.selectCount();
+		}
+	}
+
+	public List<Device> selectOrderOffsetAndLimit(HttpServletRequest request, Integer offset, Integer limit) {
+		// TODO Auto-generated method stub
+		String order = request.getParameter("order");
+		String action = request.getParameter("action");
+		if( order != null ){
+			Integer orderId = Integer.valueOf(order);
+			return deviceMapper.selectOrderOffsetAndLimit(orderId, offset, limit);
+		}else if( action.equals("search") ){
+			String deviceToken = request.getParameter("device_token")!= null?"%"+request.getParameter("device_token")+"%":"%%";
+			String deviceFcmToken = request.getParameter("device_fcm_token")!= null?"%"+request.getParameter("device_fcm_token")+"%":"%%";
+			return this.selectSearchOffsetAndLimit(deviceToken, deviceFcmToken, offset, limit);
+		}else{
+			return this.selectOffsetAndLimit(offset, limit);
+		}
+	}
+	
+	public int selectSearchCount(String deviceToken, String deviceFcmToken) {
+		// TODO Auto-generated method stub
+		return deviceMapper.selectSearchCount(deviceToken, deviceFcmToken);
+	}
+
+	public List<Device> selectSearchOffsetAndLimit(String deviceToken, String deviceFcmToken, Integer offset,
+			Integer limit) {
+		// TODO Auto-generated method stub
+		return deviceMapper.selectSearchOffsetAndLimit(deviceToken, deviceFcmToken, offset, limit);
 	}
 
 }

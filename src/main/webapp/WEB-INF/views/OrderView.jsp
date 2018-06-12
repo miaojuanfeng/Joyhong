@@ -82,7 +82,7 @@
 			<div class="container-fluid">
 				<div class="row">
 
-					<h2 class="col-sm-12"><a href="<c:url value="/cms/order/select"></c:url>">Order management</a> > ${method} order</h2>
+					<h2 class="col-sm-12"><a href="<c:url value="/cms/order/select?category=${order.categoryId}"></c:url>">Order management</a> > ${method} order</h2>
 
 					<div class="col-sm-12">
 						<form:form name="update" method="post" modelAttribute="order">
@@ -259,25 +259,32 @@
 
 					<div class="content-column-area col-md-12 col-sm-12">
 
-						<!--div class="fieldset left">
+						<div class="fieldset">
 							<div class="search-area">
 
 								<form role="form" method="get">
-									<input type="hidden" name="order_id" />
+									<%-- <input type="hidden" name="category" value="${category}" /> --%>
 									<table>
 										<tbody>
 											<tr>
 												<td width="90%">
 													<div class="row">
-														<div class="col-sm-4">
-															<input type="text" name="order_id" class="form-control input-sm" placeholder="#" value="" />
+														<div class="col-sm-3">
+															<input type="text" name="order_code" class="form-control input-sm" placeholder="Order code" value="" />
 														</div>
-														<div class="col-sm-4"></div>
-														<div class="col-sm-4"></div>
+														<div class="col-sm-3">
+															<input type="text" name="machine_code" class="form-control input-sm" placeholder="Machine code" value="" />
+														</div>
+														<div class="col-sm-3">
+															<input type="text" name="dealer_code" class="form-control input-sm" placeholder="Dealer code" value="" />
+														</div>
+														<div class="col-sm-3">
+															<input type="text" name="key_code" class="form-control input-sm" placeholder="Key code" value="" />
+														</div>
 													</div>
 												</td>
 												<td valign="top" width="10%" class="text-right">
-													<button type="submit" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Search">
+													<button type="submit" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Search" name="action" value="search">
 														<i class="glyphicon glyphicon-search"></i>
 													</button>
 												</td>
@@ -287,7 +294,7 @@
 								</form>
 
 							</div>
-						</div-->
+						</div>
 						<div class="fieldset full">
 
 							<div class="list-area">
@@ -304,6 +311,7 @@
 												<th>Order qty</th>
 												<th>Create</th>
 												<th>Modify</th>
+												<th width="40"></th>
 												<th width="40"></th>
 												<th width="40" class="text-right">
 													<a href="<c:url value="/cms/order/insert"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Insert">
@@ -322,6 +330,11 @@
 												<td class="expandable"><fmt:formatDate  value="${item.createDate}"  pattern="yyyy-MM-dd" /></td>
 												<td class="expandable"><fmt:formatDate  value="${item.modifyDate}"  pattern="yyyy-MM-dd" /></td>
 												<td class="text-right">
+													<a href="<c:url value="/cms/device/select?order=${item.id}"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Device">
+														<i class="glyphicon glyphicon-hdd"></i>
+													</a>
+												</td>
+												<td class="text-right">
 													<a href="<c:url value="/cms/order/update/${item.id}"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Update">
 														<i class="glyphicon glyphicon-pencil"></i>
 													</a>
@@ -336,7 +349,7 @@
 
 											<c:if test="${totalRecord == 0}">
 											<tr class="list-row">
-												<td colspan="10"><a href="#" class="btn btn-sm btn-primary">No record found</a></td>
+												<td colspan="11"><a href="#" class="btn btn-sm btn-primary">No record found</a></td>
 											</tr>
 											</c:if>
 
@@ -347,23 +360,23 @@
 										<c:if test="${totalRecord > 0}">
 										<span class="pagination-area">
 											<c:if test="${page-1 > 1}">
-												<a href="<c:url value="/cms/order/select/1"></c:url>" class="btn btn-sm btn-primary">&lt;&lt;</a>
+												<a href="<c:url value="/cms/order/select/1${parameters}"></c:url>" class="btn btn-sm btn-primary">&lt;&lt;</a>
 											</c:if>
 											<c:if test="${page != 1}">
-												<a href="<c:url value="/cms/order/select/${page-1}"></c:url>" class="btn btn-sm btn-primary">&lt;</a>
+												<a href="<c:url value="/cms/order/select/${page-1}${parameters}"></c:url>" class="btn btn-sm btn-primary">&lt;</a>
 											</c:if>
 											<c:if test="${page-1 > 0}">
-												<a href="<c:url value="/cms/order/select/${page-1}"></c:url>" class="btn btn-sm btn-primary">${page-1}</a>
+												<a href="<c:url value="/cms/order/select/${page-1}${parameters}"></c:url>" class="btn btn-sm btn-primary">${page-1}</a>
 											</c:if>
-											<a href="<c:url value="/cms/order/select/${page}"></c:url>" class="btn btn-sm btn-primary disabled">${page}</a>
+											<a href="<c:url value="/cms/order/select/${page}${parameters}"></c:url>" class="btn btn-sm btn-primary disabled">${page}</a>
 											<c:if test="${page+1 <= totalPage}">
-												<a href="<c:url value="/cms/order/select/${page+1}"></c:url>" class="btn btn-sm btn-primary">${page+1}</a>
+												<a href="<c:url value="/cms/order/select/${page+1}${parameters}"></c:url>" class="btn btn-sm btn-primary">${page+1}</a>
 											</c:if>
 											<c:if test="${page != totalPage}">
-												<a href="<c:url value="/cms/order/select/${page+1}"></c:url>" class="btn btn-sm btn-primary">&gt;</a>
+												<a href="<c:url value="/cms/order/select/${page+1}${parameters}"></c:url>" class="btn btn-sm btn-primary">&gt;</a>
 											</c:if>
 											<c:if test="${page+1 < totalPage}">
-												<a href="<c:url value="/cms/order/select/${totalPage}"></c:url>" class="btn btn-sm btn-primary">&gt;&gt;</a>
+												<a href="<c:url value="/cms/order/select/${totalPage}${parameters}"></c:url>" class="btn btn-sm btn-primary">&gt;&gt;</a>
 											</c:if>
 										</span>
 										</c:if>
