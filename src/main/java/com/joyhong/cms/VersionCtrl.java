@@ -1,5 +1,6 @@
 package com.joyhong.cms;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -14,10 +15,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.joyhong.model.Version;
 import com.joyhong.service.VersionService;
+import com.joyhong.service.common.ConstantService;
 import com.joyhong.service.common.FuncService;
+import com.joyhong.service.common.OssService;
 
 @Controller
 @RequestMapping("cms/version")
@@ -28,6 +32,9 @@ public class VersionCtrl {
 	
 	@Autowired
 	private FuncService funcService;
+	
+	@Autowired
+	private OssService ossService;
 	
 	@RequestMapping(value="/select", method=RequestMethod.GET)
 	public String select(){
@@ -54,6 +61,7 @@ public class VersionCtrl {
 		model.addAttribute("totalPage", totalPage);
 		model.addAttribute("totalRecord", totalRecord);
 		model.addAttribute("version", version);
+		model.addAttribute("ossUrl", ConstantService.ossUrl);
 		
 		return "VersionView";
 	}
@@ -71,9 +79,13 @@ public class VersionCtrl {
 	public String insert(
 			Model model, 
 			@ModelAttribute("version") Version version, 
-			@RequestParam("referer") String referer
-	){
+			@RequestParam("referer") String referer,
+			@RequestParam(value="version_file", required=false) MultipartFile version_file
+	) throws IOException{
 		if( versionService.insert(version) == 1 ){
+			Integer version_id = version.getId();
+			version.setDownloadLink(ossService.uploadFile(version_file, ossService.filePath, ossService.ossVersionPath, version_id, version.getDownloadLink()));
+			versionService.updateByPrimaryKey(version);
 			if( referer != "" ){
 				return "redirect:"+referer.substring(referer.lastIndexOf("/cms/"));
 			}
@@ -91,10 +103,11 @@ public class VersionCtrl {
 		Version version = versionService.selectByPrimaryKey(version_id);
 		if( version != null ){
 			model.addAttribute("version", version);
-			
-//			List<Device> device = deviceService.selectByVersionId(version.getId());
-//			model.addAttribute("device", device);
-//			model.addAttribute("deviceTotal", device.size());
+			if( version.getDownloadLink() != "" ){
+				model.addAttribute("ossUrl", ConstantService.ossUrl);
+			}else{
+				model.addAttribute("ossUrl", "");
+			}
 		
 			return "VersionView";
 		}
@@ -108,11 +121,12 @@ public class VersionCtrl {
 			HttpServletRequest request, 
 			@PathVariable("version_id") Integer version_id, 
 			@ModelAttribute("version") Version version, 
-			@RequestParam("referer") String referer
-	){
+			@RequestParam("referer") String referer,
+			@RequestParam(value="version_file", required=false) MultipartFile version_file
+	) throws IOException{
+		version.setDownloadLink(ossService.uploadFile(version_file, ossService.filePath, ossService.ossVersionPath, version_id, version.getDownloadLink()));
+		
 		version.setId(version_id);
-		version.setModifyDate(new Date());
-		version.setDeleted(0);
 		if( versionService.updateByPrimaryKeyWithBLOBs(version) == 1 ){
 			if( referer != "" ){
 				return "redirect:"+referer.substring(referer.lastIndexOf("/cms/"));

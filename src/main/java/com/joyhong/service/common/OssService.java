@@ -1,22 +1,33 @@
 package com.joyhong.service.common;
 
-import org.apache.log4j.Logger;
-import org.springframework.stereotype.Service;
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
 
-import com.google.gson.Gson;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.qiniu.common.QiniuException;
 import com.qiniu.common.Zone;
 import com.qiniu.http.Response;
 import com.qiniu.storage.BucketManager;
 import com.qiniu.storage.Configuration;
 import com.qiniu.storage.UploadManager;
-import com.qiniu.storage.model.DefaultPutRet;
 import com.qiniu.util.Auth;
 
 @Service
 public class OssService {
 	
 	private Logger logger = Logger.getLogger(this.getClass());
+	
+	@Autowired
+	private FileService fileService;
+	
+	public final String filePath = "/Users/user/Desktop/file/";
+	public final String ossOtaPath = "ota/";
+	public final String ossVersionPath = "version/";
 
 	private String accessKey = "2LlH425zih5U1CpzSE_-gl3BtvDH0nlLX8cDnQ16";
 	private String secretKey = "yw56scCKFK9sL0hK6W0gItPhezGO82zkB4XhjEkn";
@@ -46,7 +57,8 @@ public class OssService {
 		Configuration cfg = new Configuration(Zone.zoneNa0());
 		UploadManager uploadManager = new UploadManager(cfg);
 		try {
-		    Response response = uploadManager.put(source, target, upToken);
+			uploadManager.put(source, target, upToken);
+//		    Response response = uploadManager.put(source, target, upToken);
 		    //解析上传成功的结果
 //		    DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
 		} catch (QiniuException ex) {
@@ -71,5 +83,43 @@ public class OssService {
 			logger.info(ex.code());
 			logger.info(ex.response.toString());
 		}
+	}
+	
+	public String uploadFile(MultipartFile file, String filePath, String ossPath, Integer id, String overrideFile) throws IOException{
+		String retval = overrideFile;
+		
+		if( !file.isEmpty() ){
+			String fileName = file.getOriginalFilename();
+			String fileDir = filePath + String.valueOf(new Date().getTime()/1000) + "/";
+			String ossDir = ossPath + String.valueOf(id) + "/";
+			/*
+			 *  create folder
+			 */
+			fileService.makeDir(fileDir);
+			Runtime.getRuntime().exec("chmod 777 " + fileDir);
+			/*
+			 *  move file
+			 */
+			file.transferTo(new File(fileDir + fileName));
+			Runtime.getRuntime().exec("chmod 644 " + fileDir + fileName);
+			/*	
+			 * delete file
+			 */
+			if( overrideFile != null && !overrideFile.equals("") ){
+				this.delete(overrideFile);
+			}
+			/*	
+			 * 	upload file
+			 */
+			this.upload(fileDir + fileName, ossDir + fileName, ossDir + fileName);
+			/*	
+			 * 	delete local file
+			 */
+			fileService.deleteDir(fileDir);
+			
+			retval = ossDir + fileName;
+		}
+		
+		return retval;
 	}
 }

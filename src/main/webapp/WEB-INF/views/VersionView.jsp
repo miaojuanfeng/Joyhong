@@ -85,7 +85,7 @@
 					<h2 class="col-sm-12"><a href="<c:url value="/cms/version/select"></c:url>">Version management</a> > ${method} version</h2>
 
 					<div class="col-sm-12">
-						<form:form name="update" method="post" modelAttribute="version">
+						<form:form name="update" method="post" modelAttribute="version" enctype="multipart/form-data">
 							<%-- <input type="hidden" name="version_id" value="${version.id}" /> --%>
 							<input type="hidden" name="referer" value="${referer}" />
 							<div class="fieldset">
@@ -101,15 +101,23 @@
 											<form:input id="last_version" path="lastVersion" type="number" min="0" class="form-control input-sm required" placeholder="Last version" />
 										</p>
 										<p class="form-group">
-											<label for="download_link">Download link <span class="highlight">*</span></label>
-											<form:input id="download_link" path="downloadLink" type="text" class="form-control input-sm required" placeholder="Download link" />
-										</p>
-										<p class="form-group">
 											<label for="version_desc">Version Description <span class="highlight"></span></label>
 											<form:textarea id="version_desc" rows="10" path="versionDesc" class="form-control input-sm" placeholder="Version Description"></form:textarea>
 										</p>
 									</div>
-									<div class="col-sm-8 col-xs-12 pull-right">
+									<div class="col-sm-4 col-xs-12">
+										<h4 class="corpcolor-font">Related information</h4>
+										<p class="form-group">
+											<label for="version_file">Version file <span class="highlight"></span></label>
+											<input id="version_file" name="version_file" type="file" class="form-control input-sm" placeholder="Version file" />
+										</p>
+										<p class="form-group">
+											<label for="download_link">Download link <span class="highlight"></span></label>
+											<form:input id="download_link" path="downloadLink" type="hidden" class="form-control input-sm" placeholder="Download link" />
+											<input id="download_link" name="download_link" type="text" class="form-control input-sm" placeholder="Download link" readonly="readonly" value="${ossUrl}${version.downloadLink}" />
+										</p>
+									</div>
+									<div class="col-sm-4 col-xs-12 pull-right">
 										
 									</div>
 								</div>
@@ -244,7 +252,7 @@
 												<td title="${item.id}">${item.id}</td>
 												<td class="expandable">${item.name}</td>
 												<td class="expandable">${item.lastVersion}</td>
-												<td class="expandable">${item.downloadLink}</td>
+												<td class="expandable"><c:if test="${item.downloadLink != ''}">${ossUrl}</c:if>${item.downloadLink}</td>
 												<td class="expandable"><fmt:formatDate  value="${item.createDate}"  pattern="yyyy-MM-dd" /></td>
 												<td class="expandable"><fmt:formatDate  value="${item.modifyDate}"  pattern="yyyy-MM-dd" /></td>
 												<td class="text-right">

@@ -51,7 +51,7 @@
     delete from jh_version
     where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.joyhong.model.Version">
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.joyhong.model.Version">
     insert into jh_version (id, name, last_version, 
       download_link, create_date, modify_date, 
       deleted, version_desc)

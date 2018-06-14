@@ -69,6 +69,8 @@ public class VersionServiceImpl implements VersionService {
 
 	public int updateByPrimaryKeyWithBLOBs(Version record) {
 		// TODO Auto-generated method stub
+		record.setModifyDate(new Date());
+		record.setDeleted(0);
 		return versionMapper.updateByPrimaryKeyWithBLOBs(record);
 	}
 
