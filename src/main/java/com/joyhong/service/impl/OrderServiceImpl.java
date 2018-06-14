@@ -64,7 +64,7 @@ public class OrderServiceImpl implements OrderService {
 		if( category != null ){
 			Integer categoryId = Integer.valueOf(category);
 			return orderMapper.selectCategoryCount(categoryId);
-		}else if( action.equals("search") ){
+		}else if( action != null && action.equals("search") ){
 			String orderCode = request.getParameter("order_code")!= null?"%"+request.getParameter("order_code")+"%":"%%";
 			String machineCode = request.getParameter("machine_code")!= null?"%"+request.getParameter("machine_code")+"%":"%%";
 			String dealerCode = request.getParameter("dealer_code")!= null?"%"+request.getParameter("dealer_code")+"%":"%%";
@@ -82,7 +82,7 @@ public class OrderServiceImpl implements OrderService {
 		if( category != null ){
 			Integer categoryId = Integer.valueOf(category);
 			return orderMapper.selectCategoryOffsetAndLimit(categoryId, offset, limit);
-		}else if( action.equals("search") ){
+		}else if( action != null && action.equals("search") ){
 			String orderCode = request.getParameter("order_code")!= null?"%"+request.getParameter("order_code")+"%":"%%";
 			String machineCode = request.getParameter("machine_code")!= null?"%"+request.getParameter("machine_code")+"%":"%%";
 			String dealerCode = request.getParameter("dealer_code")!= null?"%"+request.getParameter("dealer_code")+"%":"%%";

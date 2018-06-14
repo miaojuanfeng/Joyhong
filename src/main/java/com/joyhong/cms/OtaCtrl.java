@@ -1,5 +1,7 @@
 package com.joyhong.cms;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -14,10 +16,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.joyhong.model.Order;
 import com.joyhong.model.Ota;
 import com.joyhong.service.OtaService;
+import com.joyhong.service.common.FileService;
 import com.joyhong.service.common.FuncService;
 
 @Controller
@@ -29,6 +32,12 @@ public class OtaCtrl {
 	
 	@Autowired
 	private FuncService funcService;
+	
+	@Autowired
+	private FileService fileService;
+	
+//	private String filePath = "/home/wwwroot/default/upload/";
+	private String filePath = "/Users/user/Desktop/file/";
 	
 	@RequestMapping(value="/select", method=RequestMethod.GET)
 	public String select(HttpServletRequest request){
@@ -116,8 +125,21 @@ public class OtaCtrl {
 			HttpServletRequest request, 
 			@PathVariable("ota_id") Integer ota_id, 
 			@ModelAttribute("ota") Ota ota,
-			@RequestParam("referer") String referer
-	){
+			@RequestParam("referer") String referer,
+			@RequestParam(value="ota_file", required=false) MultipartFile ota_file
+	) throws IOException{
+		if( !ota_file.isEmpty() ){
+			String fileName = ota_file.getOriginalFilename();
+			String fileDir = filePath + String.valueOf(new Date().getTime()/1000) + "/";
+			fileService.makeDir(fileDir);
+			Runtime.getRuntime().exec("chmod 777 " + fileDir);
+			
+			ota_file.transferTo(new File(fileDir + fileName));
+			Runtime.getRuntime().exec("chmod 644 " + fileDir + fileName);
+			
+			
+		}
+		
 		ota.setId(ota_id);
 		ota.setModifyDate(new Date());
 		ota.setDeleted(0);

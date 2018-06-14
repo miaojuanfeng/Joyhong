@@ -665,7 +665,6 @@ public class TwitterController {
 					CloseableHttpClient httpclient = HttpClients.createDefault();
 					
 					String oauth_timestamp = String.valueOf(new Date().getTime()/1000);
-					oauth_timestamp = "1528343544";
 					String hmacSHA1Text = "POST&" + URLEncoder.encode(url, "UTF-8") + "&" + 
 										  URLEncoder.encode("oauth_consumer_key="+consumerKey+"&"+
 										  "oauth_nonce="+oauth_timestamp+"&"+

@@ -75,7 +75,7 @@
 					<h2 class="col-sm-12"><a href="<c:url value="/cms/ota/select"></c:url>">Ota management</a> > ${method} ota</h2>
 
 					<div class="col-sm-12">
-						<form:form name="update" method="post" modelAttribute="ota">
+						<form:form name="update" method="post" modelAttribute="ota" enctype="multipart/form-data">
 							<input type="hidden" name="ota_id" value="${ota.id}" />
 							<form:input type="hidden" path="orderId" />
 							<input type="hidden" name="referer" value="${referer}" />
@@ -96,14 +96,19 @@
 											<form:textarea id="version_desc" rows="10" path="versionDesc" class="form-control input-sm" placeholder="Version description"></form:textarea>
 										</p>
 									</div>
-									<div class="col-sm-8 col-xs-12 pull-right">
-										
+									<div class="col-sm-4 col-xs-12">
+										<h4 class="corpcolor-font">Related information</h4>
+										<p class="form-group">
+											<label for="ota_file">Ota file <span class="highlight"></span></label>
+											<input id="ota_file" name="ota_file" type="file" class="form-control input-sm" placeholder="Ota file" />
+										</p>
 									</div>
+									<div class="col-sm-4 col-xs-12 pull-right"></div>
 								</div>
 
 								<div class="row">
 									<div class="col-xs-12">
-										<button type="submit" class="btn btn-sm btn-primary"><i class="glyphicon glyphicon-floppy-disk""></i> Save</button>
+										<button type="submit" class="btn btn-sm btn-primary"><i class="glyphicon glyphicon-floppy-disk"></i> Save</button>
 									</div>
 								</div>
 

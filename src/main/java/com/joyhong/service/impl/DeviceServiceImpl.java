@@ -93,7 +93,7 @@ public class DeviceServiceImpl implements DeviceService {
 		if( order != null ){
 			Integer orderId = Integer.valueOf(order);
 			return deviceMapper.selectOrderCount(orderId);
-		}else if( action.equals("search") ){
+		}else if( action != null && action.equals("search") ){
 			String deviceToken = request.getParameter("device_token")!= null?"%"+request.getParameter("device_token")+"%":"%%";
 			String deviceFcmToken = request.getParameter("device_fcm_token")!= null?"%"+request.getParameter("device_fcm_token")+"%":"%%";
 			return this.selectSearchCount(deviceToken, deviceFcmToken);
@@ -109,7 +109,7 @@ public class DeviceServiceImpl implements DeviceService {
 		if( order != null ){
 			Integer orderId = Integer.valueOf(order);
 			return deviceMapper.selectOrderOffsetAndLimit(orderId, offset, limit);
-		}else if( action.equals("search") ){
+		}else if( action != null && action.equals("search") ){
 			String deviceToken = request.getParameter("device_token")!= null?"%"+request.getParameter("device_token")+"%":"%%";
 			String deviceFcmToken = request.getParameter("device_fcm_token")!= null?"%"+request.getParameter("device_fcm_token")+"%":"%%";
 			return this.selectSearchOffsetAndLimit(deviceToken, deviceFcmToken, offset, limit);

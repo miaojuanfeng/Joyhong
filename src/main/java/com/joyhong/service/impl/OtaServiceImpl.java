@@ -76,7 +76,7 @@ public class OtaServiceImpl implements OtaService {
 		if( order != null ){
 			Integer orderId = Integer.valueOf(order);
 			return otaMapper.selectOrderCount(orderId);
-//		}else if( action.equals("search") ){
+//		}else if( action != null && action.equals("search") ){
 //			String otaToken = request.getParameter("ota_token")!= null?"%"+request.getParameter("ota_token")+"%":"%%";
 //			String otaFcmToken = request.getParameter("ota_fcm_token")!= null?"%"+request.getParameter("ota_fcm_token")+"%":"%%";
 //			return this.selectSearchCount(otaToken, otaFcmToken);
@@ -92,7 +92,7 @@ public class OtaServiceImpl implements OtaService {
 		if( order != null ){
 			Integer orderId = Integer.valueOf(order);
 			return otaMapper.selectOrderOffsetAndLimit(orderId, offset, limit);
-//		}else if( action.equals("search") ){
+//		}else if( action != null && action.equals("search") ){
 //			String otaToken = request.getParameter("ota_token")!= null?"%"+request.getParameter("ota_token")+"%":"%%";
 //			String otaFcmToken = request.getParameter("ota_fcm_token")!= null?"%"+request.getParameter("ota_fcm_token")+"%":"%%";
 //			return this.selectSearchOffsetAndLimit(otaToken, otaFcmToken, offset, limit);

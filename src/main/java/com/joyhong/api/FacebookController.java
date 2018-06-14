@@ -160,6 +160,8 @@ public class FacebookController {
 			        			}
 			        		}
 						}
+					}else{
+						postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'We have received your message.'}}";
 					}
 					
 					/*
