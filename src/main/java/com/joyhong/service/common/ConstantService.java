@@ -3,6 +3,7 @@ package com.joyhong.service.common;
 public class ConstantService {
 	
 	public static final String baseUrl = "http://file.bsimb.cn:8080";
+	public static final String ossUrl = "http://p9vrllw43.bkt.gdipper.com/";
 	
 	/*
 	 *  Device controller error

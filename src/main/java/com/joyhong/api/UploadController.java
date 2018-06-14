@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.google.gson.Gson;
 import com.joyhong.model.Device;
 import com.joyhong.model.Upload;
 import com.joyhong.model.User;
@@ -25,14 +24,8 @@ import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
 import com.joyhong.service.common.ConstantService;
 import com.joyhong.service.common.FileService;
+import com.joyhong.service.common.OssService;
 import com.joyhong.service.common.PushService;
-import com.qiniu.common.QiniuException;
-import com.qiniu.common.Zone;
-import com.qiniu.http.Response;
-import com.qiniu.storage.Configuration;
-import com.qiniu.storage.UploadManager;
-import com.qiniu.storage.model.DefaultPutRet;
-import com.qiniu.util.Auth;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -64,6 +57,9 @@ public class UploadController {
 	
 	@Autowired
 	private PushService pushService;
+	
+	@Autowired
+	private OssService ossService;
 	
 	private String tempPath = "/home/wwwroot/default/upload/temp/";
 	private String filePath = "/home/wwwroot/default/upload/";
@@ -436,36 +432,8 @@ public class UploadController {
 		
 		User user = userService.selectByUsername(user_imei);
 		if( user != null && user_id.equals(user.getId()) ){
-			
-			String accessKey = "2LlH425zih5U1CpzSE_-gl3BtvDH0nlLX8cDnQ16";
-			String secretKey = "yw56scCKFK9sL0hK6W0gItPhezGO82zkB4XhjEkn";
-			String bucket = "photopartner";
-			
-			Auth auth = Auth.create(accessKey, secretKey);
-			String upToken = auth.uploadToken(bucket);
-			
-			//
-//			try {
-//				Configuration cfg = new Configuration(Zone.zoneNa0());
-//				UploadManager uploadManager = new UploadManager(cfg);
-//			    Response response = uploadManager.put("/Users/user/Desktop/image.jpg", "image.jpg", upToken);
-//			    //解析上传成功的结果
-//			    DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
-//			    System.out.println(putRet.key);
-//			    System.out.println(putRet.hash);
-//			} catch (QiniuException ex) {
-//			    Response r = ex.response;
-//			    System.err.println(r.toString());
-//			    try {
-//			        System.err.println(r.bodyString());
-//			    } catch (QiniuException ex2) {
-//			        //ignore
-//			    }
-//			}
-			//
-			
 			JSONObject temp = new JSONObject();
-			temp.put("upToken", upToken);
+			temp.put("upToken", ossService.upToken());
 			
 			retval.put("status", ConstantService.statusCode_200);
 			retval.put("data", temp);

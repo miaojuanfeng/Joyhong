@@ -55,7 +55,7 @@
     delete from jh_ota
     where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.joyhong.model.Ota">
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.joyhong.model.Ota">
     insert into jh_ota (id, order_id, last_version, 
       download_link, create_date, modify_date, 
       deleted, version_desc)

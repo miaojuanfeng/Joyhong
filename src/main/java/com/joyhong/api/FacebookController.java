@@ -138,7 +138,7 @@ public class FacebookController {
 					/*
 					 * 回复给发送者的消息
 					 */
-					String postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'Sorry, I can not understand what you say.'}}";
+					String postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'Sorry, I do not understand this command, please try \"bd12345678\" (12345678 is the device id) or send me a photo.'}}";
 					if( message.has("text") ){
 						msgStr = message.getString("text");
 						if( msgStr.equals("Hello") || msgStr.equals("hello") ){

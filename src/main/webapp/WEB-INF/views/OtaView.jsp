@@ -88,10 +88,6 @@
 											<form:input id="last_version" path="lastVersion" type="number" min="0" class="form-control input-sm" placeholder="Last version" />
 										</p>
 										<p class="form-group">
-											<label for="download_link">Download link <span class="highlight"></span></label>
-											<form:input id="download_link" path="downloadLink" type="text" class="form-control input-sm" placeholder="Download link" />
-										</p>
-										<p class="form-group">
 											<label for="version_desc">Version description <span class="highlight"></span></label>
 											<form:textarea id="version_desc" rows="10" path="versionDesc" class="form-control input-sm" placeholder="Version description"></form:textarea>
 										</p>
@@ -101,6 +97,11 @@
 										<p class="form-group">
 											<label for="ota_file">Ota file <span class="highlight"></span></label>
 											<input id="ota_file" name="ota_file" type="file" class="form-control input-sm" placeholder="Ota file" />
+										</p>
+										<p class="form-group">
+											<label for="download_link">Download link <span class="highlight"></span></label>
+											<form:input id="download_link" path="downloadLink" type="hidden" class="form-control input-sm" placeholder="Download link" />
+											<input id="download_link" name="download_link" type="text" class="form-control input-sm" placeholder="Download link" readonly="true" value="${ossUrl}${ota.downloadLink}" />
 										</p>
 									</div>
 									<div class="col-sm-4 col-xs-12 pull-right"></div>
@@ -234,7 +235,7 @@
 											<tr id="<?=$value->ota_id?>" class="list-row" onclick=""> <!-- the onclick="" is for fixing the iphone problem -->
 												<td title="${item.id}">${item.id}</td>
 												<td class="expandable">${item.lastVersion}</td>
-												<td class="expandable">${item.downloadLink}</td>
+												<td class="expandable"><a href="${ossUrl}${item.downloadLink}" target="_blank"><c:if test="${item.downloadLink != ''}">${ossUrl}</c:if>${item.downloadLink}</a></td>
 												<td class="expandable"><fmt:formatDate  value="${item.createDate}"  pattern="yyyy-MM-dd" /></td>
 												<td class="expandable"><fmt:formatDate  value="${item.modifyDate}"  pattern="yyyy-MM-dd" /></td>
 												<td class="text-right">

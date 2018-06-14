@@ -103,6 +103,8 @@ public class OtaServiceImpl implements OtaService {
 
 	public int updateByPrimaryKeyWithBLOBs(Ota record) {
 		// TODO Auto-generated method stub
+		record.setModifyDate(new Date());
+		record.setDeleted(0);
 		return otaMapper.updateByPrimaryKeyWithBLOBs(record);
 	}
 

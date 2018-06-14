@@ -20,8 +20,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.joyhong.model.Ota;
 import com.joyhong.service.OtaService;
+import com.joyhong.service.common.ConstantService;
 import com.joyhong.service.common.FileService;
 import com.joyhong.service.common.FuncService;
+import com.joyhong.service.common.OssService;
 
 @Controller
 @RequestMapping("cms/ota")
@@ -36,8 +38,14 @@ public class OtaCtrl {
 	@Autowired
 	private FileService fileService;
 	
+	@Autowired
+	private OssService ossService;
+	
 //	private String filePath = "/home/wwwroot/default/upload/";
 	private String filePath = "/Users/user/Desktop/file/";
+	
+//	private String ossPath = "ota/";
+	private String ossPath = "ota/";
 	
 	@RequestMapping(value="/select", method=RequestMethod.GET)
 	public String select(HttpServletRequest request){
@@ -65,6 +73,7 @@ public class OtaCtrl {
 		model.addAttribute("totalPage", totalPage);
 		model.addAttribute("totalRecord", totalRecord);
 		model.addAttribute("ota", ota);
+		model.addAttribute("ossUrl", ConstantService.ossUrl);
 		model.addAttribute("parameters", funcService.requestParameters(request));
 		
 		return "OtaView";
@@ -92,9 +101,13 @@ public class OtaCtrl {
 	public String insert(
 			Model model, 
 			@ModelAttribute("ota") Ota ota, 
-			@RequestParam("referer") String referer
-	){
+			@RequestParam("referer") String referer,
+			@RequestParam(value="ota_file", required=false) MultipartFile ota_file
+	) throws IOException{
 		if( otaService.insert(ota) == 1 ){
+			Integer ota_id = ota.getId();
+			ota.setDownloadLink(this.uploadFile(ota_file, ota_id, ota.getDownloadLink()));
+			otaService.updateByPrimaryKey(ota);
 			if( referer != "" ){
 				return "redirect:"+referer.substring(referer.lastIndexOf("/cms/"));
 			}
@@ -112,6 +125,11 @@ public class OtaCtrl {
 		Ota ota = otaService.selectByPrimaryKey(ota_id);
 		if( ota != null ){
 			model.addAttribute("ota", ota);
+			if( ota.getDownloadLink() != "" ){
+				model.addAttribute("ossUrl", ConstantService.ossUrl);
+			}else{
+				model.addAttribute("ossUrl", "");
+			}
 		
 			return "OtaView";
 		}
@@ -128,21 +146,9 @@ public class OtaCtrl {
 			@RequestParam("referer") String referer,
 			@RequestParam(value="ota_file", required=false) MultipartFile ota_file
 	) throws IOException{
-		if( !ota_file.isEmpty() ){
-			String fileName = ota_file.getOriginalFilename();
-			String fileDir = filePath + String.valueOf(new Date().getTime()/1000) + "/";
-			fileService.makeDir(fileDir);
-			Runtime.getRuntime().exec("chmod 777 " + fileDir);
-			
-			ota_file.transferTo(new File(fileDir + fileName));
-			Runtime.getRuntime().exec("chmod 644 " + fileDir + fileName);
-			
-			
-		}
+		ota.setDownloadLink(this.uploadFile(ota_file, ota_id, ota.getDownloadLink()));
 		
 		ota.setId(ota_id);
-		ota.setModifyDate(new Date());
-		ota.setDeleted(0);
 		if( otaService.updateByPrimaryKeyWithBLOBs(ota) == 1 ){
 			if( referer != "" ){
 				return "redirect:"+referer.substring(referer.lastIndexOf("/cms/"));
@@ -170,5 +176,39 @@ public class OtaCtrl {
 	@ModelAttribute
 	public void startup(Model model, HttpSession httpSession, HttpServletRequest request){
 		funcService.modelAttribute(model, httpSession, request);
+	}
+	
+	private String uploadFile(MultipartFile ota_file, Integer ota_id, String overrideFile) throws IOException{
+		String retval = overrideFile;
+		
+		if( !ota_file.isEmpty() ){
+			String fileName = ota_file.getOriginalFilename();
+			String fileDir = filePath + String.valueOf(new Date().getTime()/1000) + "/";
+			String ossDir = ossPath + String.valueOf(ota_id) + "/";
+			/*
+			 *  create folder
+			 */
+			fileService.makeDir(fileDir);
+			Runtime.getRuntime().exec("chmod 777 " + fileDir);
+			/*
+			 *  move file
+			 */
+			ota_file.transferTo(new File(fileDir + fileName));
+			Runtime.getRuntime().exec("chmod 644 " + fileDir + fileName);
+			/*	
+			 * delete file
+			 */
+			if( overrideFile != null && !overrideFile.equals("") ){
+				ossService.delete(overrideFile);
+			}
+			/*	
+			 * 	upload file
+			 */
+			ossService.upload(fileDir + fileName, ossDir + fileName, ossDir + fileName);
+			
+			retval = ossDir + fileName;
+		}
+		
+		return retval;
 	}
 }
