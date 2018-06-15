@@ -66,7 +66,7 @@ public class OtaServiceImpl implements OtaService {
 	
 	public Ota selectByOrderIdAndVersion(Integer order_id, Integer version) {
 		// TODO Auto-generated method stub
-		return null;
+		return otaMapper.selectByOrderIdAndVersion(order_id, version);
 	}
 
 	public int selectOrderCount(HttpServletRequest request) {

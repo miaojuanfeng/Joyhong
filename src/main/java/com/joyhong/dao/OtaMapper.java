@@ -12,6 +12,8 @@ public interface OtaMapper {
     int insertSelective(Ota record);
 
     Ota selectByPrimaryKey(Integer id);
+    
+    Ota selectByOrderIdAndVersion(Integer order_id, Integer version);
 
     int updateByPrimaryKeySelective(Ota record);
 

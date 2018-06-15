@@ -27,6 +27,14 @@
     from jh_ota
     where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </select>
+  <select id="selectByOrderIdAndVersion" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from jh_ota
+    where deleted = 0 and order_id = #{0} and last_version = #{1} order by id desc limit 1
+  </select>
   <select id="selectCount" resultType="java.lang.Integer">
     select count(id)
     from jh_ota

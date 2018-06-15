@@ -1,7 +1,5 @@
 package com.joyhong.api;
 
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.List;
@@ -21,10 +19,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.joyhong.model.Device;
 import com.joyhong.model.Order;
+import com.joyhong.model.Ota;
 import com.joyhong.model.User;
 import com.joyhong.model.UserDevice;
 import com.joyhong.service.DeviceService;
 import com.joyhong.service.OrderService;
+import com.joyhong.service.OtaService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
 import com.joyhong.service.common.ConstantService;
@@ -58,6 +58,9 @@ public class DeviceController {
 	
 	@Autowired
 	private PushService pushService;
+	
+	@Autowired
+	private OtaService otaService;
 	
 	/**
 	 * 注册device id与fcm token
@@ -394,11 +397,12 @@ public class DeviceController {
 	 * @url {base_url}/device/version
 	 * @method POST
 	 * @param device_id 设备数据库主键
+	 * @param version 设备当前版本编号
 	 * @return json
 	 */
 	@RequestMapping(value="/version", method=RequestMethod.POST)
 	@ResponseBody
-	public String version(@RequestParam("device_id") Integer device_id){
+	public String version(@RequestParam("device_id") Integer device_id, @RequestParam("version") Integer version){
 		JSONObject retval = new JSONObject();
 		JSONObject temp = new JSONObject();
 		
@@ -409,11 +413,16 @@ public class DeviceController {
 			Integer order_id = device.getOrderId();
 			Order order = orderService.selectByPrimaryKey(order_id);
 			if( order != null ){
-				retval.put("status", ConstantService.statusCode_200);
-				temp.put("last_version", order.getLastVersion());
-				temp.put("download_link", order.getDownloadLink());
-				temp.put("version_desc", order.getVersionDesc());
-				retval.put("data", temp);
+				Ota ota = otaService.selectByOrderIdAndVersion(order_id, version);
+				if( ota != null ){
+					retval.put("status", ConstantService.statusCode_200);
+					temp.put("last_version", ota.getLastVersion());
+					temp.put("download_link", ConstantService.ossUrl + ota.getDownloadLink());
+					temp.put("version_desc", ota.getVersionDesc());
+					retval.put("data", temp);
+				}else{
+					retval.put("status", ConstantService.statusCode_118);
+				}
 			}else{
 				retval.put("status", ConstantService.statusCode_112);
 			}
