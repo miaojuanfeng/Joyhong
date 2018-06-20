@@ -72,9 +72,9 @@ public class TwitterController {
 	private static String accessTokenSecret = "sZdCDyrJWLQDnfXSIZXrKrGFsUMmxA3YPZO1YxX9OyYJf";
 	
 	private static String twitterImagePath = "/home/wwwroot/default/twitter/attachments/image/";
-	private static String twitterImageUrl = ConstantService.baseUrl + "/twitter/attachments/image/";
+	private static String twitterImageUrl = ConstantService.fileUrl + "/twitter/attachments/image/";
 	private static String twitterVideoPath = "/home/wwwroot/default/twitter/attachments/video/";
-	private static String twitterVideoUrl = ConstantService.baseUrl + "/twitter/attachments/video/";
+	private static String twitterVideoUrl = ConstantService.fileUrl + "/twitter/attachments/video/";
 	
 	private TwitterStream twitterStream = null;
 	
@@ -308,7 +308,7 @@ public class TwitterController {
 			String filePath = "/home/wwwroot/default/twitter/attachments/users/" + String.valueOf(userId) + "/";
 			String fileName = "";
 			// 用户头像url
-			String fileUrl = ConstantService.baseUrl + "/twitter/attachments/users/" + String.valueOf(userId) + "/";
+			String fileUrl = ConstantService.fileUrl + "/twitter/attachments/users/" + String.valueOf(userId) + "/";
 			
 			try{
 		        User user = this.twitter.showUser(userId);
@@ -412,7 +412,6 @@ public class TwitterController {
 								"", 
 								device.getDeviceFcmToken(), 
 								"new user", 
-								"", 
 								"", 
 								"text", 
 								"twitter", 
@@ -563,8 +562,7 @@ public class TwitterController {
 									userDevice.getDeviceName(), 
 									device.getDeviceFcmToken(), 
 									messageText, 
-									image_url, 
-									video_url, 
+									finalUrl, 
 									type, 
 									"twitter", 
 									"Receive a message from Twitter", 

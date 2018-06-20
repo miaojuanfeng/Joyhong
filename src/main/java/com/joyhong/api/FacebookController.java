@@ -184,12 +184,12 @@ public class FacebookController {
 					        String filePath = "/home/wwwroot/default/facebook/attachments/" + type + "/";   
 					        fileService.saveUrlAs(fileUrl, filePath, fileName);
 					        
-					        postdata = postdata.replace(oldUrl, ConstantService.baseUrl + "/facebook/attachments/" + type + fileName);
+					        postdata = postdata.replace(oldUrl, ConstantService.fileUrl + "/facebook/attachments/" + type + fileName);
 					        if( type.equals("image") ){
-					        	image_url = ConstantService.baseUrl + "/facebook/attachments/" + type + "/" + fileName;
+					        	image_url = ConstantService.fileUrl + "/facebook/attachments/" + type + "/" + fileName;
 					        	finalUrl = image_url;
 					        }else if( type.equals("video") ){
-					        	video_url = ConstantService.baseUrl + "/facebook/attachments/" + type + "/" + fileName;
+					        	video_url = ConstantService.fileUrl + "/facebook/attachments/" + type + "/" + fileName;
 					        	finalUrl = video_url;
 					        }
 						}
@@ -234,8 +234,7 @@ public class FacebookController {
 										userDevice.getDeviceName(), 
 										device.getDeviceFcmToken(), 
 										msgStr, 
-										image_url, 
-										video_url, 
+										finalUrl, 
 										type, 
 										"facebook", 
 										"Receive a message from Facebook", 
@@ -344,7 +343,6 @@ public class FacebookController {
 							device.getDeviceFcmToken(), 
 							"new user", 
 							"", 
-							"", 
 							"text", 
 							"facebook", 
 							"Receive a message from App", 
@@ -368,7 +366,7 @@ public class FacebookController {
 		
 		String filePath = "/home/wwwroot/default/facebook/attachments/users/" + userId + "/";
 		String fileName = "";
-		String fileUrl = ConstantService.baseUrl + "/facebook/attachments/users/" + userId + "/";
+		String fileUrl = ConstantService.fileUrl + "/facebook/attachments/users/" + userId + "/";
 		
 		try{
 			CloseableHttpClient httpclient = HttpClients.createDefault();

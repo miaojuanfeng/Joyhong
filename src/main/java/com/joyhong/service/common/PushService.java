@@ -48,8 +48,7 @@ public class PushService {
 					String receive_name, 
 					String to_fcm_token,
 					String text,
-					String image_url,
-					String video_url,
+					String fileUrl,
 					String type,
 					String platform,
 					String title,
@@ -97,8 +96,11 @@ public class PushService {
 	          notification.setToFcmToken(to_fcm_token);
 	          notification.setType(type);
         	  notification.setText(text);
-        	  notification.setImageUrl(image_url);
-        	  notification.setVideoUrl(video_url);
+        	  if( type.equals("image") ){
+        		  notification.setImageUrl(fileUrl);
+        	  }else if( type.equals("video") ){
+        		  notification.setVideoUrl(fileUrl);
+        	  }
         	  notification.setPlatform(platform);
 	          //
 	          if( resultJson.getString("success").equals("1") ){
@@ -194,8 +196,11 @@ public class PushService {
 //			notification.setToFcmToken(to_fcm_token);
 //			notification.setType(type);
 //			notification.setText(text);
-//			notification.setImageUrl(image_url);
-//			notification.setVideoUrl(video_url);
+//			if( type.equals("image") ){
+//	 			notification.setImageUrl(fileUrl);
+//			}else if( type.equals("video") ){
+//	  			notification.setVideoUrl(fileUrl);
+//			}
 //			notification.setPlatform(platform);
 //			/*
 //			 * 查询该Token是否已注册

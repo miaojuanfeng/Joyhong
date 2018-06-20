@@ -16,6 +16,7 @@ import com.qiniu.storage.BucketManager;
 import com.qiniu.storage.Configuration;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.util.Auth;
+import com.qiniu.util.StringMap;
 
 @Service
 public class OssService {
@@ -32,16 +33,32 @@ public class OssService {
 	private String accessKey = "2LlH425zih5U1CpzSE_-gl3BtvDH0nlLX8cDnQ16";
 	private String secretKey = "yw56scCKFK9sL0hK6W0gItPhezGO82zkB4XhjEkn";
 	private String bucket = "photopartner";
+	public String callbackUrl = ConstantService.baseUrl + "upload/callback";
+	private String callbackBody = "{\"type\":\"$(x:type)\",\"user_id\":\"$(x:user_id)\",\"name\":\"$(x:name)\",\"description\":\"$(x:description)\",\"url\":$(key),\"device_id\":\"$(x:device_id)\"}";
+	public String callbackBodyType = "application/json";
+	private long expireSeconds = 3600;
+	
+	public Auth auth(){
+		return Auth.create(this.accessKey, this.secretKey);
+	}
 	
 	public String upToken(){
-		Auth auth = Auth.create(this.accessKey, this.secretKey);
-		String upToken = auth.uploadToken(this.bucket);
+		Auth auth = this.auth();
+		StringMap putPolicy = new StringMap();
+		putPolicy.put("callbackUrl", this.callbackUrl);
+		putPolicy.put("callbackBody", this.callbackBody);
+		putPolicy.put("callbackBodyType", this.callbackBodyType);
+		String upToken = auth.uploadToken(this.bucket, null, this.expireSeconds, putPolicy);
 		return upToken;
 	}
 	
 	public String upToken(String filename){
-		Auth auth = Auth.create(this.accessKey, this.secretKey);
-		String upToken = auth.uploadToken(this.bucket, filename);
+		Auth auth = this.auth();
+		StringMap putPolicy = new StringMap();
+		putPolicy.put("callbackUrl", this.callbackUrl);
+		putPolicy.put("callbackBody", this.callbackBody);
+		putPolicy.put("callbackBodyType", this.callbackBodyType);
+		String upToken = auth.uploadToken(this.bucket, filename, this.expireSeconds, putPolicy);
 		return upToken;
 	}
 	
@@ -75,7 +92,7 @@ public class OssService {
 	
 	public void delete(String filename){
 		Configuration cfg = new Configuration(Zone.zoneNa0());
-		Auth auth = Auth.create(this.accessKey, this.secretKey);
+		Auth auth = this.auth();
 		BucketManager bucketManager = new BucketManager(auth, cfg);
 		try {
 		    bucketManager.delete(this.bucket, filename);

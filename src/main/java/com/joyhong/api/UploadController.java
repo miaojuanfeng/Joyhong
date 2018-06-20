@@ -2,8 +2,11 @@ package com.joyhong.api;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Date;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +29,7 @@ import com.joyhong.service.common.ConstantService;
 import com.joyhong.service.common.FileService;
 import com.joyhong.service.common.OssService;
 import com.joyhong.service.common.PushService;
+import com.qiniu.util.Auth;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -65,7 +69,7 @@ public class UploadController {
 	private String filePath = "/home/wwwroot/default/upload/";
 //	private String tempPath = "/Users/user/Desktop/temp/";
 //	private String filePath = "/Users/user/Desktop/test/";
-	private String fileUrl = ConstantService.baseUrl + "/upload/";
+	private String fileUrl = ConstantService.fileUrl + "/upload/";
 	
 	/**
 	 * 上传图片
@@ -158,7 +162,6 @@ public class UploadController {
 							device.getDeviceFcmToken(), 
 							desc_temp.toString(), 
 							temp.toString(), 
-							"", 
 							"image", 
 							"app", 
 							"Receive a message from App", 
@@ -263,7 +266,6 @@ public class UploadController {
 											userDevice.getDeviceName(), 
 											device.getDeviceFcmToken(), 
 											file_desc, 
-											"", 
 											webUrl + fileName, 
 											"video", 
 											"app", 
@@ -383,7 +385,6 @@ public class UploadController {
 											userDevice.getDeviceName(), 
 											device.getDeviceFcmToken(), 
 											file_desc, 
-											"", 
 											webUrl + fileName, 
 											"video", 
 											"app", 
@@ -441,6 +442,118 @@ public class UploadController {
 			retval.put("status", ConstantService.statusCode_109);
 		}
 		
+		return retval.toString();
+	}
+	
+	@RequestMapping(value="/callback", method = RequestMethod.POST)
+	@ResponseBody
+	public String callback(HttpServletRequest request){
+		JSONObject retval = new JSONObject();
+//		JSONArray temp = new JSONArray();
+//		JSONArray desc_temp = new JSONArray();
+		
+		//回调地址
+        String callbackUrl = ossService.callbackUrl;
+        //定义回调内容的组织格式
+        String callbackBodyType = ossService.callbackBodyType;
+        /**
+         * 这两个参数根据实际所使用的HTTP框架进行获取
+         */
+        //通过获取请求的HTTP头部Authorization字段获得
+        String callbackAuthHeader = request.getHeader("Authorization");
+        //通过读取回调POST请求体获得，不要设置为null
+        byte[] callbackBody = new byte[10240];
+        try {
+            //这里是最重要的，接收byte[]
+            request.getInputStream().read(callbackBody);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        //将byte[]转化为字符串
+        String callbackBodyStr = new String(callbackBody);
+        Auth auth = ossService.auth();
+        //检查是否为七牛合法的回调请求
+        boolean validCallback = auth.isValidCallback(callbackAuthHeader, callbackUrl, callbackBody, callbackBodyType);
+        if (validCallback) {
+            //继续处理其他业务逻辑
+        	logger.info("callback str: " + callbackBodyStr);
+        	//将字符串转化为json对象
+            JSONObject obj = JSONObject.fromObject(callbackBodyStr);
+            String type = obj.getString("type");
+            Integer userId = Integer.valueOf(obj.getString("user_id"));
+            String fileName = obj.getString("name");
+            String desc = obj.getString("description");
+            String url = obj.getString("url");
+            JSONArray deviceId = JSONArray.fromObject(obj.getString("device_id"));
+            //保存到表
+            Upload upload = new Upload();
+			upload.setUserId(userId);
+			upload.setName(fileName);
+			upload.setDescription(desc);
+			upload.setUrl(ConstantService.ossUrl + url);
+			upload.setMd5("");
+			if( uploadService.insert(upload) == 1 ){
+//				temp.add(ConstantService.ossUrl + url);
+//				desc_temp.add(file_desc[i]);
+				/*
+				 * 推送在下
+				 */
+				User user = userService.selectByPrimaryKey(userId);
+				if( user != null ){
+					for(int i = 0; i< deviceId.size(); i++){
+						Integer id = deviceId.getInt(i);
+						Device device = deviceService.selectByPrimaryKey(id);
+						UserDevice userDevice = userDeviceService.selectByUserIdAndDeviceId(userId, device.getId());
+						if( device != null && userDevice != null ){
+							JSONObject body = new JSONObject();
+							body.put("sender_id", user.getId());
+							body.put("sender_name", user.getNickname());
+							//
+							JSONObject ut = new JSONObject();
+							ut.put("username", user.getUsername());
+							ut.put("account", user.getNumber());
+							ut.put("nickname", user.getNickname());
+							ut.put("avatar", user.getProfileImage());
+							ut.put("platform", user.getPlatform());
+							ut.put("accepted", user.getAccepted());
+							body.put("sender_user", ut);
+							//
+							body.put("receive_id", device.getId());
+							body.put("receive_name", userDevice.getDeviceName());
+							body.put("to_fcm_token", device.getDeviceFcmToken());
+							body.put("text", desc);
+							body.put("url", ConstantService.ossUrl + url);
+							body.put("type", type);
+							body.put("platform", "app");
+							body.put("time", (new Date()).getTime()/1000);
+							pushService.push(
+									user.getId(),
+									user.getNickname(), 
+									device.getId(), 
+									userDevice.getDeviceName(), 
+									device.getDeviceFcmToken(), 
+									desc, 
+									ConstantService.ossUrl + url, 
+									type, 
+									"app", 
+									"Receive a message from App", 
+									body.toString());
+						}
+					}
+				}
+				/*
+				 * 推送在上
+				 */
+				retval.put("status", ConstantService.statusCode_200);
+				retval.put("data", ConstantService.ossUrl + url);
+			}else{
+				retval.put("status", ConstantService.statusCode_318);
+			}
+        } else {
+            //这是哪里的请求，被劫持，篡改了吧？
+        }
+        
 		return retval.toString();
 	}
 }
