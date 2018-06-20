@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
@@ -447,7 +448,7 @@ public class UploadController {
 	
 	@RequestMapping(value="/callback", method = RequestMethod.POST)
 	@ResponseBody
-	public String callback(HttpServletRequest request){
+	public String callback(HttpServletRequest request) throws UnsupportedEncodingException{
 		JSONObject retval = new JSONObject();
 //		JSONArray temp = new JSONArray();
 //		JSONArray desc_temp = new JSONArray();
@@ -471,7 +472,7 @@ public class UploadController {
             e.printStackTrace();
         }
         //将byte[]转化为字符串
-        String callbackBodyStr = new String(callbackBody);
+        String callbackBodyStr = new String(callbackBody, "utf-8");
         Auth auth = ossService.auth();
         //检查是否为七牛合法的回调请求
         boolean validCallback = auth.isValidCallback(callbackAuthHeader, callbackUrl, callbackBody, callbackBodyType);
@@ -486,13 +487,14 @@ public class UploadController {
             String desc = obj.getString("description");
             String url = obj.getString("url");
             JSONArray deviceId = JSONArray.fromObject(obj.getString("device_id"));
+            String md5 = obj.getString("md5");
             //保存到表
             Upload upload = new Upload();
 			upload.setUserId(userId);
 			upload.setName(fileName);
 			upload.setDescription(desc);
 			upload.setUrl(ConstantService.ossUrl + url);
-			upload.setMd5("");
+			upload.setMd5(md5);
 			if( uploadService.insert(upload) == 1 ){
 //				temp.add(ConstantService.ossUrl + url);
 //				desc_temp.add(file_desc[i]);

@@ -34,7 +34,7 @@ public class OssService {
 	private String secretKey = "yw56scCKFK9sL0hK6W0gItPhezGO82zkB4XhjEkn";
 	private String bucket = "photopartner";
 	public String callbackUrl = ConstantService.baseUrl + "upload/callback";
-	private String callbackBody = "{\"type\":\"$(x:type)\",\"user_id\":\"$(x:user_id)\",\"name\":\"$(x:name)\",\"description\":\"$(x:description)\",\"url\":$(key),\"device_id\":\"$(x:device_id)\"}";
+	private String callbackBody = "{\"type\":\"$(x:type)\",\"user_id\":\"$(x:user_id)\",\"name\":\"$(x:name)\",\"description\":\"$(x:description)\",\"url\":$(key),\"device_id\":\"$(x:device_id)\",\"md5\":\"$(x:md5)\"}";
 	public String callbackBodyType = "application/json";
 	private long expireSeconds = 3600;
 	
