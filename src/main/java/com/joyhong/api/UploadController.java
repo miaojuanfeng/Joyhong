@@ -427,9 +427,9 @@ public class UploadController {
 	 * @param user_imei
 	 * @return
 	 */
-	@RequestMapping(value="/token", method = RequestMethod.POST)
+	@RequestMapping(value="/token/image", method = RequestMethod.POST)
 	@ResponseBody
-	public String token(@RequestParam("user_id") Integer user_id, @RequestParam("user_imei") String user_imei){
+	public String tokenImage(@RequestParam("user_id") Integer user_id, @RequestParam("user_imei") String user_imei){
 		JSONObject retval = new JSONObject();
 		
 		User user = userService.selectByUsername(user_imei);
@@ -439,6 +439,55 @@ public class UploadController {
 			
 			retval.put("status", ConstantService.statusCode_200);
 			retval.put("data", temp);
+		}else{
+			retval.put("status", ConstantService.statusCode_109);
+		}
+		
+		return retval.toString();
+	}
+	
+	@RequestMapping(value="/token/video", method = RequestMethod.POST)
+	@ResponseBody
+	public String tokenVideo(@RequestParam("user_id") Integer user_id, @RequestParam("user_imei") String user_imei,
+							 @RequestParam("video_data") String video_data){
+		JSONObject retval = new JSONObject();
+		
+		User user = userService.selectByUsername(user_imei);
+		if( user != null && user_id.equals(user.getId()) ){
+			
+			JSONObject obj = JSONObject.fromObject(video_data);
+			String file_md5 = obj.getString("file_md5");
+			String file_desc = obj.getString("file_desc");
+			JSONArray deviceId = JSONArray.fromObject(obj.getString("device_id"));
+			
+			Upload existsFile = uploadService.selectByNameAndMD5(user_id, file_md5);
+	        if( existsFile != null ){
+	        	JSONArray t = new JSONArray();
+	        	t.add(file_desc);
+	        	existsFile.setDescription(t.toString());
+	        	if( uploadService.updateByPrimaryKey(existsFile) == 1 ){
+	        		/*
+					 * 推送在下
+					 */
+					for(int i = 0; i< deviceId.size(); i++){
+						this.doPush(user, deviceId.getInt(i), existsFile.getDescription(), existsFile.getUrl(), "video");
+					}
+					/*
+					 * 推送在上
+					 */
+					JSONObject temp = new JSONObject();
+					temp.put("url", existsFile.getUrl());
+					
+					retval.put("status", ConstantService.statusCode_200);
+					retval.put("data", temp);
+	        	}
+	        }else{
+	        	JSONObject temp = new JSONObject();
+				temp.put("upToken", ossService.upToken());
+				
+				retval.put("status", ConstantService.statusCode_200);
+				retval.put("data", temp);
+	        }
 		}else{
 			retval.put("status", ConstantService.statusCode_109);
 		}
@@ -504,51 +553,17 @@ public class UploadController {
 				User user = userService.selectByPrimaryKey(userId);
 				if( user != null ){
 					for(int i = 0; i< deviceId.size(); i++){
-						Integer id = deviceId.getInt(i);
-						Device device = deviceService.selectByPrimaryKey(id);
-						UserDevice userDevice = userDeviceService.selectByUserIdAndDeviceId(userId, device.getId());
-						if( device != null && userDevice != null ){
-							JSONObject body = new JSONObject();
-							body.put("sender_id", user.getId());
-							body.put("sender_name", user.getNickname());
-							//
-							JSONObject ut = new JSONObject();
-							ut.put("username", user.getUsername());
-							ut.put("account", user.getNumber());
-							ut.put("nickname", user.getNickname());
-							ut.put("avatar", user.getProfileImage());
-							ut.put("platform", user.getPlatform());
-							ut.put("accepted", user.getAccepted());
-							body.put("sender_user", ut);
-							//
-							body.put("receive_id", device.getId());
-							body.put("receive_name", userDevice.getDeviceName());
-							body.put("to_fcm_token", device.getDeviceFcmToken());
-							body.put("text", desc);
-							body.put("url", ConstantService.ossUrl + url);
-							body.put("type", type);
-							body.put("platform", "app");
-							body.put("time", (new Date()).getTime()/1000);
-							pushService.push(
-									user.getId(),
-									user.getNickname(), 
-									device.getId(), 
-									userDevice.getDeviceName(), 
-									device.getDeviceFcmToken(), 
-									desc, 
-									ConstantService.ossUrl + url, 
-									type, 
-									"app", 
-									"Receive a message from App", 
-									body.toString());
-						}
+						this.doPush(user, deviceId.getInt(i), desc, ConstantService.ossUrl + url, type);
 					}
 				}
 				/*
 				 * 推送在上
 				 */
+				JSONObject temp = new JSONObject();
+				temp.put("url", ConstantService.ossUrl + url);
+				
 				retval.put("status", ConstantService.statusCode_200);
-				retval.put("data", ConstantService.ossUrl + url);
+				retval.put("data", temp);
 			}else{
 				retval.put("status", ConstantService.statusCode_318);
 			}
@@ -557,5 +572,45 @@ public class UploadController {
         }
         
 		return retval.toString();
+	}
+	
+	private void doPush(User user, Integer deviceId, String desc, String url, String type){
+		Device device = deviceService.selectByPrimaryKey(deviceId);
+		UserDevice userDevice = userDeviceService.selectByUserIdAndDeviceId(user.getId(), device.getId());
+		if( device != null && userDevice != null ){
+			JSONObject body = new JSONObject();
+			body.put("sender_id", user.getId());
+			body.put("sender_name", user.getNickname());
+			//
+			JSONObject ut = new JSONObject();
+			ut.put("username", user.getUsername());
+			ut.put("account", user.getNumber());
+			ut.put("nickname", user.getNickname());
+			ut.put("avatar", user.getProfileImage());
+			ut.put("platform", user.getPlatform());
+			ut.put("accepted", user.getAccepted());
+			body.put("sender_user", ut);
+			//
+			body.put("receive_id", device.getId());
+			body.put("receive_name", userDevice.getDeviceName());
+			body.put("to_fcm_token", device.getDeviceFcmToken());
+			body.put("text", desc);
+			body.put("url", url);
+			body.put("type", type);
+			body.put("platform", "app");
+			body.put("time", (new Date()).getTime()/1000);
+			pushService.push(
+					user.getId(),
+					user.getNickname(), 
+					device.getId(), 
+					userDevice.getDeviceName(), 
+					device.getDeviceFcmToken(), 
+					desc, 
+					url, 
+					type, 
+					"app", 
+					"Receive a message from App", 
+					body.toString());
+		}
 	}
 }

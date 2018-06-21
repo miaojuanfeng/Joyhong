@@ -15,9 +15,7 @@ public class Notification {
 
     private String toFcmToken;
 
-    private String imageUrl;
-
-    private String videoUrl;
+    private String url;
 
     private String type;
 
@@ -83,20 +81,12 @@ public class Notification {
         this.toFcmToken = toFcmToken == null ? null : toFcmToken.trim();
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public String getUrl() {
+        return url;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl == null ? null : imageUrl.trim();
-    }
-
-    public String getVideoUrl() {
-        return videoUrl;
-    }
-
-    public void setVideoUrl(String videoUrl) {
-        this.videoUrl = videoUrl == null ? null : videoUrl.trim();
+    public void setUrl(String url) {
+        this.url = url == null ? null : url.trim();
     }
 
     public String getType() {
