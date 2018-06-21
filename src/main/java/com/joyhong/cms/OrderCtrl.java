@@ -1,5 +1,6 @@
 package com.joyhong.cms;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -62,11 +63,16 @@ public class OrderCtrl {
 		Integer offset = (page-1)*pageSize;
 		List<Order> order = orderService.selectCategoryOffsetAndLimit(request, offset, pageSize);
 		
+		List<Integer> deviceCount = new ArrayList<Integer>();
+		for(Order o : order){
+			deviceCount.add(deviceService.selectCountByOrderId(o.getId()));
+		}
+		
 		model.addAttribute("page", page);
 		model.addAttribute("totalPage", totalPage);
 		model.addAttribute("totalRecord", totalRecord);
 		model.addAttribute("order", order);
-//		model.addAttribute("category", request.getParameter("category"));
+		model.addAttribute("deviceCount", deviceCount);
 		model.addAttribute("parameters", funcService.requestParameters(request));
 		
 		return "OrderView";
@@ -74,9 +80,19 @@ public class OrderCtrl {
 	
 	@RequestMapping(value="insert", method=RequestMethod.GET)
 	public String insert(
-			Model model
+			Model model,
+			HttpServletRequest request
 	){
-		model.addAttribute("order", new Order());
+		String categoryId = request.getParameter("category");
+		Order order = new Order();
+		if( categoryId != null ){
+			try{
+				order.setCategoryId(Integer.valueOf(categoryId));
+			}catch(Exception e){
+				
+			}
+		}
+		model.addAttribute("order", order);
 		
 		List<Category> categorys = categoryService.selectAll();
 		model.addAttribute("categorys", categorys);
@@ -146,6 +162,7 @@ public class OrderCtrl {
 	@RequestMapping(value="delete", method=RequestMethod.POST)
 	public String delete(
 			Model model, 
+			HttpServletRequest request, 
 			@RequestParam("order_id") Integer order_id
 	){
 		Order order = orderService.selectByPrimaryKey(order_id);
@@ -155,7 +172,7 @@ public class OrderCtrl {
 			orderService.updateByPrimaryKey(order);
 		}
 		
-		return "redirect:/cms/order/select";
+		return "redirect:/cms/order/select?category=" + order.getCategoryId();
 	}
 	
 	@RequestMapping(value="generate", method=RequestMethod.POST)

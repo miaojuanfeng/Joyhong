@@ -228,7 +228,7 @@
 													</a>
 												</th>
 											</tr>
-											<c:forEach items="${category}" var="item">
+											<c:forEach items="${category}" var="item" varStatus="status">
 											<tr id="<?=$value->category_id?>" class="list-row" onclick=""> <!-- the onclick="" is for fixing the iphone problem -->
 												<td title="${item.id}">${item.id}</td>
 												<td class="expandable">${item.name}</td>
@@ -246,7 +246,7 @@
 													</a>
 												</td>
 												<td class="text-right">
-													<a onclick="check_delete(${item.id});" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Delete">
+													<a onclick="check_delete(${item.id});" class="btn btn-sm btn-primary <c:if test="${orderCount[status.index] > 0 }">disabled</c:if>" data-toggle="tooltip" title="Delete">
 														<i class="glyphicon glyphicon-remove"></i>
 													</a>
 												</td>

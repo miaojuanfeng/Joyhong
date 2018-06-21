@@ -1,5 +1,7 @@
 package com.joyhong.cms;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.joyhong.model.Category;
-import com.joyhong.model.Order;
 import com.joyhong.service.CategoryService;
+import com.joyhong.service.OrderService;
 import com.joyhong.service.common.FuncService;
 
 @Controller
@@ -25,6 +27,9 @@ public class CategoryCtrl {
 	
 	@Autowired
 	private CategoryService categoryService;
+	
+	@Autowired
+	private OrderService orderService;
 	
 	@Autowired
 	private FuncService funcService;
@@ -71,10 +76,16 @@ public class CategoryCtrl {
 		Integer offset = (page-1)*pageSize;
 		List<Category> category = categoryService.selectOffsetAndLimit(type, offset, pageSize);
 		
+		List<Integer> orderCount = new ArrayList<Integer>();
+		for(Category c : category){
+			orderCount.add(orderService.selectCountByCategoryId(c.getId()));
+		}
+		
 		model.addAttribute("page", page);
 		model.addAttribute("totalPage", totalPage);
 		model.addAttribute("totalRecord", totalRecord);
 		model.addAttribute("category", category);
+		model.addAttribute("orderCount", orderCount);
 		model.addAttribute("type", type);
 	}
 	
@@ -185,6 +196,21 @@ public class CategoryCtrl {
 		}
 		
 		return "CategoryView";
+	}
+	
+	@RequestMapping(value="delete", method=RequestMethod.POST)
+	public String delete(
+			Model model, 
+			@RequestParam("category_id") Integer category_id
+	){
+		Category category = categoryService.selectByPrimaryKey(category_id);
+		if( category != null ){
+			category.setModifyDate(new Date());
+			category.setDeleted(1);
+			categoryService.updateByPrimaryKey(category);
+		}
+		
+		return "redirect:/cms/category/select/"+category.getType();
 	}
 	
 	@ModelAttribute

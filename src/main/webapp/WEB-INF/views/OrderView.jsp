@@ -315,12 +315,12 @@
 												<th width="40"></th>
 												<th width="40"></th>
 												<th width="40" class="text-right">
-													<a href="<c:url value="/cms/order/insert"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Insert">
+													<a href="<c:url value="/cms/order/insert${parameters}"></c:url>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Insert">
 														<i class="glyphicon glyphicon-plus"></i>
 													</a>
 												</th>
 											</tr>
-											<c:forEach items="${order}" var="item">
+											<c:forEach items="${order}" var="item" varStatus="status">
 											<tr id="<?=$value->order_id?>" class="list-row" onclick=""> <!-- the onclick="" is for fixing the iphone problem -->
 												<td title="${item.id}">${item.id}</td>
 												<td class="expandable">${item.orderCode}</td>
@@ -346,7 +346,7 @@
 													</a>
 												</td>
 												<td class="text-right">
-													<a onclick="check_delete(${item.id});" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Delete">
+													<a onclick="check_delete(${item.id});" class="btn btn-sm btn-primary <c:if test="${deviceCount[status.index] > 0 }">disabled</c:if>" data-toggle="tooltip" title="Delete">
 														<i class="glyphicon glyphicon-remove"></i>
 													</a>
 												</td>
@@ -355,7 +355,7 @@
 
 											<c:if test="${totalRecord == 0}">
 											<tr class="list-row">
-												<td colspan="11"><a href="#" class="btn btn-sm btn-primary">No record found</a></td>
+												<td colspan="12"><a href="#" class="btn btn-sm btn-primary">No record found</a></td>
 											</tr>
 											</c:if>
 

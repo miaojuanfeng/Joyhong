@@ -47,6 +47,10 @@ public class OrderServiceImpl implements OrderService {
 		return orderMapper.selectByPrimaryKey(id);
 	}
 	
+	public int selectCountByCategoryId(Integer categoryId){
+		return orderMapper.selectCountByCategoryId(categoryId);
+	}
+	
 	public int selectCount(){
 		// TODO Auto-generated method stub
 		return orderMapper.selectCount();

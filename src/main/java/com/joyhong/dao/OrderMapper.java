@@ -13,6 +13,8 @@ public interface OrderMapper {
 
     Order selectByPrimaryKey(Integer id);
     
+    int selectCountByCategoryId(Integer categoryId);
+    
     int selectCount();
     
     List<Order> selectOffsetAndLimit(Integer offset, Integer limit);

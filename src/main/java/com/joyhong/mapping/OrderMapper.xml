@@ -34,6 +34,11 @@
     from jh_order
     where deleted = 0 and id = #{id,jdbcType=INTEGER}
   </select>
+  <select id="selectCountByCategoryId" resultType="java.lang.Integer">
+    select count(id)
+    from jh_order
+    where deleted = 0 and category_id = #{0}
+  </select>
   <select id="selectCount" resultType="java.lang.Integer">
     select count(id)
     from jh_order

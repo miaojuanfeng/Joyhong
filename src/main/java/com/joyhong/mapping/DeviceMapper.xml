@@ -45,6 +45,11 @@
     from jh_device
     where deleted = 0 and order_id = #{orderId,jdbcType=INTEGER}
   </select>
+  <select id="selectCountByOrderId" resultType="java.lang.Integer">
+    select count(id)
+    from jh_device 
+    where deleted = 0 and order_id = #{0}
+  </select>
   <select id="selectCount" resultType="java.lang.Integer">
     select count(id)
     from jh_device 

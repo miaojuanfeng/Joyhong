@@ -21,6 +21,8 @@ public interface DeviceMapper {
     
     List<String> selectByOrderIdReturnDeviceToken(Integer order_id);
     
+    int selectCountByOrderId(Integer orderId);
+    
     int selectCount();
     
     List<Device> selectOffsetAndLimit(Integer offset, Integer limit);
