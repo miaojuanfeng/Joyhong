@@ -26,7 +26,8 @@ public class OssService {
 	@Autowired
 	private FileService fileService;
 	
-	public final String filePath = "/Users/user/Desktop/file/";
+//	public final String filePath = "/Users/user/Desktop/file/";
+	public final String filePath = "/home/wwwroot/default/oss/";
 	public final String ossOtaPath = "ota/";
 	public final String ossVersionPath = "version/";
 
