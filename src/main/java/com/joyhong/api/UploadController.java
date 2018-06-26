@@ -446,6 +446,14 @@ public class UploadController {
 		return retval.toString();
 	}
 	
+	/**
+	 * 视频上传
+	 * @url {base_url}/upload/token/video
+	 * @param user_id
+	 * @param user_imei
+	 * @param video_data
+	 * @return
+	 */
 	@RequestMapping(value="/token/video", method = RequestMethod.POST)
 	@ResponseBody
 	public String tokenVideo(@RequestParam("user_id") Integer user_id, @RequestParam("user_imei") String user_imei,
