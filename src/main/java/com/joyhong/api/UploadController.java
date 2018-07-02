@@ -479,8 +479,7 @@ public class UploadController {
 	        		/*
 					 * 推送在下
 					 */
-	        		JSONArray desc_temp = new JSONArray();
-	        		desc_temp.add(URLEncoder.encode(existsFile.getDescription(), "utf-8"));
+					JSONArray desc_temp = t;
 					for(int i = 0; i< deviceId.size(); i++){
 						this.doPush(user, deviceId.getInt(i), desc_temp, existsFile.getUrl(), "video");
 					}
