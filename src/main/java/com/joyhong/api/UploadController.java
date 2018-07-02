@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
@@ -136,21 +137,21 @@ public class UploadController {
 				if( device != null && userDevice != null ){
 					JSONObject body = new JSONObject();
 					body.put("sender_id", user.getId());
-					body.put("sender_name", user.getNickname());
+					body.put("sender_name", URLEncoder.encode(user.getNickname(), "utf-8"));
 					//
 					JSONObject ut = new JSONObject();
 					ut.put("username", user.getUsername());
 					ut.put("account", user.getNumber());
-					ut.put("nickname", user.getNickname());
+					ut.put("nickname", URLEncoder.encode(user.getNickname(), "utf-8"));
 					ut.put("avatar", user.getProfileImage());
 					ut.put("platform", user.getPlatform());
 					ut.put("accepted", user.getAccepted());
 					body.put("sender_user", ut);
 					//
 					body.put("receive_id", device.getId());
-					body.put("receive_name", userDevice.getDeviceName());
+					body.put("receive_name", URLEncoder.encode(userDevice.getDeviceName(), "utf-8"));
 					body.put("to_fcm_token", device.getDeviceFcmToken());
-					body.put("text", desc_temp.toString());
+					body.put("text", URLEncoder.encode(desc_temp.toString(), "utf-8"));
 					body.put("url", temp.toString());
 					body.put("type", "image");
 					body.put("platform", "app");
@@ -241,21 +242,21 @@ public class UploadController {
 								if( device != null && userDevice != null ){
 									JSONObject body = new JSONObject();
 									body.put("sender_id", user.getId());
-									body.put("sender_name", user.getNickname());
+									body.put("sender_name", URLEncoder.encode(user.getNickname(), "utf-8"));
 									//
 									JSONObject ut = new JSONObject();
 									ut.put("username", user.getUsername());
 									ut.put("account", user.getNumber());
-									ut.put("nickname", user.getNickname());
+									ut.put("nickname", URLEncoder.encode(user.getNickname(), "utf-8"));
 									ut.put("avatar", user.getProfileImage());
 									ut.put("platform", user.getPlatform());
 									ut.put("accepted", user.getAccepted());
 									body.put("sender_user", ut);
 									//
 									body.put("receive_id", device.getId());
-									body.put("receive_name", userDevice.getDeviceName());
+									body.put("receive_name", URLEncoder.encode(userDevice.getDeviceName(), "utf-8"));
 									body.put("to_fcm_token", device.getDeviceFcmToken());
-									body.put("text", desc_temp);
+									body.put("text", URLEncoder.encode(desc_temp.toString(), "utf-8"));
 									body.put("url", url_temp);
 									body.put("type", "video");
 									body.put("platform", "app");
@@ -360,21 +361,21 @@ public class UploadController {
 								if( device != null && userDevice != null ){
 									JSONObject body = new JSONObject();
 									body.put("sender_id", user.getId());
-									body.put("sender_name", user.getNickname());
+									body.put("sender_name", URLEncoder.encode(user.getNickname(), "utf-8"));
 									//
 									JSONObject ut = new JSONObject();
 									ut.put("username", user.getUsername());
 									ut.put("account", user.getNumber());
-									ut.put("nickname", user.getNickname());
+									ut.put("nickname", URLEncoder.encode(user.getNickname(), "utf-8"));
 									ut.put("avatar", user.getProfileImage());
 									ut.put("platform", user.getPlatform());
 									ut.put("accepted", user.getAccepted());
 									body.put("sender_user", ut);
 									//
 									body.put("receive_id", device.getId());
-									body.put("receive_name", userDevice.getDeviceName());
+									body.put("receive_name", URLEncoder.encode(userDevice.getDeviceName(), "utf-8"));
 									body.put("to_fcm_token", device.getDeviceFcmToken());
-									body.put("text", desc_temp);
+									body.put("text", URLEncoder.encode(desc_temp.toString(), "utf-8"));
 									body.put("url", url_temp);
 									body.put("type", "video");
 									body.put("platform", "app");
@@ -453,11 +454,12 @@ public class UploadController {
 	 * @param user_imei
 	 * @param video_data
 	 * @return
+	 * @throws UnsupportedEncodingException 
 	 */
 	@RequestMapping(value="/token/video", method = RequestMethod.POST)
 	@ResponseBody
 	public String tokenVideo(@RequestParam("user_id") Integer user_id, @RequestParam("user_imei") String user_imei,
-							 @RequestParam("video_data") String video_data){
+							 @RequestParam("video_data") String video_data) throws UnsupportedEncodingException{
 		JSONObject retval = new JSONObject();
 		
 		User user = userService.selectByUsername(user_imei);
@@ -477,8 +479,10 @@ public class UploadController {
 	        		/*
 					 * 推送在下
 					 */
+	        		JSONArray desc = new JSONArray();
+	        		desc.add(existsFile.getDescription());
 					for(int i = 0; i< deviceId.size(); i++){
-						this.doPush(user, deviceId.getInt(i), existsFile.getDescription(), existsFile.getUrl(), "video");
+						this.doPush(user, deviceId.getInt(i), desc.toString(), existsFile.getUrl(), "video");
 					}
 					/*
 					 * 推送在上
@@ -582,27 +586,27 @@ public class UploadController {
 		return retval.toString();
 	}
 	
-	private void doPush(User user, Integer deviceId, String desc, String url, String type){
+	private void doPush(User user, Integer deviceId, String desc, String url, String type) throws UnsupportedEncodingException{
 		Device device = deviceService.selectByPrimaryKey(deviceId);
 		UserDevice userDevice = userDeviceService.selectByUserIdAndDeviceId(user.getId(), device.getId());
 		if( device != null && userDevice != null ){
 			JSONObject body = new JSONObject();
 			body.put("sender_id", user.getId());
-			body.put("sender_name", user.getNickname());
+			body.put("sender_name", URLEncoder.encode(user.getNickname(), "utf-8"));
 			//
 			JSONObject ut = new JSONObject();
 			ut.put("username", user.getUsername());
 			ut.put("account", user.getNumber());
-			ut.put("nickname", user.getNickname());
+			ut.put("nickname", URLEncoder.encode(user.getNickname(), "utf-8"));
 			ut.put("avatar", user.getProfileImage());
 			ut.put("platform", user.getPlatform());
 			ut.put("accepted", user.getAccepted());
 			body.put("sender_user", ut);
 			//
 			body.put("receive_id", device.getId());
-			body.put("receive_name", userDevice.getDeviceName());
+			body.put("receive_name", URLEncoder.encode(userDevice.getDeviceName(), "utf-8"));
 			body.put("to_fcm_token", device.getDeviceFcmToken());
-			body.put("text", desc);
+			body.put("text", URLEncoder.encode(desc, "utf-8"));
 			body.put("url", url);
 			body.put("type", type);
 			body.put("platform", "app");

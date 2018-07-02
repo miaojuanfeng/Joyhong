@@ -167,9 +167,6 @@ public class DeviceController {
 				 * 推送解绑消息
 				 */
 				JSONObject body = new JSONObject();
-				JSONArray desc_temp = new JSONArray();
-				desc_temp.add("unbind user");
-				JSONArray url_temp = new JSONArray();
 				body.put("sender_id", user.getId());
 				body.put("sender_name", user.getNickname());
 				//
@@ -185,9 +182,9 @@ public class DeviceController {
 				body.put("receive_id", device.getId());
 				body.put("receive_name", userDevice.getDeviceName());
 				body.put("to_fcm_token", device.getDeviceFcmToken());
-				body.put("text", desc_temp);
-				body.put("url", url_temp);
-				body.put("type", "text");
+				body.put("text", "");
+				body.put("url", "");
+				body.put("type", "unbind user");
 				body.put("platform", "app");
 				body.put("time", (new Date()).getTime()/1000);
 				pushService.push(
@@ -304,9 +301,6 @@ public class DeviceController {
 								 * 推送绑定消息
 								 */
 								JSONObject body = new JSONObject();
-								JSONArray desc_temp = new JSONArray();
-								desc_temp.add("new user");
-								JSONArray url_temp = new JSONArray();
 								body.put("sender_id", user.getId());
 								body.put("sender_name", user.getNickname());
 								//
@@ -322,9 +316,9 @@ public class DeviceController {
 								body.put("receive_id", device.getId());
 								body.put("receive_name", device_name);
 								body.put("to_fcm_token", device.getDeviceFcmToken());
-								body.put("text", desc_temp);
-								body.put("url", url_temp);
-								body.put("type", "text");
+								body.put("text", "");
+								body.put("url", "");
+								body.put("type", "new user");
 								body.put("platform", "app");
 								body.put("time", (new Date()).getTime()/1000);
 								pushService.push(

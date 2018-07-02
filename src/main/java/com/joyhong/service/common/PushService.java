@@ -4,6 +4,7 @@ import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,8 +54,8 @@ public class PushService {
 					String platform,
 					String title,
 					String body) {
-		body = body.replace("\"", "\\\"");
 		try{
+		  body = body.replace("\"", "\\\"");
 		  String url = "https://fcm.googleapis.com/fcm/send";
 		  URL obj = new URL(url);
 		  HttpURLConnection con = (HttpURLConnection) obj.openConnection();

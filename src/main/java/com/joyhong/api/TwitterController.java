@@ -2,6 +2,7 @@ package com.joyhong.api;
 
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.List;
@@ -376,22 +377,21 @@ public class TwitterController {
 					newUserDevice.setDeviceName("");
 					
 					if( userDeviceService.insert(newUserDevice) == 1 ){
+						try {
 						com.joyhong.model.User user = userService.selectByPrimaryKey(userId);
 						Device device = deviceService.selectByPrimaryKey(deviceId);
 						/*
 						 * 推送绑定消息
 						 */
 						JSONObject body = new JSONObject();
-						JSONArray desc_temp = new JSONArray();
-						desc_temp.add("new user");
 						JSONArray url_temp = new JSONArray();
 						body.put("sender_id", user.getId());
-						body.put("sender_name", user.getNickname());
+						body.put("sender_name", URLEncoder.encode(user.getNickname(), "utf-8"));
 						//
 						JSONObject ut = new JSONObject();
 						ut.put("username", user.getUsername());
 						ut.put("account", user.getNumber());
-						ut.put("nickname", user.getNickname());
+						ut.put("nickname", URLEncoder.encode(user.getNickname(), "utf-8"));
 						ut.put("avatar", user.getProfileImage());
 						ut.put("platform", user.getPlatform());
 						ut.put("accepted", user.getAccepted());
@@ -400,9 +400,9 @@ public class TwitterController {
 						body.put("receive_id", device.getId());
 						body.put("receive_name", "");
 						body.put("to_fcm_token", device.getDeviceFcmToken());
-						body.put("text", desc_temp);
+						body.put("text", "");
 						body.put("url", url_temp);
-						body.put("type", "text");
+						body.put("type", "new user");
 						body.put("platform", "twitter");
 						body.put("time", (new Date()).getTime()/1000);
 						pushService.push(
@@ -417,7 +417,10 @@ public class TwitterController {
 								"twitter", 
 								"Receive a message from App", 
 								body.toString());
-						
+						} catch (UnsupportedEncodingException e) {
+							// TODO Auto-generated catch block
+							logger.info(e.getMessage());
+						}
 						return true;
 					}
 				}
@@ -504,23 +507,24 @@ public class TwitterController {
 						 */
 						List<UserDevice> ud = userDeviceService.selectByUserId(user.getId());
 						if( ud != null ){
+							try {
 							UserDevice userDevice = ud.get(0);
 							Device device = deviceService.selectByPrimaryKey(userDevice.getDeviceId());
 							JSONObject body = new JSONObject();
 							body.put("sender_id", user.getId());
-							body.put("sender_name", user.getNickname());
+							body.put("sender_name", URLEncoder.encode(user.getNickname(), "utf-8"));
 							//
 							JSONObject temp = new JSONObject();
 							temp.put("username", user.getUsername());
 							temp.put("account", user.getNumber());
-							temp.put("nickname", user.getNickname());
+							temp.put("nickname", URLEncoder.encode(user.getNickname(), "utf-8"));
 							temp.put("avatar", user.getProfileImage());
 							temp.put("platform", user.getPlatform());
 							temp.put("accepted", user.getAccepted());
 							body.put("sender_user", temp);
 							//
 							body.put("receive_id", device.getId());
-							body.put("receive_name", userDevice.getDeviceName());
+							body.put("receive_name", URLEncoder.encode(userDevice.getDeviceName(), "utf-8"));
 							body.put("to_fcm_token", device.getDeviceFcmToken());
 							String image_url = "";
 							String video_url = "";
@@ -550,7 +554,7 @@ public class TwitterController {
 //							JSONArray url_temp = new JSONArray();
 							desc_temp.add(messageText);
 //							url_temp.add(finalUrl);
-							body.put("text", desc_temp);
+							body.put("text", URLEncoder.encode(desc_temp.toString(), "utf-8"));
 							body.put("url", finalUrl);
 							body.put("type", type);
 							body.put("platform", "twitter");
@@ -567,6 +571,10 @@ public class TwitterController {
 									"twitter", 
 									"Receive a message from Twitter", 
 									body.toString());
+							} catch (UnsupportedEncodingException e) {
+								// TODO Auto-generated catch block
+								logger.info(e.getMessage());
+							}
 						}
 						/*
 						 * 推送在上

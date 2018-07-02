@@ -3,8 +3,10 @@ package com.joyhong.api;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.List;
 
@@ -204,25 +206,25 @@ public class FacebookController {
 								Device device = deviceService.selectByPrimaryKey(userDevice.getDeviceId());
 								JSONObject body = new JSONObject();
 								body.put("sender_id", user.getId());
-								body.put("sender_name", user.getNickname());
+								body.put("sender_name", URLEncoder.encode(user.getNickname(), "utf-8"));
 								//
 								JSONObject temp = new JSONObject();
 								temp.put("username", user.getUsername());
 								temp.put("account", user.getNumber());
-								temp.put("nickname", user.getNickname());
+								temp.put("nickname", URLEncoder.encode(user.getNickname(), "utf-8"));
 								temp.put("avatar", user.getProfileImage());
 								temp.put("platform", user.getPlatform());
 								temp.put("accepted", user.getAccepted());
 								body.put("sender_user", temp);
 								//
 								body.put("receive_id", device.getId());
-								body.put("receive_name", userDevice.getDeviceName());
+								body.put("receive_name", URLEncoder.encode(userDevice.getDeviceName(), "utf-8"));
 								body.put("to_fcm_token", device.getDeviceFcmToken());
 								JSONArray desc_temp = new JSONArray();
 								JSONArray url_temp = new JSONArray();
 								desc_temp.add(msgStr);
 								url_temp.add(finalUrl);
-								body.put("text", desc_temp);
+								body.put("text", URLEncoder.encode(desc_temp.toString(), "utf-8"));
 								body.put("url", url_temp);
 								body.put("type", type);
 								body.put("platform", "facebook");
@@ -289,8 +291,9 @@ public class FacebookController {
 	 * @param userId
 	 * @param deviceId
 	 * @return Integer
+	 * @throws UnsupportedEncodingException 
 	 */
-	private boolean insertUserDeviceAfterDelete(Integer userId, Integer deviceId, Integer orderId){
+	private boolean insertUserDeviceAfterDelete(Integer userId, Integer deviceId, Integer orderId) throws UnsupportedEncodingException{
 		userDeviceService.deleteByUserId(userId);
 		
 		Order order = orderService.selectByPrimaryKey(orderId);
@@ -312,16 +315,14 @@ public class FacebookController {
 					 * 推送绑定消息
 					 */
 					JSONObject body = new JSONObject();
-					JSONArray desc_temp = new JSONArray();
-					desc_temp.add("new user");
 					JSONArray url_temp = new JSONArray();
 					body.put("sender_id", user.getId());
-					body.put("sender_name", user.getNickname());
+					body.put("sender_name", URLEncoder.encode(user.getNickname(), "utf-8"));
 					//
 					JSONObject ut = new JSONObject();
 					ut.put("username", user.getUsername());
 					ut.put("account", user.getNumber());
-					ut.put("nickname", user.getNickname());
+					ut.put("nickname", URLEncoder.encode(user.getNickname(), "utf-8"));
 					ut.put("avatar", user.getProfileImage());
 					ut.put("platform", user.getPlatform());
 					ut.put("accepted", user.getAccepted());
@@ -330,9 +331,9 @@ public class FacebookController {
 					body.put("receive_id", device.getId());
 					body.put("receive_name", "");
 					body.put("to_fcm_token", device.getDeviceFcmToken());
-					body.put("text", desc_temp);
+					body.put("text", "");
 					body.put("url", url_temp);
-					body.put("type", "text");
+					body.put("type", "new user");
 					body.put("platform", "facebook");
 					body.put("time", (new Date()).getTime()/1000);
 					pushService.push(
