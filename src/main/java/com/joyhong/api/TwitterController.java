@@ -552,9 +552,9 @@ public class TwitterController {
 							}
 							JSONArray desc_temp = new JSONArray();
 //							JSONArray url_temp = new JSONArray();
-							desc_temp.add(messageText);
+							desc_temp.add(URLEncoder.encode(messageText, "utf-8"));
 //							url_temp.add(finalUrl);
-							body.put("text", URLEncoder.encode(desc_temp.toString(), "utf-8"));
+							body.put("text", desc_temp);
 							body.put("url", finalUrl);
 							body.put("type", type);
 							body.put("platform", "twitter");

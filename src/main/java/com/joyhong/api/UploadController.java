@@ -118,7 +118,7 @@ public class UploadController {
 				upload.setMd5("");
 				if( uploadService.insert(upload) == 1 ){
 					temp.add(webUrl + fileName);
-					desc_temp.add(file_desc[i]);
+					desc_temp.add(URLEncoder.encode(file_desc[i], "utf-8"));
 				}else{
 					retval.put("status", ConstantService.statusCode_318);
 					return retval.toString();
@@ -151,7 +151,7 @@ public class UploadController {
 					body.put("receive_id", device.getId());
 					body.put("receive_name", URLEncoder.encode(userDevice.getDeviceName(), "utf-8"));
 					body.put("to_fcm_token", device.getDeviceFcmToken());
-					body.put("text", URLEncoder.encode(desc_temp.toString(), "utf-8"));
+					body.put("text", desc_temp);
 					body.put("url", temp.toString());
 					body.put("type", "image");
 					body.put("platform", "app");
@@ -233,7 +233,7 @@ public class UploadController {
 		        		 */
 		        		User user = userService.selectByPrimaryKey(user_id);
 						if( user != null ){
-							desc_temp.add(file_desc);
+							desc_temp.add(URLEncoder.encode(file_desc, "utf-8"));
 							url_temp.add(webUrl + fileName);
 							
 							for(Integer id : device_id){
@@ -256,7 +256,7 @@ public class UploadController {
 									body.put("receive_id", device.getId());
 									body.put("receive_name", URLEncoder.encode(userDevice.getDeviceName(), "utf-8"));
 									body.put("to_fcm_token", device.getDeviceFcmToken());
-									body.put("text", URLEncoder.encode(desc_temp.toString(), "utf-8"));
+									body.put("text", desc_temp);
 									body.put("url", url_temp);
 									body.put("type", "video");
 									body.put("platform", "app");
@@ -352,7 +352,7 @@ public class UploadController {
 						 */
 						User user = userService.selectByPrimaryKey(user_id);
 						if( user != null ){
-							desc_temp.add(file_desc);
+							desc_temp.add(URLEncoder.encode(file_desc, "utf-8"));
 							url_temp.add(webUrl + fileName);
 							
 							for(Integer id : device_id){
@@ -375,7 +375,7 @@ public class UploadController {
 									body.put("receive_id", device.getId());
 									body.put("receive_name", URLEncoder.encode(userDevice.getDeviceName(), "utf-8"));
 									body.put("to_fcm_token", device.getDeviceFcmToken());
-									body.put("text", URLEncoder.encode(desc_temp.toString(), "utf-8"));
+									body.put("text", desc_temp);
 									body.put("url", url_temp);
 									body.put("type", "video");
 									body.put("platform", "app");
@@ -479,10 +479,10 @@ public class UploadController {
 	        		/*
 					 * 推送在下
 					 */
-	        		JSONArray desc = new JSONArray();
-	        		desc.add(existsFile.getDescription());
+	        		JSONArray desc_temp = new JSONArray();
+	        		desc_temp.add(URLEncoder.encode(existsFile.getDescription(), "utf-8"));
 					for(int i = 0; i< deviceId.size(); i++){
-						this.doPush(user, deviceId.getInt(i), desc.toString(), existsFile.getUrl(), "video");
+						this.doPush(user, deviceId.getInt(i), desc_temp, existsFile.getUrl(), "video");
 					}
 					/*
 					 * 推送在上
@@ -564,8 +564,13 @@ public class UploadController {
 				 */
 				User user = userService.selectByPrimaryKey(userId);
 				if( user != null ){
+					JSONArray t = JSONArray.fromObject(desc);
+					JSONArray desc_temp = new JSONArray();
+					for(int i=0; i<t.size(); i++){
+						desc_temp.add(URLEncoder.encode(t.getString(i), "utf-8"));
+					}
 					for(int i = 0; i< deviceId.size(); i++){
-						this.doPush(user, deviceId.getInt(i), desc, ConstantService.ossUrl + url, type);
+						this.doPush(user, deviceId.getInt(i), desc_temp, ConstantService.ossUrl + url, type);
 					}
 				}
 				/*
@@ -586,7 +591,7 @@ public class UploadController {
 		return retval.toString();
 	}
 	
-	private void doPush(User user, Integer deviceId, String desc, String url, String type) throws UnsupportedEncodingException{
+	private void doPush(User user, Integer deviceId, JSONArray desc, String url, String type) throws UnsupportedEncodingException{
 		Device device = deviceService.selectByPrimaryKey(deviceId);
 		UserDevice userDevice = userDeviceService.selectByUserIdAndDeviceId(user.getId(), device.getId());
 		if( device != null && userDevice != null ){
@@ -606,7 +611,7 @@ public class UploadController {
 			body.put("receive_id", device.getId());
 			body.put("receive_name", URLEncoder.encode(userDevice.getDeviceName(), "utf-8"));
 			body.put("to_fcm_token", device.getDeviceFcmToken());
-			body.put("text", URLEncoder.encode(desc, "utf-8"));
+			body.put("text", desc);
 			body.put("url", url);
 			body.put("type", type);
 			body.put("platform", "app");
@@ -617,7 +622,7 @@ public class UploadController {
 					device.getId(), 
 					userDevice.getDeviceName(), 
 					device.getDeviceFcmToken(), 
-					desc, 
+					desc.toString(), 
 					url, 
 					type, 
 					"app", 

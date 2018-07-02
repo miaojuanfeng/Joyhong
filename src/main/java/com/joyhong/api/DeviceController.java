@@ -170,7 +170,7 @@ public class DeviceController {
 				 */
 				JSONObject body = new JSONObject();
 				JSONArray desc_temp = new JSONArray();
-				desc_temp.add("");
+				desc_temp.add(URLEncoder.encode("", "utf-8"));
 				body.put("sender_id", user.getId());
 				body.put("sender_name", URLEncoder.encode(user.getNickname(), "utf-8"));
 				//
@@ -186,7 +186,7 @@ public class DeviceController {
 				body.put("receive_id", device.getId());
 				body.put("receive_name", URLEncoder.encode(userDevice.getDeviceName(), "utf-8"));
 				body.put("to_fcm_token", device.getDeviceFcmToken());
-				body.put("text", URLEncoder.encode(desc_temp.toString(), "utf-8"));
+				body.put("text", desc_temp);
 				body.put("url", "");
 				body.put("type", "unbind user");
 				body.put("platform", "app");
@@ -307,7 +307,7 @@ public class DeviceController {
 								 */
 								JSONObject body = new JSONObject();
 								JSONArray desc_temp = new JSONArray();
-								desc_temp.add("");
+								desc_temp.add(URLEncoder.encode("", "utf-8"));
 								body.put("sender_id", user.getId());
 								body.put("sender_name", URLEncoder.encode(user.getNickname(), "utf-8"));
 								//
@@ -323,7 +323,7 @@ public class DeviceController {
 								body.put("receive_id", device.getId());
 								body.put("receive_name", URLEncoder.encode(device_name, "utf-8"));
 								body.put("to_fcm_token", device.getDeviceFcmToken());
-								body.put("text", URLEncoder.encode(desc_temp.toString(), "utf-8"));
+								body.put("text", desc_temp);
 								body.put("url", "");
 								body.put("type", "new user");
 								body.put("platform", "app");

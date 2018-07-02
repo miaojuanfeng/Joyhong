@@ -222,9 +222,9 @@ public class FacebookController {
 								body.put("to_fcm_token", device.getDeviceFcmToken());
 								JSONArray desc_temp = new JSONArray();
 								JSONArray url_temp = new JSONArray();
-								desc_temp.add(msgStr);
+								desc_temp.add(URLEncoder.encode(msgStr, "utf-8"));
 								url_temp.add(finalUrl);
-								body.put("text", URLEncoder.encode(desc_temp.toString(), "utf-8"));
+								body.put("text", desc_temp);
 								body.put("url", url_temp);
 								body.put("type", type);
 								body.put("platform", "facebook");
