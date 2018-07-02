@@ -1,5 +1,6 @@
 package com.joyhong.api;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.List;
@@ -152,10 +153,11 @@ public class DeviceController {
 	 * @param device_id
 	 * @param status，4种状态，unbind：app端解除绑定，lock：设备端锁定，unlock：设备端解锁，delete：设备端删除
 	 * @return json
+	 * @throws UnsupportedEncodingException 
 	 */
 	@RequestMapping(value="/status", method=RequestMethod.POST)
 	@ResponseBody
-	public String status(@RequestParam("user_id") Integer user_id, @RequestParam("device_id") Integer device_id, @RequestParam("status") String status){
+	public String status(@RequestParam("user_id") Integer user_id, @RequestParam("device_id") Integer device_id, @RequestParam("status") String status) throws UnsupportedEncodingException{
 		JSONObject retval = new JSONObject();
 		
 		if( status.equals("unbind") ){
@@ -167,22 +169,24 @@ public class DeviceController {
 				 * 推送解绑消息
 				 */
 				JSONObject body = new JSONObject();
+				JSONArray desc_temp = new JSONArray();
+				desc_temp.add("");
 				body.put("sender_id", user.getId());
-				body.put("sender_name", user.getNickname());
+				body.put("sender_name", URLEncoder.encode(user.getNickname(), "utf-8"));
 				//
 				JSONObject ut = new JSONObject();
 				ut.put("username", user.getUsername());
 				ut.put("account", user.getNumber());
-				ut.put("nickname", user.getNickname());
+				ut.put("nickname", URLEncoder.encode(user.getNickname(), "utf-8"));
 				ut.put("avatar", user.getProfileImage());
 				ut.put("platform", user.getPlatform());
 				ut.put("accepted", user.getAccepted());
 				body.put("sender_user", ut);
 				//
 				body.put("receive_id", device.getId());
-				body.put("receive_name", userDevice.getDeviceName());
+				body.put("receive_name", URLEncoder.encode(userDevice.getDeviceName(), "utf-8"));
 				body.put("to_fcm_token", device.getDeviceFcmToken());
-				body.put("text", "");
+				body.put("text", URLEncoder.encode(desc_temp.toString(), "utf-8"));
 				body.put("url", "");
 				body.put("type", "unbind user");
 				body.put("platform", "app");
@@ -262,10 +266,11 @@ public class DeviceController {
 	 * @param String device_token
 	 * @param String device_name
 	 * @return
+	 * @throws UnsupportedEncodingException 
 	 */
 	@RequestMapping(value="/bind", method=RequestMethod.POST)
 	@ResponseBody
-	public String bind(@RequestParam("user_id") Integer user_id, @RequestParam("device_token") String device_token, @RequestParam("device_name") String device_name){
+	public String bind(@RequestParam("user_id") Integer user_id, @RequestParam("device_token") String device_token, @RequestParam("device_name") String device_name) throws UnsupportedEncodingException{
 		JSONObject retval = new JSONObject();
 		
 		User user = userService.selectByPrimaryKey(user_id);
@@ -301,22 +306,24 @@ public class DeviceController {
 								 * 推送绑定消息
 								 */
 								JSONObject body = new JSONObject();
+								JSONArray desc_temp = new JSONArray();
+								desc_temp.add("");
 								body.put("sender_id", user.getId());
-								body.put("sender_name", user.getNickname());
+								body.put("sender_name", URLEncoder.encode(user.getNickname(), "utf-8"));
 								//
 								JSONObject ut = new JSONObject();
 								ut.put("username", user.getUsername());
 								ut.put("account", user.getNumber());
-								ut.put("nickname", user.getNickname());
+								ut.put("nickname", URLEncoder.encode(user.getNickname(), "utf-8"));
 								ut.put("avatar", user.getProfileImage());
 								ut.put("platform", user.getPlatform());
 								ut.put("accepted", user.getAccepted());
 								body.put("sender_user", ut);
 								//
 								body.put("receive_id", device.getId());
-								body.put("receive_name", device_name);
+								body.put("receive_name", URLEncoder.encode(device_name, "utf-8"));
 								body.put("to_fcm_token", device.getDeviceFcmToken());
-								body.put("text", "");
+								body.put("text", URLEncoder.encode(desc_temp.toString(), "utf-8"));
 								body.put("url", "");
 								body.put("type", "new user");
 								body.put("platform", "app");
