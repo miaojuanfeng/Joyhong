@@ -588,6 +588,7 @@ public class UploadController {
 			}
         } else {
             //这是哪里的请求，被劫持，篡改了吧？
+        	logger.info("bad callback str: " + callbackBodyStr);
         }
         
 		return retval.toString();
