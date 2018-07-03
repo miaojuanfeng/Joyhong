@@ -47,6 +47,7 @@ public class UploadServiceImpl implements UploadService {
 
 	public int updateByPrimaryKey(Upload record) {
 		// TODO Auto-generated method stub
+		record.setModifyDate(new Date());
 		return uploadMapper.updateByPrimaryKey(record);
 	}
 
