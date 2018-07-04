@@ -1,11 +1,14 @@
 package com.joyhong.service.common;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,6 +33,8 @@ public class OssService {
 	public final String filePath = "/home/wwwroot/default/oss/";
 	public final String ossOtaPath = "ota/";
 	public final String ossVersionPath = "version/";
+	public final String ossUploadImagePath = "upload/image/";
+	public final String ossUploadVideoPath = "upload/video/";
 
 	private String accessKey = "2LlH425zih5U1CpzSE_-gl3BtvDH0nlLX8cDnQ16";
 	private String secretKey = "yw56scCKFK9sL0hK6W0gItPhezGO82zkB4XhjEkn";
@@ -103,13 +108,23 @@ public class OssService {
 		}
 	}
 	
-	public String uploadFile(MultipartFile file, String filePath, String ossPath, Integer id, String overrideFile) throws IOException{
+	/**
+	 * 上传cms文件
+	 * @param file
+	 * @param filePath
+	 * @param ossPath
+	 * @param id
+	 * @param overrideFile
+	 * @return
+	 * @throws IOException
+	 */
+	public String uploadFile(MultipartFile file, String filePath, String ossPath, String id, String overrideFile) throws IOException{
 		String retval = overrideFile;
 		
 		if( !file.isEmpty() ){
 			String fileName = file.getOriginalFilename();
 			String fileDir = filePath + String.valueOf(new Date().getTime()/1000) + "/";
-			String ossDir = ossPath + String.valueOf(id) + "/";
+			String ossDir = ossPath + id + "/";
 			/*
 			 *  create folder
 			 */
@@ -139,5 +154,85 @@ public class OssService {
 		}
 		
 		return retval;
+	}
+	
+	/**
+	 * 上传twitter文件
+	 * @param fileByte
+	 * @param fileName
+	 * @param filePath
+	 * @param ossPath
+	 * @param id
+	 * @return
+	 * @throws IOException
+	 */
+	public String uploadFile(byte[] fileByte, String fileName, String filePath, String ossPath, String id) throws IOException{
+		String retval = "";
+		
+		if( fileByte.length > 0 ){
+			String fileDir = filePath + String.valueOf(new Date().getTime()/1000) + "/";
+			String ossDir = ossPath + id + "/";
+			/*
+			 *  create folder
+			 */
+			fileService.makeDir(fileDir);
+			Runtime.getRuntime().exec("chmod 777 " + fileDir);
+			/*
+			 *  move file
+			 */
+			FileOutputStream fileOut = new FileOutputStream(fileDir + fileName);  
+	        BufferedOutputStream bos = new BufferedOutputStream(fileOut); 
+	        bos.write(fileByte, 0, fileByte.length);
+	        bos.close();
+	        Runtime.getRuntime().exec("chmod 644 " + fileDir + fileName);
+			/*	
+			 * 	upload file
+			 */
+			this.upload(fileDir + fileName, ossDir + fileName, ossDir + fileName);
+			/*	
+			 * 	delete local file
+			 */
+			fileService.deleteDir(fileDir);
+			
+			retval = ossDir + fileName;
+		}
+		
+		return retval;
+	}
+	
+	/**
+	 * 上传facebook文件，针对facebook服务器回调时间超过10s就会重发请求的情况，此处采用异步方式来解决文件上传到oss时间过长导致不断回调问题
+	 * @param url
+	 * @param fileName
+	 * @param filePath
+	 * @param ossPath
+	 * @param id
+	 * @return
+	 * @throws IOException
+	 */
+	@Async
+	public String uploadFile(String url, String fileName, String filePath, String ossPath, String id) throws IOException{
+		
+		String fileDir = filePath + String.valueOf(new Date().getTime()/1000) + "/";
+		String ossDir = ossPath + id + "/";
+		/*
+		 *  create folder
+		 */
+		fileService.makeDir(fileDir);
+		Runtime.getRuntime().exec("chmod 777 " + fileDir);
+		/*
+		 *  save file
+		 */
+		fileService.saveUrlAs(url, fileDir, fileName);
+		/*	
+		 * 	upload file
+		 */
+		this.upload(fileDir + fileName, ossDir + fileName, ossDir + fileName);
+		/*	
+		 * 	delete local file
+		 */
+		fileService.deleteDir(fileDir);
+		
+		return ossDir + fileName;
 	}
 }

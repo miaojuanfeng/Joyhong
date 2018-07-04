@@ -95,7 +95,7 @@ public class OtaCtrl {
 	) throws IOException{
 		if( otaService.insert(ota) == 1 ){
 			Integer ota_id = ota.getId();
-			ota.setDownloadLink(ossService.uploadFile(ota_file, ossService.filePath, ossService.ossOtaPath, ota_id, ota.getDownloadLink()));
+			ota.setDownloadLink(ossService.uploadFile(ota_file, ossService.filePath, ossService.ossOtaPath, "oid"+ota_id, ota.getDownloadLink()));
 			otaService.updateByPrimaryKey(ota);
 			if( referer != "" ){
 				return "redirect:"+referer.substring(referer.lastIndexOf("/cms/"));
@@ -135,7 +135,7 @@ public class OtaCtrl {
 			@RequestParam("referer") String referer,
 			@RequestParam(value="ota_file", required=false) MultipartFile ota_file
 	) throws IOException{
-		ota.setDownloadLink(ossService.uploadFile(ota_file, ossService.filePath, ossService.ossOtaPath, ota_id, ota.getDownloadLink()));
+		ota.setDownloadLink(ossService.uploadFile(ota_file, ossService.filePath, ossService.ossOtaPath, "oid"+ota_id, ota.getDownloadLink()));
 		
 		ota.setId(ota_id);
 		if( otaService.updateByPrimaryKeyWithBLOBs(ota) == 1 ){

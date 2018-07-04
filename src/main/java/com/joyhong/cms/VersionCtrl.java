@@ -84,7 +84,7 @@ public class VersionCtrl {
 	) throws IOException{
 		if( versionService.insert(version) == 1 ){
 			Integer version_id = version.getId();
-			version.setDownloadLink(ossService.uploadFile(version_file, ossService.filePath, ossService.ossVersionPath, version_id, version.getDownloadLink()));
+			version.setDownloadLink(ossService.uploadFile(version_file, ossService.filePath, ossService.ossVersionPath, "vid"+version_id, version.getDownloadLink()));
 			versionService.updateByPrimaryKey(version);
 			if( referer != "" ){
 				return "redirect:"+referer.substring(referer.lastIndexOf("/cms/"));
@@ -124,7 +124,7 @@ public class VersionCtrl {
 			@RequestParam("referer") String referer,
 			@RequestParam(value="version_file", required=false) MultipartFile version_file
 	) throws IOException{
-		version.setDownloadLink(ossService.uploadFile(version_file, ossService.filePath, ossService.ossVersionPath, version_id, version.getDownloadLink()));
+		version.setDownloadLink(ossService.uploadFile(version_file, ossService.filePath, ossService.ossVersionPath, "vid"+version_id, version.getDownloadLink()));
 		
 		version.setId(version_id);
 		if( versionService.updateByPrimaryKeyWithBLOBs(version) == 1 ){

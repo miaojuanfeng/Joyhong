@@ -1,7 +1,5 @@
 package com.joyhong.api;
 
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Date;
@@ -34,6 +32,7 @@ import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
 import com.joyhong.service.common.ConstantService;
 import com.joyhong.service.common.FileService;
+import com.joyhong.service.common.OssService;
 import com.joyhong.service.common.PushService;
 
 import net.sf.json.JSONArray;
@@ -72,10 +71,10 @@ public class TwitterController {
 	private static String accessToken = "1002026986229743619-WZ01a605vNryMkXztjqMIyHTiJdUel";
 	private static String accessTokenSecret = "sZdCDyrJWLQDnfXSIZXrKrGFsUMmxA3YPZO1YxX9OyYJf";
 	
-	private static String twitterImagePath = "/home/wwwroot/default/twitter/attachments/image/";
-	private static String twitterImageUrl = ConstantService.fileUrl + "/twitter/attachments/image/";
-	private static String twitterVideoPath = "/home/wwwroot/default/twitter/attachments/video/";
-	private static String twitterVideoUrl = ConstantService.fileUrl + "/twitter/attachments/video/";
+//	private static String twitterImagePath = "/home/wwwroot/default/twitter/attachments/image/";
+//	private static String twitterImageUrl = ConstantService.fileUrl + "/twitter/attachments/image/";
+//	private static String twitterVideoPath = "/home/wwwroot/default/twitter/attachments/video/";
+//	private static String twitterVideoUrl = ConstantService.fileUrl + "/twitter/attachments/video/";
 	
 	private TwitterStream twitterStream = null;
 	
@@ -96,6 +95,9 @@ public class TwitterController {
 	
 	@Autowired
 	private PushService pushService;
+	
+	@Autowired
+	private OssService ossService;
 	
 	public TwitterController(){
 		ConfigurationBuilder cb = new ConfigurationBuilder();
@@ -201,25 +203,28 @@ public class TwitterController {
 		return videoJson;
 	}
 	
-	private String imageUrl(String url){
+	private String imageUrl(Integer userId, String url){
+		String retval = "";
+		
 		byte[] fileByte = getFileBytes(url);
 		String fileName = url.substring(url.lastIndexOf("/")+1);
 		
 		try{
-			FileOutputStream fileOut = new FileOutputStream(twitterImagePath+fileName);  
-	        BufferedOutputStream bos = new BufferedOutputStream(fileOut); 
-	        bos.write(fileByte, 0, fileByte.length);
-	        bos.close();
-	        Runtime.getRuntime().exec("chmod 644 " + twitterImagePath + fileName);
+//			FileOutputStream fileOut = new FileOutputStream(twitterImagePath+fileName);  
+//	        BufferedOutputStream bos = new BufferedOutputStream(fileOut); 
+//	        bos.write(fileByte, 0, fileByte.length);
+//	        bos.close();
+//	        Runtime.getRuntime().exec("chmod 644 " + twitterImagePath + fileName);
+			retval = ossService.uploadFile(fileByte, fileName, ossService.filePath, ossService.ossUploadImagePath, "uid"+userId);
 		}catch(Exception e){
 			logger.info(e.getMessage());
 		}
 		
-		return twitterImageUrl+fileName;
+		return ConstantService.ossUrl + retval;
 	}
 	
-	private String videoUrl(long id){
-		JSONArray retval = new JSONArray();
+	private String videoUrl(Integer userId, long id){
+		String retval = "";
 		
 		String videoJson = getVideoJson(id);
 		
@@ -239,15 +244,17 @@ public class TwitterController {
 								String url = video.getString("url");
 								String fileName = url.substring(url.lastIndexOf("/")+1);
 								byte[] fileByte = getFileBytes(url);
-								try{
-									FileOutputStream fileOut = new FileOutputStream(twitterVideoPath+fileName);  
-							        BufferedOutputStream bos = new BufferedOutputStream(fileOut); 
-							        bos.write(fileByte, 0, fileByte.length);
-							        bos.close();
-							        Runtime.getRuntime().exec("chmod 644 " + twitterVideoPath + fileName);
-							        retval.add(twitterVideoUrl+fileName);
-								}catch(Exception e){
-									logger.info(e.getMessage());
+								if( fileName.endsWith(".mp4") ){
+									try{
+	//									FileOutputStream fileOut = new FileOutputStream(twitterVideoPath+fileName);  
+	//							        BufferedOutputStream bos = new BufferedOutputStream(fileOut); 
+	//							        bos.write(fileByte, 0, fileByte.length);
+	//							        bos.close();
+	//							        Runtime.getRuntime().exec("chmod 644 " + twitterVideoPath + fileName);
+								        retval = ConstantService.ossUrl + ossService.uploadFile(fileByte, fileName, ossService.filePath, ossService.ossUploadVideoPath, "uid"+userId);
+									}catch(Exception e){
+										logger.info(e.getMessage());
+									}
 								}
 							}
 						}
@@ -256,7 +263,7 @@ public class TwitterController {
 			}
 		}
 		
-		return retval.toString();
+		return retval;
 	}
 	
 	/**
@@ -486,22 +493,22 @@ public class TwitterController {
 		        	 * 遍历所有附件
 		        	 */
 		   	        MediaEntity[] media = message.getMediaEntities();
-		   	        JSONArray img = new JSONArray();
+		   	        String img = "";
 				    for(MediaEntity m : media){
 				    	/**
 				    	 *  同步图片
 				    	 */
-				    	img.add(imageUrl(m.getMediaURL()));
+				    	img = imageUrl(user.getId(), m.getMediaURL());
 					    /**
 				    	 *  同步视频
 				    	 */
 					    if( m.getType().equals("video") ){
-					    	retval.put("video", videoUrl(message.getId()));
+					    	retval.put("video", videoUrl(user.getId(), message.getId()));
 					    }
 				    }
 				    retval.put("image", img);
 				    
-				    if( img.size() > 0 || retval.has("video") ){
+				    if( img.length() > 0 || retval.has("video") ){
 					    /*
 						 * 推送在下
 						 */
@@ -537,8 +544,8 @@ public class TwitterController {
 								finalUrl = video_url;
 								messageText = messageText.substring(0, messageText.lastIndexOf(" https://"));
 								retval.put("message", messageText);
-							}else if( img.size() > 0 ){
-								image_url = img.toString();
+							}else if( img.length() > 0 ){
+								image_url = img;
 								video_url = "";
 								type = "image";
 								finalUrl = image_url;
@@ -565,7 +572,7 @@ public class TwitterController {
 									device.getId(), 
 									userDevice.getDeviceName(), 
 									device.getDeviceFcmToken(), 
-									messageText, 
+									desc_temp.toString(), 
 									finalUrl, 
 									type, 
 									"twitter", 

@@ -35,6 +35,7 @@ import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
 import com.joyhong.service.common.ConstantService;
 import com.joyhong.service.common.FileService;
+import com.joyhong.service.common.OssService;
 import com.joyhong.service.common.PushService;
 
 import net.sf.json.JSONArray;
@@ -68,6 +69,9 @@ public class FacebookController {
 	
 	@Autowired
 	private PushService pushService;
+	
+	@Autowired
+	private OssService ossService;
 	
 	/**
 	 * 监听facebook发来的消息
@@ -183,17 +187,27 @@ public class FacebookController {
 					        String fileName = fileUrl.substring(fileUrl.lastIndexOf("/")+1);
 					        fileName = fileName.substring(0, fileName.lastIndexOf("?"));
 		  
-					        String filePath = "/home/wwwroot/default/facebook/attachments/" + type + "/";   
-					        fileService.saveUrlAs(fileUrl, filePath, fileName);
+//					        String filePath = "/home/wwwroot/default/facebook/attachments/" + type + "/";   
+//					        fileService.saveUrlAs(fileUrl, filePath, fileName);
 					        
-					        postdata = postdata.replace(oldUrl, ConstantService.fileUrl + "/facebook/attachments/" + type + fileName);
+					        
+//					        postdata = postdata.replace(oldUrl, ConstantService.fileUrl + "/facebook/attachments/" + type + fileName);
 					        if( type.equals("image") ){
-					        	image_url = ConstantService.fileUrl + "/facebook/attachments/" + type + "/" + fileName;
+//					        	image_url = ConstantService.fileUrl + "/facebook/attachments/" + type + "/" + fileName;
+					        	// 异步上传
+					        	ossService.uploadFile(url, fileName, ossService.filePath, ossService.ossUploadImagePath, "uid" + user.getId());
+					        	String ossDir = ossService.ossUploadImagePath + "uid" + user.getId() + "/";
+					        	image_url = ConstantService.ossUrl + ossDir + fileName;
 					        	finalUrl = image_url;
 					        }else if( type.equals("video") ){
-					        	video_url = ConstantService.fileUrl + "/facebook/attachments/" + type + "/" + fileName;
+//					        	video_url = ConstantService.fileUrl + "/facebook/attachments/" + type + "/" + fileName;
+					        	// 异步上传
+					        	ossService.uploadFile(url, fileName, ossService.filePath, ossService.ossUploadVideoPath, "uid"+user.getId());
+					        	String ossDir = ossService.ossUploadVideoPath + "uid" + user.getId() + "/";
+					        	video_url = ConstantService.ossUrl + ossDir + fileName;
 					        	finalUrl = video_url;
 					        }
+					        postdata = postdata.replace(oldUrl, finalUrl);
 						}
 						
 						/*
@@ -221,11 +235,11 @@ public class FacebookController {
 								body.put("receive_name", URLEncoder.encode(userDevice.getDeviceName(), "utf-8"));
 								body.put("to_fcm_token", device.getDeviceFcmToken());
 								JSONArray desc_temp = new JSONArray();
-								JSONArray url_temp = new JSONArray();
+//								JSONArray url_temp = new JSONArray();
 								desc_temp.add(URLEncoder.encode(msgStr, "utf-8"));
-								url_temp.add(finalUrl);
+//								url_temp.add(finalUrl);
 								body.put("text", desc_temp);
-								body.put("url", url_temp);
+								body.put("url", finalUrl);
 								body.put("type", type);
 								body.put("platform", "facebook");
 								body.put("time", (new Date()).getTime()/1000);
@@ -235,7 +249,7 @@ public class FacebookController {
 										device.getId(), 
 										userDevice.getDeviceName(), 
 										device.getDeviceFcmToken(), 
-										msgStr, 
+										desc_temp.toString(), 
 										finalUrl, 
 										type, 
 										"facebook", 
