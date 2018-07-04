@@ -34,6 +34,7 @@ import com.joyhong.service.OrderService;
 import com.joyhong.service.UserDeviceService;
 import com.joyhong.service.UserService;
 import com.joyhong.service.common.ConstantService;
+import com.joyhong.service.common.FacebookService;
 import com.joyhong.service.common.FileService;
 import com.joyhong.service.common.OssService;
 import com.joyhong.service.common.PushService;
@@ -72,6 +73,9 @@ public class FacebookController {
 	
 	@Autowired
 	private OssService ossService;
+	
+	@Autowired
+	private FacebookService facebookService;
 	
 	/**
 	 * 监听facebook发来的消息
@@ -195,14 +199,14 @@ public class FacebookController {
 					        if( type.equals("image") ){
 //					        	image_url = ConstantService.fileUrl + "/facebook/attachments/" + type + "/" + fileName;
 					        	// 异步上传
-					        	ossService.uploadFile(url, fileName, ossService.filePath, ossService.ossUploadImagePath, "uid" + user.getId());
+					        	facebookService.uploadFile(url, fileName, ossService.filePath, ossService.ossUploadImagePath, "uid" + user.getId());
 					        	String ossDir = ossService.ossUploadImagePath + "uid" + user.getId() + "/";
 					        	image_url = ConstantService.ossUrl + ossDir + fileName;
 					        	finalUrl = image_url;
 					        }else if( type.equals("video") ){
 //					        	video_url = ConstantService.fileUrl + "/facebook/attachments/" + type + "/" + fileName;
 					        	// 异步上传
-					        	ossService.uploadFile(url, fileName, ossService.filePath, ossService.ossUploadVideoPath, "uid"+user.getId());
+					        	facebookService.uploadFile(url, fileName, ossService.filePath, ossService.ossUploadVideoPath, "uid"+user.getId());
 					        	String ossDir = ossService.ossUploadVideoPath + "uid" + user.getId() + "/";
 					        	video_url = ConstantService.ossUrl + ossDir + fileName;
 					        	finalUrl = video_url;
