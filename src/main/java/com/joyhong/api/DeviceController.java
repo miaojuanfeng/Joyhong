@@ -88,6 +88,10 @@ public class DeviceController {
 			if( this.deviceService.updateByPrimaryKeySelective(device) == 1 ){
 				JSONObject temp = new JSONObject();
 				temp.put("device_id", exist_device.getId());
+				temp.put("android", "https://play.google.com/store/apps/details?id=com.idwell.photopartner");
+				temp.put("ios", "https://itunes.apple.com/cn/app/photopartner-cloudphotoframe/id1393943223?mt=8");
+				temp.put("facebook", "https://www.facebook.com/photopartner");
+				temp.put("twitter", "https://twitter.com/PhotoPartner3");
 				retval.put("status", ConstantService.statusCode_200);
 				retval.put("data", temp);
 			}else{
