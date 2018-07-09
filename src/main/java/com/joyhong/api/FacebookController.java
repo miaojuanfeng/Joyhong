@@ -132,6 +132,7 @@ public class FacebookController {
 				String image_url = "";
 				String video_url = "";
 				String finalUrl = "";
+				String fileName = "";
 				String type = "text";
 				while((line = in.readLine()) != null){ 
 					postdata = postdata + line;
@@ -188,7 +189,7 @@ public class FacebookController {
 							String oldUrl = url.replace("/", "\\/");
 							String fileUrl = url.replace("\\", "");
 							                     
-					        String fileName = fileUrl.substring(fileUrl.lastIndexOf("/")+1);
+					        fileName = fileUrl.substring(fileUrl.lastIndexOf("/")+1);
 					        fileName = fileName.substring(0, fileName.lastIndexOf("?"));
 		  
 //					        String filePath = "/home/wwwroot/default/facebook/attachments/" + type + "/";   
@@ -211,6 +212,9 @@ public class FacebookController {
 					        	video_url = ConstantService.ossUrl + ossDir + fileName;
 					        	finalUrl = video_url;
 					        }
+					        if( !finalUrl.equals("") ){
+								fileName = finalUrl.substring(finalUrl.lastIndexOf("/")+1);
+							}
 					        postdata = postdata.replace(oldUrl, finalUrl);
 						}
 						
@@ -227,11 +231,11 @@ public class FacebookController {
 								body.put("sender_name", URLEncoder.encode(user.getNickname(), "utf-8"));
 								//
 								JSONObject temp = new JSONObject();
-								temp.put("username", user.getUsername());
+								temp.put("imei", user.getUsername());
 								temp.put("account", user.getNumber());
-								temp.put("nickname", URLEncoder.encode(user.getNickname(), "utf-8"));
+//								temp.put("nickname", URLEncoder.encode(user.getNickname(), "utf-8"));
 								temp.put("avatar", user.getProfileImage());
-								temp.put("platform", user.getPlatform());
+//								temp.put("platform", user.getPlatform());
 								temp.put("accepted", user.getAccepted());
 								body.put("sender_user", temp);
 								//
@@ -243,6 +247,7 @@ public class FacebookController {
 								desc_temp.add(URLEncoder.encode(msgStr, "utf-8"));
 //								url_temp.add(finalUrl);
 								body.put("text", desc_temp);
+								body.put("file_name", fileName);
 								body.put("url", finalUrl);
 								body.put("type", type);
 								body.put("platform", "facebook");
@@ -338,11 +343,11 @@ public class FacebookController {
 					body.put("sender_name", URLEncoder.encode(user.getNickname(), "utf-8"));
 					//
 					JSONObject ut = new JSONObject();
-					ut.put("username", user.getUsername());
+					ut.put("imei", user.getUsername());
 					ut.put("account", user.getNumber());
-					ut.put("nickname", URLEncoder.encode(user.getNickname(), "utf-8"));
+//					ut.put("nickname", URLEncoder.encode(user.getNickname(), "utf-8"));
 					ut.put("avatar", user.getProfileImage());
-					ut.put("platform", user.getPlatform());
+//					ut.put("platform", user.getPlatform());
 					ut.put("accepted", user.getAccepted());
 					body.put("sender_user", ut);
 					//
@@ -350,6 +355,7 @@ public class FacebookController {
 					body.put("receive_name", "");
 					body.put("to_fcm_token", device.getDeviceFcmToken());
 					body.put("text", "");
+					body.put("file_name", "");
 					body.put("url", url_temp);
 					body.put("type", "new user");
 					body.put("platform", "facebook");

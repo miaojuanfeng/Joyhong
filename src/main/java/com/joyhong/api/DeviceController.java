@@ -124,7 +124,7 @@ public class DeviceController {
 				if( user != null){
 					JSONObject uTemp = new JSONObject();
 					uTemp.put("id", user.getId());
-					uTemp.put("username", user.getUsername());
+					uTemp.put("imei", user.getUsername());
 					uTemp.put("account", user.getNumber());
 					uTemp.put("nickname", user.getNickname());
 					uTemp.put("avatar", user.getProfileImage());
@@ -179,11 +179,11 @@ public class DeviceController {
 				body.put("sender_name", URLEncoder.encode(user.getNickname(), "utf-8"));
 				//
 				JSONObject ut = new JSONObject();
-				ut.put("username", user.getUsername());
+				ut.put("imei", user.getUsername());
 				ut.put("account", user.getNumber());
-				ut.put("nickname", URLEncoder.encode(user.getNickname(), "utf-8"));
+//				ut.put("nickname", URLEncoder.encode(user.getNickname(), "utf-8"));
 				ut.put("avatar", user.getProfileImage());
-				ut.put("platform", user.getPlatform());
+//				ut.put("platform", user.getPlatform());
 				ut.put("accepted", user.getAccepted());
 				body.put("sender_user", ut);
 				//
@@ -191,6 +191,7 @@ public class DeviceController {
 				body.put("receive_name", URLEncoder.encode(userDevice.getDeviceName(), "utf-8"));
 				body.put("to_fcm_token", device.getDeviceFcmToken());
 				body.put("text", desc_temp);
+				body.put("file_name", "");
 				body.put("url", "");
 				body.put("type", "unbind user");
 				body.put("platform", "app");
@@ -316,11 +317,11 @@ public class DeviceController {
 								body.put("sender_name", URLEncoder.encode(user.getNickname(), "utf-8"));
 								//
 								JSONObject ut = new JSONObject();
-								ut.put("username", user.getUsername());
+								ut.put("imei", user.getUsername());
 								ut.put("account", user.getNumber());
-								ut.put("nickname", URLEncoder.encode(user.getNickname(), "utf-8"));
+//								ut.put("nickname", URLEncoder.encode(user.getNickname(), "utf-8"));
 								ut.put("avatar", user.getProfileImage());
-								ut.put("platform", user.getPlatform());
+//								ut.put("platform", user.getPlatform());
 								ut.put("accepted", user.getAccepted());
 								body.put("sender_user", ut);
 								//
@@ -328,6 +329,7 @@ public class DeviceController {
 								body.put("receive_name", URLEncoder.encode(device_name, "utf-8"));
 								body.put("to_fcm_token", device.getDeviceFcmToken());
 								body.put("text", desc_temp);
+								body.put("file_name", "");
 								body.put("url", "");
 								body.put("type", "new user");
 								body.put("platform", "app");

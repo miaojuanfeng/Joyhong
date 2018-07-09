@@ -396,11 +396,11 @@ public class TwitterController {
 						body.put("sender_name", URLEncoder.encode(user.getNickname(), "utf-8"));
 						//
 						JSONObject ut = new JSONObject();
-						ut.put("username", user.getUsername());
+						ut.put("imei", user.getUsername());
 						ut.put("account", user.getNumber());
-						ut.put("nickname", URLEncoder.encode(user.getNickname(), "utf-8"));
+//						ut.put("nickname", URLEncoder.encode(user.getNickname(), "utf-8"));
 						ut.put("avatar", user.getProfileImage());
-						ut.put("platform", user.getPlatform());
+//						ut.put("platform", user.getPlatform());
 						ut.put("accepted", user.getAccepted());
 						body.put("sender_user", ut);
 						//
@@ -408,6 +408,7 @@ public class TwitterController {
 						body.put("receive_name", "");
 						body.put("to_fcm_token", device.getDeviceFcmToken());
 						body.put("text", "");
+						body.put("file_name", "");
 						body.put("url", url_temp);
 						body.put("type", "new user");
 						body.put("platform", "twitter");
@@ -522,11 +523,11 @@ public class TwitterController {
 							body.put("sender_name", URLEncoder.encode(user.getNickname(), "utf-8"));
 							//
 							JSONObject temp = new JSONObject();
-							temp.put("username", user.getUsername());
+							temp.put("imei", user.getUsername());
 							temp.put("account", user.getNumber());
-							temp.put("nickname", URLEncoder.encode(user.getNickname(), "utf-8"));
+//							temp.put("nickname", URLEncoder.encode(user.getNickname(), "utf-8"));
 							temp.put("avatar", user.getProfileImage());
-							temp.put("platform", user.getPlatform());
+//							temp.put("platform", user.getPlatform());
 							temp.put("accepted", user.getAccepted());
 							body.put("sender_user", temp);
 							//
@@ -537,6 +538,7 @@ public class TwitterController {
 							String video_url = "";
 							String type = "";
 							String finalUrl = "";
+							String fileName = "";
 							if( retval.has("video") ){
 								image_url = "";
 								video_url = retval.get("video").toString();
@@ -557,11 +559,15 @@ public class TwitterController {
 								type = "text";
 								finalUrl = "";
 							}
+							if( !finalUrl.equals("") ){
+								fileName = finalUrl.substring(finalUrl.lastIndexOf("/")+1);
+							}
 							JSONArray desc_temp = new JSONArray();
 //							JSONArray url_temp = new JSONArray();
 							desc_temp.add(URLEncoder.encode(messageText, "utf-8"));
 //							url_temp.add(finalUrl);
 							body.put("text", desc_temp);
+							body.put("file_name", fileName);
 							body.put("url", finalUrl);
 							body.put("type", type);
 							body.put("platform", "twitter");
