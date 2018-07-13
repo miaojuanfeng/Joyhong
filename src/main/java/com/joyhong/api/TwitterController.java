@@ -337,7 +337,11 @@ public class TwitterController {
 		 * @param message
 		 * @return Integer
 		 */
-		public Integer insertUserIfNotExist(DirectMessage message){
+		public Integer updateUserProfile(DirectMessage message){
+			String username = String.valueOf(message.getSenderId());
+			String nickname = message.getSenderScreenName();
+			String profileImage = this.getUserProfile(message.getSenderId());
+			
 			com.joyhong.model.User user = userService.selectByUsername(String.valueOf(message.getSenderId()));
 			if( user == null ){
 				user = new com.joyhong.model.User();
@@ -350,14 +354,17 @@ public class TwitterController {
 					}
 				}
 				user.setNumber(user_number);
-				user.setUsername(String.valueOf(message.getSenderId()));
-				user.setNickname(message.getSenderScreenName());
-				user.setProfileImage(this.getUserProfile(message.getSenderId()));
+				user.setUsername(username);
+				user.setNickname(nickname);
+				user.setProfileImage(profileImage);
 				user.setPlatform("twitter");
 				user.setAccepted("1");
 				userService.insert(user);
 				return user.getId();
 			}else{
+				user.setNickname(nickname);
+				user.setProfileImage(profileImage);
+				userService.updateByPrimaryKey(user);
 				return user.getId();
 			}
 		}
@@ -463,7 +470,7 @@ public class TwitterController {
 	        			Device device = deviceService.selectByDeviceToken(device_token);
 	        			init();
 	        			if( device != null ){
-	        				Integer user_id = this.insertUserIfNotExist(message);
+	        				Integer user_id = this.updateUserProfile(message);
 	        				if( insertUserDeviceAfterDelete(user_id, device.getId(), device.getOrderId()) ){
 	        					try{
 		        					this.twitter.sendDirectMessage(message.getSenderId(), "Successful Binding!");

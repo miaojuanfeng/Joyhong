@@ -77,6 +77,8 @@ public class FacebookController {
 	@Autowired
 	private FacebookService facebookService;
 	
+	private String accessToken = "EAAHaDouAxh4BAF6hma0v5b7bisZCgLywns3ZAEQiOyqESAV8VRVDFRJo8YKZCm1cW2gIDWvqNITmcYGkWPuJlvMdcHUNgu3VohFg8B4IqzSwzBi7zYnCxK6PKETBCSretaZCt1ys3dQOruI5lElY35nlDd2THSbD2GHZBKbSBhEHSr1kO7lHY";
+	
 	/**
 	 * 监听facebook发来的消息
 	 * @url Invoked by the Facebook server
@@ -160,7 +162,7 @@ public class FacebookController {
 			        			String device_token = msg.substring(2);
 			        			Device device = deviceService.selectByDeviceToken(device_token);
 			        			if( device != null ){
-			        				Integer user_id = this.insertUserIfNotExist(json_obj);
+			        				Integer user_id = this.updateUserProfile(json_obj);
 			        				if( insertUserDeviceAfterDelete(user_id, device.getId(), device.getOrderId()) ){
 			        					postJsonData = "{'recipient':{'id':'" + sender_id + "'},'message':{'text':'Successful Binding!'}}";
 			        				}else{
@@ -274,7 +276,7 @@ public class FacebookController {
 					/*
 					 * 回复消息
 					 */
-					String url = "https://graph.facebook.com/v2.6/me/messages?access_token=EAAHaDouAxh4BAF6hma0v5b7bisZCgLywns3ZAEQiOyqESAV8VRVDFRJo8YKZCm1cW2gIDWvqNITmcYGkWPuJlvMdcHUNgu3VohFg8B4IqzSwzBi7zYnCxK6PKETBCSretaZCt1ys3dQOruI5lElY35nlDd2THSbD2GHZBKbSBhEHSr1kO7lHY";
+					String url = "https://graph.facebook.com/v2.6/me/messages?access_token="+this.accessToken;
 					URL obj = new URL(url);
 					HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 									 
@@ -396,7 +398,7 @@ public class FacebookController {
 		
 		try{
 			CloseableHttpClient httpclient = HttpClients.createDefault();
-			HttpGet httpget = new HttpGet("https://graph.facebook.com/v2.6/"+userId+"?access_token=EAAHQ2lh6o2UBAAeLni23hen920ECISXqjY5SsJXPeUKrHRid3f3huz82pdu8ptYSmCI8yhGJmjc0E3InZAl3mgKZBGTjMyIZCGGniep8lnGRVaheHfZB7h0dh06YDvV5mAmFL7pdfKgOMJTP9aUFM9ZAGZAuldUPUwPG5oQoY2wIvNEaZCuZAN4DLyQqURJKH9IZD");
+			HttpGet httpget = new HttpGet("https://graph.facebook.com/v2.6/"+userId+"?access_token="+this.accessToken);
 
 			CloseableHttpResponse response = httpclient.execute(httpget);
 			if (response.getStatusLine().getStatusCode() == 200) {
@@ -420,8 +422,9 @@ public class FacebookController {
     	         * Cache profile_pic
     	         */
                 if( json_obj.has("profile_pic") ){
-	    	        fileName = json_obj.getString("profile_pic").substring(json_obj.getString("profile_pic").lastIndexOf("/")+1);
-	    	        fileName = fileName.substring(0, fileName.lastIndexOf("?"));
+//	    	        fileName = json_obj.getString("profile_pic").substring(json_obj.getString("profile_pic").lastIndexOf("/")+1);
+//	    	        fileName = fileName.substring(0, fileName.lastIndexOf("?"));
+                	fileName = "download.jpeg";
 	    	        fileService.saveUrlAs(json_obj.getString("profile_pic"), filePath, fileName);
 	    	        retval.put("profile_pic", fileUrl + fileName);
                 }
@@ -449,17 +452,21 @@ public class FacebookController {
 	 * @param json_obj
 	 * @return Integer
 	 */
-	public Integer insertUserIfNotExist(JSONObject json_obj){
+	public Integer updateUserProfile(JSONObject json_obj){
 		String sender_id = json_obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("sender").getString("id");
+		String u = this.getUserProfile(sender_id);
+		JSONObject uJson = JSONObject.fromObject(u);
+		String nickname = "";
+		if( uJson.has("username") ){
+			nickname = uJson.getString("username");
+		}
+		String profileImage = "";
+		if( uJson.has("profile_pic") ){
+			profileImage = uJson.getString("profile_pic");
+		}
+		
 		com.joyhong.model.User user = userService.selectByUsername(sender_id);
 		if( user == null ){
-			String u = this.getUserProfile(sender_id);
-			JSONObject uJson = JSONObject.fromObject(u);
-			String username = "";
-			if( uJson.has("username") ){
-				username = uJson.getString("username");
-			}
-			
 			user = new com.joyhong.model.User();
 			int user_number = 0;
 			while(true){
@@ -471,17 +478,16 @@ public class FacebookController {
 			}
 			user.setNumber(user_number);
 			user.setUsername(sender_id);
-			user.setNickname(username);
-			if( uJson.has("profile_pic") ){
-				user.setProfileImage(uJson.getString("profile_pic"));
-			}else{
-				user.setProfileImage("");
-			}
+			user.setNickname(nickname);
+			user.setProfileImage(profileImage);
 			user.setPlatform("facebook");
 			user.setAccepted("1");
 			userService.insert(user);
 			return user.getId();
 		}else{
+			user.setNickname(nickname);
+			user.setProfileImage(profileImage);
+			userService.updateByPrimaryKey(user);
 			return user.getId();
 		}
 	}

@@ -66,6 +66,7 @@ public class FileService {
 	    	 File file = new File(filePath);
 	    	 if(!file.exists()){
 	    		 file .mkdir();
+	    		 Runtime.getRuntime().exec("chmod 777 " + file);
 	    	 }
 	    	 
 	         URL httpUrl=new URL(url);  

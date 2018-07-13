@@ -75,9 +75,10 @@ public class UserServiceImpl implements UserService {
 		return userMapper.selectPlatformOffsetAndLimit(platform, offset, limit);
 	}
 
-	public int updateByPrimaryKey(User record) {
+	public int updateByPrimaryKey(User user) {
 		// TODO Auto-generated method stub
-		return userMapper.updateByPrimaryKey(record);
+		user.setModifyDate(new Date());
+		return userMapper.updateByPrimaryKey(user);
 	}
 
 }
