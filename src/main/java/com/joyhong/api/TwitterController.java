@@ -391,7 +391,8 @@ public class TwitterController {
 						 * 推送绑定消息
 						 */
 						JSONObject body = new JSONObject();
-						JSONArray url_temp = new JSONArray();
+						JSONArray desc_temp = new JSONArray();
+						desc_temp.add(URLEncoder.encode("", "utf-8"));
 						body.put("sender_id", user.getId());
 						body.put("sender_name", URLEncoder.encode(user.getNickname(), "utf-8"));
 						//
@@ -407,9 +408,9 @@ public class TwitterController {
 						body.put("receive_id", device.getId());
 						body.put("receive_name", "");
 						body.put("to_fcm_token", device.getDeviceFcmToken());
-						body.put("text", "");
+						body.put("text", desc_temp);
 						body.put("file_name", "");
-						body.put("url", url_temp);
+						body.put("url", "");
 						body.put("type", "new user");
 						body.put("platform", "twitter");
 						body.put("time", (new Date()).getTime()/1000);
