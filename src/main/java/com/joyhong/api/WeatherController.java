@@ -1,6 +1,7 @@
 package com.joyhong.api;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.TimeZone;
@@ -201,6 +202,19 @@ public class WeatherController {
 //		} 
 //		return time;
 //    }
+    
+    /**
+     * 得到几天后的时间
+     * @param d
+     * @param day
+     * @return
+     */
+    private Date getDateAfter(Date d,int day){
+		Calendar now = Calendar.getInstance();
+		now.setTime(d);
+		now.set(Calendar.DATE, now.get(Calendar.DATE) + day);
+		return now.getTime();
+	}
 	
     /**
      * 处理天气数据
@@ -227,7 +241,9 @@ public class WeatherController {
 		}
 		JSONArray list = jsonResult.getJSONArray("list");
 		Integer i;
-		String todayDate = timeStamp2Date(String.valueOf(new Date().getTime()/1000), "yyyy-MM-dd", timeZone);
+		Date now = new Date();
+		String todayDate = timeStamp2Date(String.valueOf(now.getTime()/1000), "yyyy-MM-dd", timeZone);
+		String lastDate = timeStamp2Date(String.valueOf(this.getDateAfter(now, 4).getTime()/1000), "yyyy-MM-dd", timeZone);
 		String todayDatetime = timeStamp2Date(String.valueOf(new Date().getTime()/1000), "yyyy-MM-dd HH:mm:ss", timeZone);
 		Float temp_min = 99999999.0F;
 		Float temp_max = 0.0F;
@@ -266,7 +282,7 @@ public class WeatherController {
 				/*
 				 * 未来时间的最高温和最低温
 				 */
-				if( !date.equals(todayDate) ){
+				if( !date.equals(todayDate) && date.compareTo(lastDate) <= 0 ){
 					
 					if( !retObj.has(date) ){
 						temp_min = 99999999.0F;
