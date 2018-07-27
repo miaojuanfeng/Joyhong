@@ -423,16 +423,34 @@ public class UploadController {
 	 */
 	@RequestMapping(value="/token/image", method = RequestMethod.POST)
 	@ResponseBody
-	public String tokenImage(@RequestParam("user_id") Integer user_id, @RequestParam("user_imei") String user_imei){
+	public String tokenImage(@RequestParam("user_id") Integer user_id, @RequestParam("user_imei") String user_imei,
+							 @RequestParam("image_data") String image_data){
 		JSONObject retval = new JSONObject();
 		
 		User user = userService.selectByUsername(user_imei);
 		if( user != null && user_id.equals(user.getId()) ){
-			JSONObject temp = new JSONObject();
-			temp.put("upToken", ossService.upToken());
 			
-			retval.put("status", ConstantService.statusCode_200);
-			retval.put("data", temp);
+			JSONObject obj = JSONObject.fromObject(image_data);
+			JSONArray deviceId = JSONArray.fromObject(obj.getString("device_id"));
+			
+			Boolean errorCode327 = false;
+			for(int i = 0; i< deviceId.size(); i++){
+				UserDevice userDevice = userDeviceService.selectByUserIdAndDeviceId(user_id, deviceId.getInt(i));
+				if( userDevice == null ){
+					errorCode327 = true;
+					break;
+				}
+			}
+			
+			if( !errorCode327 ){
+				JSONObject temp = new JSONObject();
+				temp.put("upToken", ossService.upToken());
+				
+				retval.put("status", ConstantService.statusCode_200);
+				retval.put("data", temp);
+			}else{
+				retval.put("status", ConstantService.statusCode_327);
+			}
 		}else{
 			retval.put("status", ConstantService.statusCode_109);
 		}
@@ -463,38 +481,51 @@ public class UploadController {
 			String file_desc = obj.getString("file_desc");
 			JSONArray deviceId = JSONArray.fromObject(obj.getString("device_id"));
 			
-			Upload existsFile = uploadService.selectByNameAndMD5(user_id, file_md5);
-	        if( existsFile != null ){
-	        	JSONArray t = new JSONArray();
-	        	t.add(file_desc);
-	        	existsFile.setDescription(t.toString());
-	        	if( uploadService.updateByPrimaryKey(existsFile) == 1 ){
-	        		/*
-					 * 推送在下
-					 */
-	        		JSONArray desc_temp = new JSONArray();
-					for(int i=0; i<t.size(); i++){
-						desc_temp.add(URLEncoder.encode(t.getString(i), "utf-8"));
-					}
-					for(int i = 0; i< deviceId.size(); i++){
-						this.doPush(user, existsFile, deviceId.getInt(i), desc_temp, existsFile.getUrl(), "video");
-					}
-					/*
-					 * 推送在上
-					 */
-					JSONObject temp = new JSONObject();
-					temp.put("url", existsFile.getUrl());
+			Boolean errorCode327 = false;
+			for(int i = 0; i< deviceId.size(); i++){
+				UserDevice userDevice = userDeviceService.selectByUserIdAndDeviceId(user_id, deviceId.getInt(i));
+				if( userDevice == null ){
+					errorCode327 = true;
+					break;
+				}
+			}
+			
+			if( !errorCode327 ){
+				Upload existsFile = uploadService.selectByNameAndMD5(user_id, file_md5);
+		        if( existsFile != null ){
+		        	JSONArray t = new JSONArray();
+		        	t.add(file_desc);
+		        	existsFile.setDescription(t.toString());
+		        	if( uploadService.updateByPrimaryKey(existsFile) == 1 ){
+		        		/*
+						 * 推送在下
+						 */
+		        		JSONArray desc_temp = new JSONArray();
+						for(int i=0; i<t.size(); i++){
+							desc_temp.add(URLEncoder.encode(t.getString(i), "utf-8"));
+						}
+						for(int i = 0; i< deviceId.size(); i++){
+							this.doPush(user, existsFile, deviceId.getInt(i), desc_temp, existsFile.getUrl(), "video");
+						}
+						/*
+						 * 推送在上
+						 */
+						JSONObject temp = new JSONObject();
+						temp.put("url", existsFile.getUrl());
+						
+						retval.put("status", ConstantService.statusCode_200);
+						retval.put("data", temp);
+		        	}
+		        }else{
+		        	JSONObject temp = new JSONObject();
+					temp.put("upToken", ossService.upToken());
 					
 					retval.put("status", ConstantService.statusCode_200);
 					retval.put("data", temp);
-	        	}
-	        }else{
-	        	JSONObject temp = new JSONObject();
-				temp.put("upToken", ossService.upToken());
-				
-				retval.put("status", ConstantService.statusCode_200);
-				retval.put("data", temp);
-	        }
+		        }
+			}else{
+				retval.put("status", ConstantService.statusCode_327);
+			}
 		}else{
 			retval.put("status", ConstantService.statusCode_109);
 		}

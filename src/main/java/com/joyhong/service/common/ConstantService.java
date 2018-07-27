@@ -60,6 +60,7 @@ public class ConstantService {
 	public static final int statusCode_324 = 324;		// The total block must be more than 0
 	public static final int statusCode_325 = 325;		// The total block must be more or equal than current block
 	public static final int statusCode_326 = 326;		// Block file not exists
+	public static final int statusCode_327 = 327;		// User bound device change
 	/*
 	 * User controller error
 	 */
